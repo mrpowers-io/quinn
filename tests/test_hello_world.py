@@ -3,9 +3,6 @@ import pytest
 from quinn.spark import *
 from quinn.hello_world import HelloWorld
 
-from pyspark.sql.functions import col
-
-
 class TestHelloWorld(object):
 
     def test_hello(self):
