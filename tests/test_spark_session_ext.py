@@ -15,14 +15,9 @@ class TestSparkSessionExt(object):
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
         actual_df = spark.createDataFrame(data, schema)
 
-        expected_df = spark.createDF([
-            ("jose", "a"),
-            ("li", "b"),
-            ("sam", "c")
-        ],
-        [
-            ("name", StringType(), True),
-            ("blah", StringType(), True)
-        ])
+        expected_df = spark.createDF(
+            [("jose", "a"), ("li", "b"), ("sam", "c")],
+            [("name", StringType(), True), ("blah", StringType(), True)]
+        )
 
         assert(expected_df.collect() == actual_df.collect())
