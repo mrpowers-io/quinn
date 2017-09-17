@@ -9,7 +9,7 @@ class TestDataFrameHelpers(object):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
 
-        actual = DataFrameHelpers().columnToList(source_df, "name")
+        actual = DataFrameHelpers().column_to_list(source_df, "name")
 
         assert(["jose", "li", "luisa"] == actual)
 
