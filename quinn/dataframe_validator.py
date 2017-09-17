@@ -1,6 +1,9 @@
 class DataFrameMissingColumnError(ValueError):
     '''raise this when there's a DataFrame column error'''
 
+class DataFrameMissingStructFieldError(ValueError):
+    '''raise this when there's a DataFrame column error'''
+
 class DataFrameValidator:
 
     def validate_presence_of_columns(self, df, required_col_names):
@@ -9,3 +12,10 @@ class DataFrameValidator:
         error_message = f"The {missing_col_names} columns are not included in the DataFrame with the following columns {all_col_names}"
         if missing_col_names:
             raise DataFrameMissingColumnError(error_message)
+
+    def validate_schema(self, df, required_schema):
+        all_struct_fields = df.schema
+        missing_struct_fields = [x for x in required_schema if x not in all_struct_fields]
+        error_message = f"The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {all_struct_fields}"
+        if missing_struct_fields:
+            raise DataFrameMissingStructFieldError(error_message)
