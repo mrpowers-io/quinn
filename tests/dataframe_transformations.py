@@ -1,6 +1,5 @@
 from pyspark.sql.functions import lit
 
-
 class DataFrameTransformations:
     def with_greeting(self, df):
         return df.withColumn("greeting", lit("hi"))
