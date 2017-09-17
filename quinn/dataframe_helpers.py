@@ -7,3 +7,6 @@ class DataFrameHelpers:
         l = list(map(lambda r: (getattr(r, key_col_name), getattr(r, value_col_name)), df.collect()))
         return dict(l)
 
+    def to_list_of_dictionaries(self, df):
+        return list(map(lambda r: r.asDict(), df.collect()))
+
