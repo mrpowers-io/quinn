@@ -5,7 +5,7 @@ from quinn.column_ext import *
 from quinn.spark_session_ext import *
 
 from pyspark.sql.functions import col
-from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
 
 class TestColumnExt(object):
 
