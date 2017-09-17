@@ -38,3 +38,15 @@ class TestDataFrameValidator(object):
             StructField("age", LongType(), True),
         ])
         DataFrameValidator().validate_schema(source_df, required_schema)
+
+    def test_validate_absence_of_columns_when_column_is_present(self):
+        data = [("jose", 1), ("li", 2), ("luisa", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+        with pytest.raises(DataFrameProhibitedColumnError) as excinfo:
+            DataFrameValidator().validate_absence_of_columns(source_df, ["age", "cool"])
+        assert excinfo.value.args[0] == "The ['age'] columns are not allowed to be included in the DataFrame with the following columns ['name', 'age']"
+
+    def test_validate_absence_of_columns_when_column_isnt_present(self):
+        data = [("jose", 1), ("li", 2), ("luisa", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+        DataFrameValidator().validate_absence_of_columns(source_df, ["favorite_color"])
