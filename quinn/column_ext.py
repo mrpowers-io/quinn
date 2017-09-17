@@ -2,6 +2,17 @@ from pyspark.sql.functions import when, lit, col, trim
 
 from pyspark.sql.column import Column
 
+def nullBetween(self, lower, upper):
+    return when(lower.isNull() & upper.isNull(), False).otherwise(
+        when(self.isNull(), False).otherwise(
+            when(lower.isNull() & upper.isNotNull() & (self <= upper), True).otherwise(
+                when(lower.isNotNull() & upper.isNull() & (self >= lower), True).otherwise(
+                    self.between(lower, upper)
+                )
+            )
+        )
+    )
+
 def isFalsy(self):
     return when(self.isNull() | (self == lit(False)), True).otherwise(False)
 
@@ -14,6 +25,7 @@ def isNullOrBlank(self):
 def isNotIn(self, list):
     return ~(self.isin(list))
 
+Column.nullBetween = nullBetween
 Column.isFalsy = isFalsy
 Column.isTruthy = isTruthy
 Column.isNullOrBlank = isNullOrBlank
