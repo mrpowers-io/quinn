@@ -152,7 +152,52 @@ source_df.withColumn(
 import quinn.transformations as QT
 ```
 
+**snake_case_col_names()**
+
+```python
+QT.snake_case_col_names(source_df)
+```
+
+Converts all the column names in a DataFrame to snake_case.  It's annoying to write SQL queries when columns aren't snake cased.
+
+**sort_columns()**
+
+```python
+QT.sort_columns(source_df, "asc")
+```
+
+Sorts the DataFrame columns in alphabetical order.  Wide DataFrames are easier to navigate when they're sorted alphabetically.
+
 ### DataFrame Helpers
+
+```python
+from quinn.dataframe_helpers import DataFrameHelpers
+```
+
+**column_to_list()**
+
+```python
+DataFrameHelpers().column_to_list(source_df, "name")
+```
+
+Converts a column in a DataFrame to a list of values.
+
+**two_columns_to_dictionary()**
+
+```python
+DataFrameHelpers().two_columns_to_dictionary(source_df, "name", "age")
+```
+
+Converts two columns of a DataFrame into a dictionary.  In this example, `name` is the key and `age` is the value.
+
+
+**to_list_of_dictionaries()**
+
+```python
+DataFrameHelpers().to_list_of_dictionaries(source_df)
+```
+
+Converts an entire DataFrame into a list of dictionaries.
 
 ## Contributing
 
