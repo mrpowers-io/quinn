@@ -34,10 +34,27 @@ from quinn.dataframe_validator import *
 from quinn.column_ext import *
 ```
 
-* `source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))`: Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`.  If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
+**nullBetween()**
 
+```python
+source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
+```
 
-* `source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())`: Returns `True` if `has_stuff` is `None` or `False`.
+Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`.  If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
+
+**isFalsy()**
+
+```python
+source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
+```
+
+Returns `True` if `has_stuff` is `None` or `False`.
+
+* `source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())`: Returns `True` unless `has_stuff` is `None` or `False`.
+
+* `source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())`: Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
+
+* `source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))`: Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 
 ### SparkSession Extensions
 
