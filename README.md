@@ -22,11 +22,29 @@ Quinn validates DataFrames, extends core classes, defines DataFrame transformati
 from quinn.dataframe_validator import *
 ```
 
-* `DataFrameValidator().validate_presence_of_columns(source_df, ["name", "age", "fun"])`: Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
+**validate_presence_of_columns()**
 
-* `DataFrameValidator().validate_schema(source_df, required_schema)`: Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
+```python
+DataFrameValidator().validate_presence_of_columns(source_df, ["name", "age", "fun"])
+```
 
-* `DataFrameValidator().validate_absence_of_columns(source_df, ["age", "cool"])`: Raises an exception if `source_df` contains `age` or `cool` columns.
+Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
+
+**validate_schema()**
+
+```python
+DataFrameValidator().validate_schema(source_df, required_schema)
+```
+
+Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
+
+**validate_absence_of_columns()**
+
+```python
+DataFrameValidator().validate_absence_of_columns(source_df, ["age", "cool"])
+```
+
+Raises an exception if `source_df` contains `age` or `cool` columns.
 
 ### Column Extensions
 
