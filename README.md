@@ -50,19 +50,107 @@ source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 
 Returns `True` if `has_stuff` is `None` or `False`.
 
-* `source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())`: Returns `True` unless `has_stuff` is `None` or `False`.
+**isTruthy()**
 
-* `source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())`: Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
+```python
+source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
+```
 
-* `source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))`: Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
+Returns `True` unless `has_stuff` is `None` or `False`.
+
+**isNullOrBlank()**
+
+```python
+source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
+```
+
+Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
+
+**isNotIn()**
+
+```python
+source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
+```
+
+Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 
 ### SparkSession Extensions
 
+```python
+from quinn.spark_session_ext import *
+```
+
+**createDF()**
+
+```python
+spark.createDF(
+    [("jose", "a"), ("li", "b"), ("sam", "c")],
+    [("name", StringType(), True), ("blah", StringType(), True)]
+)
+```
+
+Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
+
 ### DataFrame Extensions
+
+```python
+from quinn.dataframe_ext import *
+```
+
+**transform()**
+
+```python
+source_df\
+    .transform(lambda df: with_greeting(df))\
+    .transform(lambda df: with_something(df, "crazy"))
+```
+
+Allows for multiple DataFrame transformations to be run and executed.
 
 ### Functions
 
+```python
+import quinn.functions as QF
+```
+
+**exists()**
+
+```python
+source_df.withColumn(
+    "any_num_greater_than_5",
+    QF.exists(lambda n: n > 5)(col("nums"))
+)
+```
+
+`nums` contains lists of numbers and `exists()` returns `True` if any of the numbers in the list are greater than 5.  It's similar to the Python `any` function.
+
+**forall()**
+
+```python
+source_df.withColumn(
+    "all_nums_greater_than_3",
+    QF.forall(lambda n: n > 3)(col("nums"))
+)
+```
+
+`nums` contains lists of numbers and `forall()` returns `True` if all of the numbers in the list are greater than 3.  It's similar to the Python `all` function.
+
+**multi_equals()**
+
+```python
+source_df.withColumn(
+    "are_s1_and_s2_cat",
+    QF.multi_equals("cat")(col("s1"), col("s2"))
+)
+```
+
+`multi_equals` returns true if `s1` and `s2` are both equal to `"cat"`.
+
 ### Transformations
+
+```python
+import quinn.transformations as QT
+```
 
 ### DataFrame Helpers
 
