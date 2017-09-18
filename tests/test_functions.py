@@ -41,3 +41,36 @@ class TestFunctions(object):
         )
 
         assert(expected_df.collect() == actual_df.collect())
+
+    def test_forall(self):
+        source_df = spark.createDataFrame(
+            [
+                ("jose", [1, 2, 3]),
+                ("li", [4, 5, 6]),
+                ("luisa", [10, 11, 12]),
+            ],
+            StructType([
+                StructField("name", StringType(), True),
+                StructField("nums", ArrayType(IntegerType(), True), True),
+            ])
+        )
+
+        actual_df = source_df.withColumn(
+            "all_nums_greater_than_3",
+            QF.forall(lambda n: n > 3)(col("nums"))
+        )
+
+        expected_df = spark.createDataFrame(
+            [
+                ("jose", [1, 2, 3], False),
+                ("li", [4, 5, 6], True),
+                ("luisa", [10, 11, 12], True)
+            ],
+            StructType([
+                StructField("name", StringType(), True),
+                StructField("nums", ArrayType(IntegerType(), True), True),
+                StructField("all_nums_greater_than_3", BooleanType(), True)
+            ])
+        )
+
+        assert(expected_df.collect() == actual_df.collect())

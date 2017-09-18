@@ -9,3 +9,8 @@ def exists(f):
         return any(map(f, l))
     return F.udf(temp_udf, BooleanType())
 
+def forall(f):
+    def temp_udf(l):
+        return all(map(f, l))
+    return F.udf(temp_udf, BooleanType())
+
