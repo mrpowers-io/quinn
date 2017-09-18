@@ -4,7 +4,7 @@ from quinn.spark import *
 from quinn.column_ext import *
 from quinn.spark_session_ext import *
 
-from pyspark.sql.functions import col
+import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
 
 class TestColumnExt(object):
@@ -30,7 +30,7 @@ class TestColumnExt(object):
 
         actual_df = source_df.withColumn(
             "is_between",
-            col("age").nullBetween(col("lower_age"), col("upper_age"))
+            F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
         )
 
         expected_df = spark.createDF(
@@ -67,7 +67,7 @@ class TestColumnExt(object):
             ]
         )
 
-        actual_df = source_df.withColumn("is_stuff_falsy", col("has_stuff").isFalsy())
+        actual_df = source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 
         expected_df = spark.createDF(
             [
@@ -97,7 +97,7 @@ class TestColumnExt(object):
             ]
         )
 
-        actual_df = source_df.withColumn("is_stuff_truthy", col("has_stuff").isTruthy())
+        actual_df = source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
 
         expected_df = spark.createDF(
             [
@@ -128,7 +128,7 @@ class TestColumnExt(object):
             ]
         )
 
-        actual_df = source_df.withColumn("is_blah_null_or_blank", col("blah").isNullOrBlank())
+        actual_df = source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
 
         expected_df = spark.createDF(
             [
@@ -161,7 +161,7 @@ class TestColumnExt(object):
 
         bobs_hobbies = ["dancing", "snowboarding"]
 
-        actual_df = source_df.withColumn("is_not_bobs_hobby", col("fun_thing").isNotIn(bobs_hobbies))
+        actual_df = source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
 
         expected_df = spark.createDF(
             [
