@@ -9,51 +9,6 @@ from pyspark.sql.types import StructType, StructField, StringType, BooleanType, 
 
 class TestColumnExt(object):
 
-    def test_null_between(self):
-        source_df = spark.createDF(
-            [
-                 (17, None, 94),
-                 (17, None, 10),
-                 (None, 10, 5),
-                 (None, 10, 88),
-                 (10, 15, 11),
-                 (None, None, 11),
-                 (3, 5, None),
-                 (None, None, None),
-            ],
-            [
-                 ("lower_age", IntegerType(), True),
-                 ("upper_age", IntegerType(), True),
-                 ("age", IntegerType(), True)
-            ]
-        )
-
-        actual_df = source_df.withColumn(
-            "is_between",
-            F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
-        )
-
-        expected_df = spark.createDF(
-            [
-                (17, None, 94, True),
-                (17, None, 10, False),
-                (None, 10, 5, True),
-                (None, 10, 88, False),
-                (10, 15, 11, True),
-                (None, None, 11, False),
-                (3, 5, None, False),
-                (None, None, None, False)
-            ],
-            [
-                ("lower_age", IntegerType(), True),
-                ("upper_age", IntegerType(), True),
-                ("age", IntegerType(), True),
-                ("is_between", BooleanType(), True)
-            ]
-        )
-
-        assert(expected_df.collect() == actual_df.collect())
-
     def test_is_falsy(self):
         source_df = spark.createDF(
             [
@@ -173,6 +128,51 @@ class TestColumnExt(object):
                 ("name", StringType(), True),
                 ("fun_thing", StringType(), True),
                 ("is_not_bobs_hobby", BooleanType(), True),
+            ]
+        )
+
+        assert(expected_df.collect() == actual_df.collect())
+
+    def test_null_between(self):
+        source_df = spark.createDF(
+            [
+                 (17, None, 94),
+                 (17, None, 10),
+                 (None, 10, 5),
+                 (None, 10, 88),
+                 (10, 15, 11),
+                 (None, None, 11),
+                 (3, 5, None),
+                 (None, None, None),
+            ],
+            [
+                 ("lower_age", IntegerType(), True),
+                 ("upper_age", IntegerType(), True),
+                 ("age", IntegerType(), True)
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "is_between",
+            F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
+        )
+
+        expected_df = spark.createDF(
+            [
+                (17, None, 94, True),
+                (17, None, 10, False),
+                (None, 10, 5, True),
+                (None, 10, 88, False),
+                (10, 15, 11, True),
+                (None, None, 11, False),
+                (3, 5, None, False),
+                (None, None, None, False)
+            ],
+            [
+                ("lower_age", IntegerType(), True),
+                ("upper_age", IntegerType(), True),
+                ("age", IntegerType(), True),
+                ("is_between", BooleanType(), True)
             ]
         )
 

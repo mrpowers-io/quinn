@@ -34,14 +34,6 @@ from quinn.dataframe_validator import *
 from quinn.column_ext import *
 ```
 
-**nullBetween()**
-
-```python
-source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
-```
-
-Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`.  If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
-
 **isFalsy()**
 
 ```python
@@ -73,6 +65,14 @@ source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbie
 ```
 
 Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
+
+**nullBetween()**
+
+```python
+source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
+```
+
+Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`.  If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ### SparkSession Extensions
 
