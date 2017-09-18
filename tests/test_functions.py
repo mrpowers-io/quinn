@@ -74,3 +74,40 @@ class TestFunctions(object):
         )
 
         assert(expected_df.collect() == actual_df.collect())
+
+    def test_multi_equals(self):
+        source_df = spark.createDF(
+            [
+                ("cat", "cat"),
+                ("cat", "dog"),
+                ("pig", "pig"),
+                ("", ""),
+                (None, None)
+            ],
+            [
+                ("s1", StringType(), True),
+                ("s2", StringType(), True)
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "are_s1_and_s2_cat",
+            QF.multi_equals("cat")(col("s1"), col("s2"))
+        )
+
+        expected_df = spark.createDF(
+            [
+                ("cat", "cat", True),
+                ("cat", "dog", False),
+                ("pig", "pig", False),
+                ("", "", False),
+                (None, None, False),
+            ],
+            [
+                ("s1", StringType(), True),
+                ("s2", StringType(), True),
+                ("are_s1_and_s2_cat", BooleanType(), True),
+            ]
+        )
+
+        assert(expected_df.collect() == actual_df.collect())

@@ -14,3 +14,7 @@ def forall(f):
         return all(map(f, l))
     return F.udf(temp_udf, BooleanType())
 
+def multi_equals(value):
+    def temp_udf(*cols):
+        return all(map(lambda col: col == value, cols))
+    return F.udf(temp_udf, BooleanType())
