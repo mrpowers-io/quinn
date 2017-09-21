@@ -2,7 +2,7 @@ import pytest
 
 from quinn.spark import *
 from quinn.dataframe_ext import *
-from dataframe_transformations import DataFrameTransformations
+import dataframe_transformations as DFT
 
 from pyspark.sql.functions import col
 
@@ -23,7 +23,7 @@ class TestDataFrameExt(object):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
 
-        actual_df = source_df.transform(lambda df: DataFrameTransformations().with_greeting(df))
+        actual_df = source_df.transform(lambda df: DFT.with_greeting(df))
 
         expected_data = [("jose", 1, "hi"), ("li", 2, "hi"), ("luisa", 3, "hi")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting"])
@@ -34,7 +34,7 @@ class TestDataFrameExt(object):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
 
-        actual_df = source_df.transform(lambda df: DataFrameTransformations().with_something(df, "crazy"))
+        actual_df = source_df.transform(lambda df: DFT.with_something(df, "crazy"))
 
         expected_data = [("jose", 1, "crazy"), ("li", 2, "crazy"), ("luisa", 3, "crazy")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "something"])
@@ -46,8 +46,8 @@ class TestDataFrameExt(object):
         source_df = spark.createDataFrame(data, ["name", "age"])
 
         actual_df = source_df\
-            .transform(lambda df: DataFrameTransformations().with_greeting(df))\
-            .transform(lambda df: DataFrameTransformations().with_something(df, "crazy"))
+            .transform(lambda df: DFT.with_greeting(df))\
+            .transform(lambda df: DFT.with_something(df, "crazy"))
 
         expected_data = [("jose", 1, "hi", "crazy"), ("li", 2, "hi", "crazy"), ("luisa", 3, "hi", "crazy")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
