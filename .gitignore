@@ -4,3 +4,4 @@ quinn.egg-info/
 .cache/
 __pycache__/
 tmp/
+.idea/
