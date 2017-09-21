@@ -189,13 +189,13 @@ Sorts the DataFrame columns in alphabetical order.  Wide DataFrames are easier t
 ### DataFrame Helpers
 
 ```python
-from quinn.dataframe_helpers import DataFrameHelpers
+import quinn.dataframe_helpers as DFH
 ```
 
 **column_to_list()**
 
 ```python
-DataFrameHelpers().column_to_list(source_df, "name")
+DFH.column_to_list(source_df, "name")
 ```
 
 Converts a column in a DataFrame to a list of values.
@@ -203,7 +203,7 @@ Converts a column in a DataFrame to a list of values.
 **two_columns_to_dictionary()**
 
 ```python
-DataFrameHelpers().two_columns_to_dictionary(source_df, "name", "age")
+DFH.two_columns_to_dictionary(source_df, "name", "age")
 ```
 
 Converts two columns of a DataFrame into a dictionary.  In this example, `name` is the key and `age` is the value.
@@ -212,7 +212,7 @@ Converts two columns of a DataFrame into a dictionary.  In this example, `name` 
 **to_list_of_dictionaries()**
 
 ```python
-DataFrameHelpers().to_list_of_dictionaries(source_df)
+DFH.to_list_of_dictionaries(source_df)
 ```
 
 Converts an entire DataFrame into a list of dictionaries.
