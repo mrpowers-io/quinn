@@ -19,14 +19,25 @@ class ScalaToPyspark:
         # remove scala import statements
         result = list(filter(lambda l: not l.startswith("import scala"), result))
 
-        # remove the vals
+        # remove the vals and vars
         result = [x.replace("val ", "") for x in result]
+        result = [x.replace("var ", "") for x in result]
 
         # remove ending curly braces (low hanging fruit)
         result = list(filter(lambda l: l.strip() != "}", result))
 
         # clean up the function definitions
         result = [self.clean_function_definition(x) if x.lstrip().startswith("def") else x for x in result]
+
+        # prefix SQL functions with F
+        result = [x.replace("col(", "F.col(") for x in result]
+
+        # replace null with None
+        result = [x.replace("null", "None") for x in result]
+
+        # capital case true and false
+        result = [x.replace("true", "True") for x in result]
+        result = [x.replace("false", "False") for x in result]
 
         return result
 
@@ -46,7 +57,3 @@ class ScalaToPyspark:
     def clean_args(self, args):
         unannoted_args_list = list(map(lambda a: a.split(": ")[0], args.split(", ")))
         return ", ".join(unannoted_args_list)
-
-
-s = ScalaToPyspark("/Users/powers/Documents/code/my_apps/quinn/tmp/DataFrameHelpers.scala")
-s.display()
