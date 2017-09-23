@@ -1,8 +1,7 @@
 import pytest
 
 from quinn.spark import *
-from quinn.column_ext import *
-from quinn.spark_session_ext import *
+from quinn.extensions import *
 
 import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType

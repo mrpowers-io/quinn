@@ -5,3 +5,4 @@ quinn.egg-info/
 __pycache__/
 tmp/
 .idea/
+.DS_Store
