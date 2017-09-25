@@ -1,5 +1,6 @@
 import re
 
+
 class ScalaToPyspark:
 
     def __init__(self, scala_path):

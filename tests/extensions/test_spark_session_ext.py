@@ -15,7 +15,7 @@ class TestSparkSessionExt(object):
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
         actual_df = spark.createDataFrame(data, schema)
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [("jose", "a"), ("li", "b"), ("sam", "c")],
             [("name", StringType(), True), ("blah", StringType(), True)]
         )

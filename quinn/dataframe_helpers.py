@@ -7,4 +7,3 @@ def two_columns_to_dictionary(df, key_col_name, value_col_name):
 
 def to_list_of_dictionaries(df):
     return list(map(lambda r: r.asDict(), df.collect()))
-

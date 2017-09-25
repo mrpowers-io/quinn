@@ -1,5 +1,6 @@
 from functools import reduce
 
+
 def snake_case_col_names(df):
     return reduce(
         lambda memo_df, col_name: memo_df.withColumnRenamed(col_name, to_snake_case(col_name)),
@@ -7,8 +8,10 @@ def snake_case_col_names(df):
         df
     )
 
+
 def to_snake_case(s):
     return s.lower().replace(" ", "_")
+
 
 def sort_columns(df, sort_order):
     sorted_col_names = None

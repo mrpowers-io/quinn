@@ -9,7 +9,7 @@ from pyspark.sql.types import StructType, StructField, StringType, BooleanType, 
 class TestColumnExt(object):
 
     def test_is_falsy(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                 ("jose", True),
                 ("li", False),
@@ -23,7 +23,7 @@ class TestColumnExt(object):
 
         actual_df = source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 ("jose", True, False),
                 ("li", False, True),
@@ -39,7 +39,7 @@ class TestColumnExt(object):
         assert(expected_df.collect() == actual_df.collect())
 
     def test_is_truthy(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                 ("jose", True),
                 ("li", False),
@@ -53,7 +53,7 @@ class TestColumnExt(object):
 
         actual_df = source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 ("jose", True, True),
                 ("li", False, False),
@@ -69,7 +69,7 @@ class TestColumnExt(object):
         assert(expected_df.collect() == actual_df.collect())
 
     def test_is_null_or_blank(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                 ("jose", ""),
                 ("li", "   "),
@@ -84,7 +84,7 @@ class TestColumnExt(object):
 
         actual_df = source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 ("jose", "", True),
                 ("li", "   ", True),
@@ -101,7 +101,7 @@ class TestColumnExt(object):
         assert(expected_df.collect() == actual_df.collect())
 
     def test_is_not_in(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                 ("jose", "surfing"),
                 ("li", "swimming"),
@@ -117,7 +117,7 @@ class TestColumnExt(object):
 
         actual_df = source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 ("jose", "surfing", True),
                 ("li", "swimming", True),
@@ -133,7 +133,7 @@ class TestColumnExt(object):
         assert(expected_df.collect() == actual_df.collect())
 
     def test_null_between(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                  (17, None, 94),
                  (17, None, 10),
@@ -156,7 +156,7 @@ class TestColumnExt(object):
             F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
         )
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 (17, None, 94, True),
                 (17, None, 10, False),

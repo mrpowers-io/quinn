@@ -1,7 +1,7 @@
 import pytest
 
 from quinn.spark import *
-import quinn.functions as QF
+import quinn
 from quinn.extensions import *
 
 from pyspark.sql.functions import col
@@ -24,7 +24,7 @@ class TestFunctions(object):
 
         actual_df = source_df.withColumn(
             "any_num_greater_than_5",
-            QF.exists(lambda n: n > 5)(col("nums"))
+            quinn.exists(lambda n: n > 5)(col("nums"))
         )
 
         expected_df = spark.createDataFrame(
@@ -57,7 +57,7 @@ class TestFunctions(object):
 
         actual_df = source_df.withColumn(
             "all_nums_greater_than_3",
-            QF.forall(lambda n: n > 3)(col("nums"))
+            quinn.forall(lambda n: n > 3)(col("nums"))
         )
 
         expected_df = spark.createDataFrame(
@@ -76,7 +76,7 @@ class TestFunctions(object):
         assert(expected_df.collect() == actual_df.collect())
 
     def test_multi_equals(self):
-        source_df = spark.createDF(
+        source_df = spark.create_df(
             [
                 ("cat", "cat"),
                 ("cat", "dog"),
@@ -92,10 +92,10 @@ class TestFunctions(object):
 
         actual_df = source_df.withColumn(
             "are_s1_and_s2_cat",
-            QF.multi_equals("cat")(col("s1"), col("s2"))
+            quinn.multi_equals("cat")(col("s1"), col("s2"))
         )
 
-        expected_df = spark.createDF(
+        expected_df = spark.create_df(
             [
                 ("cat", "cat", True),
                 ("cat", "dog", False),
