@@ -2,6 +2,8 @@
 
 Pyspark helper methods to maximize developer productivity.
 
+Quinn validates DataFrames, extends core classes, defines DataFrame transformations, and provides SQL functions.
+
 ![quinn](https://github.com/MrPowers/quinn/blob/master/quinn.png)
 
 ## Setup
@@ -12,45 +14,13 @@ Quinn is [uploaded to PyPi](https://pypi.org/project/quinn/) and can be installe
 pip install quinn
 ```
 
-## API Overview
+## Pyspark Core Class Extensions
 
-Quinn validates DataFrames, extends core classes, defines DataFrame transformations, and provides SQL functions.
-
-### DataFrame Validations
-
-```python
-from quinn.dataframe_validator import *
 ```
-
-**validate_presence_of_columns()**
-
-```python
-DataFrameValidator().validate_presence_of_columns(source_df, ["name", "age", "fun"])
+from quinn.extensions import *
 ```
-
-Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
-
-**validate_schema()**
-
-```python
-DataFrameValidator().validate_schema(source_df, required_schema)
-```
-
-Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
-
-**validate_absence_of_columns()**
-
-```python
-DataFrameValidator().validate_absence_of_columns(source_df, ["age", "cool"])
-```
-
-Raises an exception if `source_df` contains `age` or `cool` columns.
 
 ### Column Extensions
-
-```python
-from quinn.column_ext import *
-```
 
 **isFalsy()**
 
@@ -94,14 +64,10 @@ Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` 
 
 ### SparkSession Extensions
 
-```python
-from quinn.spark_session_ext import *
-```
-
-**createDF()**
+**create_df()**
 
 ```python
-spark.createDF(
+spark.create_df(
     [("jose", "a"), ("li", "b"), ("sam", "c")],
     [("name", StringType(), True), ("blah", StringType(), True)]
 )
@@ -110,10 +76,6 @@ spark.createDF(
 Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
 
 ### DataFrame Extensions
-
-```python
-from quinn.dataframe_ext import *
-```
 
 **transform()**
 
@@ -125,18 +87,46 @@ source_df\
 
 Allows for multiple DataFrame transformations to be run and executed.
 
-### Functions
+## Quinn Helper Functions
 
 ```python
-import quinn.functions as QF
+import quinn
 ```
+
+### DataFrame Validations
+
+**validate_presence_of_columns()**
+
+```python
+quinn.validate_presence_of_columns(source_df, ["name", "age", "fun"])
+```
+
+Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
+
+**validate_schema()**
+
+```python
+quinn.validate_schema(source_df, required_schema)
+```
+
+Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
+
+**validate_absence_of_columns()**
+
+```python
+quinn.validate_absence_of_columns(source_df, ["age", "cool"])
+```
+
+Raises an exception if `source_df` contains `age` or `cool` columns.
+
+### Functions
 
 **exists()**
 
 ```python
 source_df.withColumn(
     "any_num_greater_than_5",
-    QF.exists(lambda n: n > 5)(col("nums"))
+    quinn.exists(lambda n: n > 5)(col("nums"))
 )
 ```
 
@@ -147,7 +137,7 @@ source_df.withColumn(
 ```python
 source_df.withColumn(
     "all_nums_greater_than_3",
-    QF.forall(lambda n: n > 3)(col("nums"))
+    quinn.forall(lambda n: n > 3)(col("nums"))
 )
 ```
 
@@ -158,7 +148,7 @@ source_df.withColumn(
 ```python
 source_df.withColumn(
     "are_s1_and_s2_cat",
-    QF.multi_equals("cat")(col("s1"), col("s2"))
+    quinn.multi_equals("cat")(col("s1"), col("s2"))
 )
 ```
 
@@ -166,14 +156,10 @@ source_df.withColumn(
 
 ### Transformations
 
-```python
-import quinn.transformations as QT
-```
-
 **snake_case_col_names()**
 
 ```python
-QT.snake_case_col_names(source_df)
+quinn.snake_case_col_names(source_df)
 ```
 
 Converts all the column names in a DataFrame to snake_case.  It's annoying to write SQL queries when columns aren't snake cased.
@@ -181,21 +167,17 @@ Converts all the column names in a DataFrame to snake_case.  It's annoying to wr
 **sort_columns()**
 
 ```python
-QT.sort_columns(source_df, "asc")
+quinn.sort_columns(source_df, "asc")
 ```
 
 Sorts the DataFrame columns in alphabetical order.  Wide DataFrames are easier to navigate when they're sorted alphabetically.
 
 ### DataFrame Helpers
 
-```python
-import quinn.dataframe_helpers as DFH
-```
-
 **column_to_list()**
 
 ```python
-DFH.column_to_list(source_df, "name")
+quinn.column_to_list(source_df, "name")
 ```
 
 Converts a column in a DataFrame to a list of values.
@@ -203,22 +185,21 @@ Converts a column in a DataFrame to a list of values.
 **two_columns_to_dictionary()**
 
 ```python
-DFH.two_columns_to_dictionary(source_df, "name", "age")
+quinn.two_columns_to_dictionary(source_df, "name", "age")
 ```
 
 Converts two columns of a DataFrame into a dictionary.  In this example, `name` is the key and `age` is the value.
 
-
 **to_list_of_dictionaries()**
 
 ```python
-DFH.to_list_of_dictionaries(source_df)
+quinn.to_list_of_dictionaries(source_df)
 ```
 
 Converts an entire DataFrame into a list of dictionaries.
 
 ## Contributing
 
-We are actively looking for contributors to request features, submit pull requests, or fix bugs.
+We are actively looking for feature requests, pull requests, and bug fixes.
 
-Any developer that demonstrates pyspark excellence will be invited to be a maintainer of the project.
+Any developer that demonstrates excellence will be invited to be a maintainer of the project.
