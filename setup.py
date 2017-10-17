@@ -10,7 +10,7 @@ tests_require = ['pytest']
 
 setup(
     name='quinn',
-    version='0.1.0',
+    version='0.2.0',
     author='Matthew Powers',
     author_email='matthewkevinpowers@gmail.com',
     url='https://github.com/MrPowers/quinn',
