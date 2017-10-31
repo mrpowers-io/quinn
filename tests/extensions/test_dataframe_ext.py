@@ -53,3 +53,18 @@ class TestDataFrameExt(object):
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
         assert(expected_df.collect() == actual_df.collect())
 
+    def test_transform_with_closure(self):
+        data = [("jose", 1), ("li", 2), ("luisa", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+
+        actual_df = (source_df
+             .transform(with_greeting)  # no lambda required
+             .transform(with_funny("haha")))
+
+        expected_data = [
+            ("jose", 1, "hi", "haha"),
+            ("li", 2, "hi", "haha"),
+            ("luisa", 3, "hi", "haha")
+        ]
+        expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "funny"])
+        assert(expected_df.collect() == actual_df.collect())
