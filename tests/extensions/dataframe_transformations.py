@@ -10,3 +10,6 @@ def with_funny(word):
     def inner(df):
         return df.withColumn("funny", lit(word))
     return inner
+
+def with_jacket(word, df):
+    return df.withColumn("jacket", lit(word))
