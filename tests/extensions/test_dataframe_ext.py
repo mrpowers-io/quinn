@@ -90,7 +90,7 @@ class TestDataFrameExt(object):
         source_df = spark.createDataFrame(data, ["name", "age"])
 
         actual_df = (source_df
-            .transform(lambda df: with_greeting(df))
+            .transform(with_greeting)
             .transform(lambda df: with_something(df, "crazy")))
 
         expected_data = [("jose", 1, "hi", "crazy"), ("li", 2, "hi", "crazy"), ("liz", 3, "hi", "crazy")]
@@ -118,7 +118,7 @@ class TestDataFrameExt(object):
         source_df = spark.createDataFrame(data, ["name", "age"])
 
         actual_df = (source_df
-            .transform(partial(with_greeting))
+            .transform(partial(with_greeting)) # partial is optional for transformations that only take a single DataFrame argument
             .transform(partial(with_jacket, "warm")))
 
         expected_data = [
