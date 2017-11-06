@@ -6,6 +6,8 @@ from quinn.spark import *
 from quinn.extensions import *
 from .dataframe_transformations import *
 
+from cytoolz.functoolz import compose
+
 from pyspark.sql.functions import col
 
 class TestDataFrameExt(object):
@@ -127,4 +129,19 @@ class TestDataFrameExt(object):
             ("liz", 3, "hi", "warm")
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "jacket"])
+        assert(expected_df.collect() == actual_df.collect())
+
+    def test_currying(self):
+        data = [("jose", 1), ("li", 2), ("liz", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+
+        pipeline = compose(with_stuff1("nice", "person"), with_stuff2("yoyo"))
+        actual_df = pipeline(source_df)
+
+        expected_data = [
+            ("jose", 1, "yoyo", "nice person"),
+            ("li", 2, "yoyo", "nice person"),
+            ("liz", 3, "yoyo", "nice person")
+        ]
+        expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
         assert(expected_df.collect() == actual_df.collect())
