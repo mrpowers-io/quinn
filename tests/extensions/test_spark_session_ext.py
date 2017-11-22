@@ -5,7 +5,7 @@ from quinn.extensions import *
 
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType
 
-class TestSparkSessionExt(object):
+class TestSparkSessionExt:
 
     def test_create_df(self):
         schema = StructType([

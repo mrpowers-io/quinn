@@ -6,7 +6,7 @@ from quinn.extensions import *
 import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
 
-class TestColumnExt(object):
+class TestColumnExt:
 
     def test_is_falsy(self):
         source_df = spark.create_df(

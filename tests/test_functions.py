@@ -7,7 +7,7 @@ from quinn.extensions import *
 from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
 
-class TestFunctions(object):
+class TestFunctions:
 
     def test_exists(self):
         source_df = spark.createDataFrame(

@@ -3,7 +3,7 @@ import pytest
 from quinn.spark import *
 import quinn
 
-class TestDataFrameHelpers(object):
+class TestDataFrameHelpers:
 
     def test_with_age_plus_two(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]

@@ -10,7 +10,7 @@ from cytoolz.functoolz import compose
 
 from pyspark.sql.functions import col
 
-class TestDataFrameExt(object):
+class TestDataFrameExt:
 
     def test_verbose_code_without_transform(self):
         data = [
@@ -145,3 +145,25 @@ class TestDataFrameExt(object):
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
         assert(expected_df.collect() == actual_df.collect())
+
+    def test_reversed_currying(self):
+        data = [("jose", 1), ("li", 2), ("liz", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+
+        pipeline = compose(*reversed([
+            with_stuff1("nice", "person"),
+            with_stuff2("yoyo")
+        ]))
+        actual_df = pipeline(source_df)
+
+        print("***")
+        print(actual_df.show())
+
+        expected_data = [
+            ("jose", 1, "nice person", "yoyo"),
+            ("li", 2, "nice person", "yoyo"),
+            ("liz", 3, "nice person", "yoyo")
+        ]
+        expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
+        assert(expected_df.collect() == actual_df.collect())
+

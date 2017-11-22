@@ -1,6 +1,6 @@
 import quinn
 
-class TestScalaToPyspark(object):
+class TestScalaToPyspark:
 
     # def test_clean_function_definition(self):
         # s = ScalaToPyspark("blah")

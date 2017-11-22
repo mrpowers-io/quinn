@@ -5,7 +5,7 @@ import quinn
 
 from pyspark.sql.types import StructType, StructField, StringType, LongType
 
-class TestDataFrameValidator(object):
+class TestDataFrameValidator:
 
     def test_validate_presence_of_columns_when_column_is_missing(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]

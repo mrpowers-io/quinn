@@ -7,7 +7,7 @@ import quinn
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType
 
 
-class TestTransformations(object):
+class TestTransformations:
 
     def test_snake_case_col_names(self):
         schema = StructType([
