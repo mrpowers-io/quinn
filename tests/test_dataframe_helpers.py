@@ -11,7 +11,7 @@ class TestDataFrameHelpers:
 
         actual = quinn.column_to_list(source_df, "name")
 
-        assert(["jose", "li", "luisa"] == actual)
+        assert ["jose", "li", "luisa"] == actual
 
     def test_two_columns_to_dictionary(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
@@ -19,7 +19,7 @@ class TestDataFrameHelpers:
 
         actual = quinn.two_columns_to_dictionary(source_df, "name", "age")
 
-        assert({"jose": 1, "li": 2, "luisa": 3} == actual)
+        assert {"jose": 1, "li": 2, "luisa": 3} == actual
 
     def test_to_list_of_dictionaries(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
@@ -33,4 +33,4 @@ class TestDataFrameHelpers:
             {"name": "luisa", "age": 3},
         ]
 
-        assert(expected == actual)
+        assert expected == actual

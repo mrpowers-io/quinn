@@ -40,7 +40,7 @@ class TestFunctions:
             ])
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_forall(self):
         source_df = spark.createDataFrame(
@@ -73,7 +73,7 @@ class TestFunctions:
             ])
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_multi_equals(self):
         source_df = spark.create_df(
@@ -110,4 +110,4 @@ class TestFunctions:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()

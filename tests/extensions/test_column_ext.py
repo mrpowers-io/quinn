@@ -36,7 +36,7 @@ class TestColumnExt:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_is_truthy(self):
         source_df = spark.create_df(
@@ -66,7 +66,7 @@ class TestColumnExt:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_is_null_or_blank(self):
         source_df = spark.create_df(
@@ -98,7 +98,7 @@ class TestColumnExt:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_is_not_in(self):
         source_df = spark.create_df(
@@ -130,7 +130,7 @@ class TestColumnExt:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_null_between(self):
         source_df = spark.create_df(
@@ -175,5 +175,5 @@ class TestColumnExt:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 

@@ -36,7 +36,7 @@ class TestDataFrameExt:
             ["name", "age", "greeting", "something"]
         )
 
-        assert(expected_df.collect() == df2.collect())
+        assert expected_df.collect() == df2.collect()
 
     def test_transform_with_lambda(self):
         data = [
@@ -63,7 +63,7 @@ class TestDataFrameExt:
             ["name", "age", "age_times_two"]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_no_arg_fun(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -74,7 +74,7 @@ class TestDataFrameExt:
         expected_data = [("jose", 1, "hi"), ("li", 2, "hi"), ("liz", 3, "hi")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting"])
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_one_arg_fun(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -85,7 +85,7 @@ class TestDataFrameExt:
         expected_data = [("jose", 1, "crazy"), ("li", 2, "crazy"), ("liz", 3, "crazy")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "something"])
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_chain_transforms(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -97,7 +97,7 @@ class TestDataFrameExt:
 
         expected_data = [("jose", 1, "hi", "crazy"), ("li", 2, "hi", "crazy"), ("liz", 3, "hi", "crazy")]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_closure(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -113,7 +113,7 @@ class TestDataFrameExt:
             ("liz", 3, "hi", "haha")
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "funny"])
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_functools_partial(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -129,7 +129,7 @@ class TestDataFrameExt:
             ("liz", 3, "hi", "warm")
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "jacket"])
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_currying(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -144,7 +144,7 @@ class TestDataFrameExt:
             ("liz", 3, "yoyo", "nice person")
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_reversed_currying(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
@@ -165,5 +165,5 @@ class TestDataFrameExt:
             ("liz", 3, "nice person", "yoyo")
         ]
         expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 

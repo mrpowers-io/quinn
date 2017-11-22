@@ -31,7 +31,7 @@ class TestTransformations:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_asc(self):
         source_df = spark.create_df(
@@ -62,7 +62,7 @@ class TestTransformations:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_desc(self):
         source_df = spark.create_df(
@@ -93,7 +93,7 @@ class TestTransformations:
             ]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_exception(self):
         source_df = spark.create_df(

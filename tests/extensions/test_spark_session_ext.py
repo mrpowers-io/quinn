@@ -20,4 +20,4 @@ class TestSparkSessionExt:
             [("name", StringType(), True), ("blah", StringType(), True)]
         )
 
-        assert(expected_df.collect() == actual_df.collect())
+        assert expected_df.collect() == actual_df.collect()
