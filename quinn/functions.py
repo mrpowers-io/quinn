@@ -5,6 +5,18 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import BooleanType
 
 
+def single_space(col):
+    return F.trim(F.regexp_replace(col, " +", " "))
+
+
+def remove_all_whitespace(col):
+    return F.regexp_replace(col, "\\s+", "")
+
+
+def anti_trim(col):
+    return F.regexp_replace(col, "\\b\\s+\\b", "")
+
+
 def exists(f):
     def temp_udf(l):
         return any(map(f, l))

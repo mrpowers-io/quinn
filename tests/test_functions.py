@@ -9,6 +9,111 @@ from pyspark.sql.types import StructType, StructField, StringType, BooleanType, 
 
 class TestFunctions:
 
+    def test_single_space(self):
+        source_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1),
+                ("    zombies", 2),
+                ("simpsons   cat lady", 2),
+                (None, 3),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "words_single_spaced",
+            quinn.single_space(col("words"))
+        )
+
+        expected_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1, "I like fish"),
+                ("    zombies", 2, "zombies"),
+                ("simpsons   cat lady", 2, "simpsons cat lady"),
+                (None, 3, None),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+                ("words_single_spaced", StringType(), True),
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
+    def test_remove_all_whitespace(self):
+        source_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1),
+                ("    zombies", 2),
+                ("simpsons   cat lady", 2),
+                (None, 3),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "words_without_whitespace",
+            quinn.remove_all_whitespace(col("words"))
+        )
+
+        expected_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1, "Ilikefish"),
+                ("    zombies", 2, "zombies"),
+                ("simpsons   cat lady", 2, "simpsonscatlady"),
+                (None, 3, None),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+                ("words_single_spaced", StringType(), True),
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
+    def test_anti_trim(self):
+        source_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1),
+                ("    zombies", 2),
+                ("  simpsons   cat lady   ", 2),
+                (None, 3),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "words_anti_trimmed",
+            quinn.anti_trim(col("words"))
+        )
+
+        expected_df = spark.create_df(
+            [
+                ("  I like     fish  ", 1, "  Ilikefish  "),
+                ("    zombies", 2, "    zombies"),
+                ("  simpsons   cat lady   ", 2, "  simpsonscatlady   "),
+                (None, 3, None),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+                ("words_anti_trimmed", StringType(), True),
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
     def test_exists(self):
         source_df = spark.createDataFrame(
             [

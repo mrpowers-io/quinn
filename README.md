@@ -121,6 +121,40 @@ Raises an exception if `source_df` contains `age` or `cool` columns.
 
 ### Functions
 
+**single_space()**
+
+```python
+actual_df = source_df.withColumn(
+    "words_single_spaced",
+    quinn.single_space(col("words"))
+)
+```
+
+
+Replaces all multispaces with single spaces (e.g. changes `"this has   some"` to `"this has some"`.
+
+**remove_all_whitespace()**
+
+```python
+actual_df = source_df.withColumn(
+    "words_without_whitespace",
+    quinn.remove_all_whitespace(col("words"))
+)
+```
+
+Removes all whitespace in a string (e.g. changes `"this has some"` to `"thishassome"`.
+
+**anti_trim()**
+
+```python
+actual_df = source_df.withColumn(
+    "words_anti_trimmed",
+    quinn.anti_trim(col("words"))
+)
+```
+
+Removes all inner whitespace, but doesn't delete leading or trailing whitespace (e.g. changes `" this has some "` to `" thishassome "`.
+
 **exists()**
 
 ```python
