@@ -79,6 +79,41 @@ class TestFunctions:
 
         assert expected_df.collect() == actual_df.collect()
 
+    def test_remove_non_word_characters(self):
+        source_df = spark.create_df(
+            [
+                ("I?like!fish>", 1),
+                ("%%%zombies", 2),
+                ("si%$#@!#$!@#mpsons", 2),
+                (None, 3),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+            ]
+        )
+
+        actual_df = source_df.withColumn(
+            "words_without_nonword_chars",
+            quinn.remove_non_word_characters(col("words"))
+        )
+
+        expected_df = spark.create_df(
+            [
+                ("I?like!fish>", 1, "Ilikefish"),
+                ("%%%zombies", 2, "zombies"),
+                ("si%$#@!#$!@#mpsons", 2, "simpsons"),
+                (None, 3, None),
+            ],
+            [
+                ("words", StringType(), True),
+                ("num", IntegerType(), True),
+                ("words_without_nonword_chars", StringType(), True),
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
     def test_anti_trim(self):
         source_df = spark.create_df(
             [

@@ -1,6 +1,7 @@
 from quinn.spark import *
 
 import pyspark.sql.functions as F
+from pyspark.sql.column import Column
 
 from pyspark.sql.types import BooleanType
 
@@ -15,6 +16,10 @@ def remove_all_whitespace(col):
 
 def anti_trim(col):
     return F.regexp_replace(col, "\\b\\s+\\b", "")
+
+
+def remove_non_word_characters(col):
+    return F.regexp_replace(col, "[^\\w\\s]+", "")
 
 
 def exists(f):

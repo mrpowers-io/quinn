@@ -155,6 +155,17 @@ actual_df = source_df.withColumn(
 
 Removes all inner whitespace, but doesn't delete leading or trailing whitespace (e.g. changes `" this has some "` to `" thishassome "`.
 
+**remove_non_word_characters()**
+
+```python
+actual_df = source_df.withColumn(
+    "words_without_nonword_chars",
+    quinn.remove_non_word_characters(col("words"))
+)
+```
+
+Removes all non-word characters from a string (e.g. changes `"si%$#@!#$!@#mpsons"` to `"simpsons"`.
+
 **exists()**
 
 ```python
