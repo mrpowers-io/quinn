@@ -20,5 +20,7 @@ def sort_columns(df, sort_order):
     elif sort_order == "desc":
         sorted_col_names = sorted(df.columns, reverse=True)
     else:
-        raise ValueError(f"['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'")
+        raise ValueError("['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
+            sort_order=sort_order
+        ))
     return df.select(*sorted_col_names)

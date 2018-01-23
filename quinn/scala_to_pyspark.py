@@ -52,7 +52,11 @@ class ScalaToPyspark:
             method_name = m.group(2)
             args = m.group(3)
             cleaned_args = self.clean_args(args)
-            return f"{whitespace}def {method_name}({cleaned_args}):\n"
+            return "{whitespace}def {method_name}({cleaned_args}):\n".format(
+                whitespace=whitespace,
+                method_name=method_name,
+                cleaned_args=cleaned_args
+            )
         return s
 
     def clean_args(self, args):

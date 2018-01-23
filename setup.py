@@ -1,16 +1,12 @@
 from setuptools import setup, find_packages
 
-import sys
-if sys.version_info < (3, 0):
-    raise RuntimeError('This version requires Python 3.0+')
-
 install_requires = ['pytest']
 
 tests_require = ['pytest']
 
 setup(
     name='quinn',
-    version='0.2.0',
+    version='0.2.1',
     author='Matthew Powers',
     author_email='matthewkevinpowers@gmail.com',
     url='https://github.com/MrPowers/quinn',
@@ -21,12 +17,17 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=[],
+    python_requires='>=2.7',
     extras_require={
         'test': tests_require,
         'all': install_requires + tests_require,
         'docs': ['sphinx'] + tests_require,
         'lint': []
     },
+    classifiers=[
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6'
+    ],
     dependency_links=[],
     include_package_data=False,
     keywords=['apachespark', 'spark', 'pyspark'],

@@ -2,7 +2,10 @@ build/
 dist/
 quinn.egg-info/
 .cache/
-__pycache__/
 tmp/
 .idea/
 .DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
