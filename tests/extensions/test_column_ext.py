@@ -86,7 +86,7 @@ class TestColumnExt:
              [
                 ("jose", True, False),
                 ("li", False, True),
-                ("luisa", None, False)
+                ("luisa", None, None)
             ],
             [
                 ("name", StringType(), True),
@@ -116,7 +116,7 @@ class TestColumnExt:
             [
                 ("jose", True, True),
                 ("li", False, False),
-                ("luisa", None, False)
+                ("luisa", None, None)
             ],
             [
                 ("name", StringType(), True),

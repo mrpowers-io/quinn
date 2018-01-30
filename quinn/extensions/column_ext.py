@@ -12,11 +12,11 @@ def isTruthy(self):
 
 
 def isFalse(self):
-    return when(self.isNull(), False).otherwise(self == False)
+    return self == False
 
 
 def isTrue(self):
-    return when(self.isNull(), False).otherwise(self == True)
+    return self == True
 
 
 def isNullOrBlank(self):
