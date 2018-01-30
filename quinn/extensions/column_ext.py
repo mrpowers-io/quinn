@@ -41,6 +41,8 @@ def nullBetween(self, lower, upper):
 
 Column.isFalsy = isFalsy
 Column.isTruthy = isTruthy
+Column.isFalse = isFalse
+Column.isTrue = isTrue
 Column.isNullOrBlank = isNullOrBlank
 Column.isNotIn = isNotIn
 Column.nullBetween = nullBetween
