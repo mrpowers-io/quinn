@@ -68,6 +68,65 @@ class TestColumnExt:
 
         assert expected_df.collect() == actual_df.collect()
 
+    def test_is_false(self):
+        source_df = spark.create_df(
+            [
+                ("jose", True),
+                ("li", False),
+                ("luisa", None)
+            ],
+            [
+                ("name", StringType(), True),
+                ("has_stuff", BooleanType(), True)
+            ]
+        )
+        actual_df = source_df.withColumn("is_stuff_false", F.col("has_stuff").isFalse())
+
+        expected_df = spark.create_df(
+             [
+                ("jose", True, False),
+                ("li", False, True),
+                ("luisa", None, False)
+            ],
+            [
+                ("name", StringType(), True),
+                ("has_stuff", BooleanType(), True),
+                ("is_stuff_false", BooleanType(), True)
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
+    def test_is_true(self):
+        source_df = spark.create_df(
+            [
+                ("jose", True),
+                ("li", False),
+                ("luisa", None)
+            ],
+            [
+                ("name", StringType(), True),
+                ("has_stuff", BooleanType(), True)
+            ]
+        )
+
+        actual_df = source_df.withColumn("is_stuff_true", F.col("has_stuff").isTrue())
+
+        expected_df = spark.create_df(
+            [
+                ("jose", True, True),
+                ("li", False, False),
+                ("luisa", None, False)
+            ],
+            [
+                ("name", StringType(), True),
+                ("has_stuff", BooleanType(), True),
+                ("is_stuff_true", BooleanType(), True)
+            ]
+        )
+
+        assert expected_df.collect() == actual_df.collect()
+
     def test_is_null_or_blank(self):
         source_df = spark.create_df(
             [

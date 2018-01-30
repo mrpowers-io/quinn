@@ -11,6 +11,14 @@ def isTruthy(self):
     return ~(self.isFalsy())
 
 
+def isFalse(self):
+    return when(self.isNull(), False).otherwise(self == False)
+
+
+def isTrue(self):
+    return when(self.isNull(), False).otherwise(self == True)
+
+
 def isNullOrBlank(self):
     return (self.isNull()) | (trim(self) == "")
 
