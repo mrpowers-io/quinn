@@ -14,7 +14,7 @@ class TestAssertionHelpers:
         data = [("jose", 1, 1), ("li", 2, 2), ("luisa", 3, 5)]
         source_df = spark.createDataFrame(data, ["name", "col1", "col2"])
 
-        with pytest.raises(quinn.ColumnNotAssertError) as excinfo:
+        with pytest.raises(quinn.ColumnMismatchError) as excinfo:
             quinn.assert_column_equality(source_df, "col1", "col2")
         assert excinfo.value.args[0] == "The values of col1 column are different from col2"
 
@@ -27,7 +27,7 @@ class TestAssertionHelpers:
         data = [("jose", None, 0), ("li", 2, 2), ("luisa", 3, 3)]
         source_df = spark.createDataFrame(data, ["name", "col1", "col2"])
 
-        with pytest.raises(quinn.ColumnNotAssertError) as excinfo:
+        with pytest.raises(quinn.ColumnMismatchError) as excinfo:
             quinn.assert_column_equality(source_df, "col1", "col2")
         assert excinfo.value.args[0] == "The values of col1 column are different from col2"
 
