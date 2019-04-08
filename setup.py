@@ -26,8 +26,7 @@ setup(
     },
     classifiers=[
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.6',
-        'Framework :: Spark :: 2.4.0'
+        'Programming Language :: Python :: 3.6'
     ],
     dependency_links=[],
     include_package_data=False,
