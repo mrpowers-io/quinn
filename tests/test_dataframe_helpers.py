@@ -1,13 +1,13 @@
-import pytest
-
-from quinn.spark import *
 import quinn
+from tests.conftest import auto_inject_fixtures
 
+
+@auto_inject_fixtures('spark')
 class TestDataFrameHelpers:
 
     def test_with_age_plus_two(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual = quinn.column_to_list(source_df, "name")
 
@@ -15,7 +15,7 @@ class TestDataFrameHelpers:
 
     def test_two_columns_to_dictionary(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual = quinn.two_columns_to_dictionary(source_df, "name", "age")
 
@@ -23,7 +23,7 @@ class TestDataFrameHelpers:
 
     def test_to_list_of_dictionaries(self):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual = quinn.to_list_of_dictionaries(source_df)
 

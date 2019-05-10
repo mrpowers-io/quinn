@@ -1,12 +1,11 @@
 import pytest
+from pyspark.sql.types import StructType, StructField, StringType
 
-from quinn.spark import *
-from quinn.extensions import *
 import quinn
+from tests.conftest import auto_inject_fixtures
 
-from pyspark.sql.types import StructType, StructField, StringType, BooleanType
 
-
+@auto_inject_fixtures('spark')
 class TestTransformations:
 
     def test_snake_case_col_names(self):
@@ -15,11 +14,11 @@ class TestTransformations:
             StructField("YUMMMMY stuff", StringType(), True)]
         )
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
-        source_df = spark.createDataFrame(data, schema)
+        source_df = self.spark.createDataFrame(data, schema)
 
         actual_df = quinn.snake_case_col_names(source_df)
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("jose", "a"),
                 ("li", "b"),
@@ -34,7 +33,7 @@ class TestTransformations:
         assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_asc(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),
@@ -49,7 +48,7 @@ class TestTransformations:
 
         actual_df = quinn.sort_columns(source_df, "asc")
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("switch", "jose", "oak"),
                 ("xbox", "li", "redwood"),
@@ -65,7 +64,7 @@ class TestTransformations:
         assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_desc(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),
@@ -80,7 +79,7 @@ class TestTransformations:
 
         actual_df = quinn.sort_columns(source_df, "desc")
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("oak", "jose", "switch"),
                 ("redwood", "li", "xbox"),
@@ -96,7 +95,7 @@ class TestTransformations:
         assert expected_df.collect() == actual_df.collect()
 
     def test_sort_columns_exception(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),

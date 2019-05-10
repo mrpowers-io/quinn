@@ -1,5 +1,6 @@
 import quinn
 
+
 class TestScalaToPyspark:
 
     def test_clean_args(self):

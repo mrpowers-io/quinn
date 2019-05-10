@@ -1,10 +1,9 @@
-import pytest
+from pyspark.sql.types import StructType, StructField, StringType
 
-from quinn.spark import *
-from quinn.extensions import *
+from tests.conftest import auto_inject_fixtures
 
-from pyspark.sql.types import StructType, StructField, StringType, BooleanType
 
+@auto_inject_fixtures('spark')
 class TestSparkSessionExt:
 
     def test_create_df(self):
@@ -13,9 +12,9 @@ class TestSparkSessionExt:
             StructField("blah", StringType(), True)]
         )
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
-        actual_df = spark.createDataFrame(data, schema)
+        actual_df = self.spark.createDataFrame(data, schema)
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [("jose", "a"), ("li", "b"), ("sam", "c")],
             [("name", StringType(), True), ("blah", StringType(), True)]
         )

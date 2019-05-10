@@ -1,15 +1,13 @@
-import pytest
-
 from functools import partial
 
-from quinn.spark import *
-from quinn.extensions import *
-from .dataframe_transformations import *
-
 from cytoolz.functoolz import compose
-
 from pyspark.sql.functions import col
 
+from tests.conftest import auto_inject_fixtures
+from .dataframe_transformations import *
+
+
+@auto_inject_fixtures('spark')
 class TestDataFrameExt:
 
     def test_verbose_code_without_transform(self):
@@ -18,7 +16,7 @@ class TestDataFrameExt:
             ("li", 2),
             ("liz", 3)
         ]
-        source_df = spark.createDataFrame(
+        source_df = self.spark.createDataFrame(
             data,
             ["name", "age"]
         )
@@ -31,7 +29,7 @@ class TestDataFrameExt:
             ("li", 2, "hi", "moo"),
             ("liz", 3, "hi", "moo")
         ]
-        expected_df = spark.createDataFrame(
+        expected_df = self.spark.createDataFrame(
             expected_data,
             ["name", "age", "greeting", "something"]
         )
@@ -44,7 +42,7 @@ class TestDataFrameExt:
             ("li", 2),
             ("liz", 3)
         ]
-        source_df = spark.createDataFrame(
+        source_df = self.spark.createDataFrame(
             data,
             ["name", "age"]
         )
@@ -58,7 +56,7 @@ class TestDataFrameExt:
             ("li", 2, 4),
             ("liz", 3, 6)
         ]
-        expected_df = spark.createDataFrame(
+        expected_df = self.spark.createDataFrame(
             expected_data,
             ["name", "age", "age_times_two"]
         )
@@ -67,41 +65,41 @@ class TestDataFrameExt:
 
     def test_transform_with_no_arg_fun(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual_df = source_df.transform(lambda df: with_greeting(df))
 
         expected_data = [("jose", 1, "hi"), ("li", 2, "hi"), ("liz", 3, "hi")]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "greeting"])
 
         assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_one_arg_fun(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual_df = source_df.transform(lambda df: with_something(df, "crazy"))
 
         expected_data = [("jose", 1, "crazy"), ("li", 2, "crazy"), ("liz", 3, "crazy")]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "something"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "something"])
 
         assert expected_df.collect() == actual_df.collect()
 
     def test_chain_transforms(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual_df = (source_df
             .transform(with_greeting)
             .transform(lambda df: with_something(df, "crazy")))
 
         expected_data = [("jose", 1, "hi", "crazy"), ("li", 2, "hi", "crazy"), ("liz", 3, "hi", "crazy")]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
         assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_closure(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual_df = (source_df
             .transform(with_greeting)  # no lambda required
@@ -112,12 +110,12 @@ class TestDataFrameExt:
             ("li", 2, "hi", "haha"),
             ("liz", 3, "hi", "haha")
         ]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "funny"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "greeting", "funny"])
         assert expected_df.collect() == actual_df.collect()
 
     def test_transform_with_functools_partial(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         actual_df = (source_df
             .transform(partial(with_greeting)) # partial is optional for transformations that only take a single DataFrame argument
@@ -128,12 +126,12 @@ class TestDataFrameExt:
             ("li", 2, "hi", "warm"),
             ("liz", 3, "hi", "warm")
         ]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "jacket"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "greeting", "jacket"])
         assert expected_df.collect() == actual_df.collect()
 
     def test_currying(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         pipeline = compose(with_stuff1("nice", "person"), with_stuff2("yoyo"))
         actual_df = pipeline(source_df)
@@ -143,12 +141,12 @@ class TestDataFrameExt:
             ("li", 2, "yoyo", "nice person"),
             ("liz", 3, "yoyo", "nice person")
         ]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
         assert expected_df.collect() == actual_df.collect()
 
     def test_reversed_currying(self):
         data = [("jose", 1), ("li", 2), ("liz", 3)]
-        source_df = spark.createDataFrame(data, ["name", "age"])
+        source_df = self.spark.createDataFrame(data, ["name", "age"])
 
         pipeline = compose(*reversed([
             with_stuff1("nice", "person"),
@@ -164,6 +162,6 @@ class TestDataFrameExt:
             ("li", 2, "nice person", "yoyo"),
             ("liz", 3, "nice person", "yoyo")
         ]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
+        expected_df = self.spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
         assert expected_df.collect() == actual_df.collect()
 
