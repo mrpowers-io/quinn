@@ -1,5 +1,7 @@
 # Quinn
 
+[![Build Status](https://travis-ci.org/MrPowers/quinn.svg?branch=master)](https://travis-ci.org/MrPowers/quinn)
+
 Pyspark helper methods to maximize developer productivity.
 
 Quinn validates DataFrames, extends core classes, defines DataFrame transformations, and provides SQL functions.
