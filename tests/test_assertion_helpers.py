@@ -1,6 +1,6 @@
 import pytest
 
-from quinn.spark import *
+from spark import *
 import quinn
 
 class TestAssertionHelpers:

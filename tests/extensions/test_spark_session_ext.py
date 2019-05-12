@@ -1,6 +1,6 @@
 import pytest
 
-from quinn.spark import *
+from spark import *
 from quinn.extensions import *
 
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType

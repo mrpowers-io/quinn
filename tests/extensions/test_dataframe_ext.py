@@ -2,7 +2,7 @@ import pytest
 
 from functools import partial
 
-from quinn.spark import *
+from spark import *
 from quinn.extensions import *
 from .dataframe_transformations import *
 
