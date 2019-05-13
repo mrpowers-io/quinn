@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
@@ -17,9 +17,9 @@ class SparkProvider:
 
     def __init__(self,
                  app_name: str,
-                 conf: SparkConf = None,
-                 extra_dependencies: List[str] = None,
-                 extra_files: List[str] = None):
+                 conf: Optional[SparkConf] = None,
+                 extra_dependencies: Optional[List[str]] = None,
+                 extra_files: Optional[List[str]] = None):
         self.spark = self.set_up_spark(app_name, self.master, conf, extra_dependencies, extra_files)
 
     @property
