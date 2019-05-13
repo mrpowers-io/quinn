@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ['pytest']
+install_requires = ['pytest', 'pytest-cov']
 
 tests_require = ['pytest', 'pytest-cov']
 
