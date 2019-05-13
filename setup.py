@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 install_requires = ['pytest']
 
-tests_require = ['pytest']
+tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='quinn',
