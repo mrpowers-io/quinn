@@ -1,16 +1,16 @@
-import pytest
-
-from quinn.spark import *
-import quinn
-from quinn.extensions import *
-
 from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
 
+import quinn
+from quinn.extensions import *
+from tests.conftest import auto_inject_fixtures
+
+
+@auto_inject_fixtures('spark')
 class TestFunctions:
 
     def test_single_space(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1),
                 ("    zombies", 2),
@@ -28,7 +28,7 @@ class TestFunctions:
             quinn.single_space(col("words"))
         )
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1, "I like fish"),
                 ("    zombies", 2, "zombies"),
@@ -45,7 +45,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_remove_all_whitespace(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1),
                 ("    zombies", 2),
@@ -63,7 +63,7 @@ class TestFunctions:
             quinn.remove_all_whitespace(col("words"))
         )
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1, "Ilikefish"),
                 ("    zombies", 2, "zombies"),
@@ -80,7 +80,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_remove_non_word_characters(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("I?like!fish>", 1),
                 ("%%%zombies", 2),
@@ -98,7 +98,7 @@ class TestFunctions:
             quinn.remove_non_word_characters(col("words"))
         )
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("I?like!fish>", 1, "Ilikefish"),
                 ("%%%zombies", 2, "zombies"),
@@ -115,7 +115,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_anti_trim(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1),
                 ("    zombies", 2),
@@ -133,7 +133,7 @@ class TestFunctions:
             quinn.anti_trim(col("words"))
         )
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("  I like     fish  ", 1, "  Ilikefish  "),
                 ("    zombies", 2, "    zombies"),
@@ -150,7 +150,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_exists(self):
-        source_df = spark.createDataFrame(
+        source_df = self.spark.createDataFrame(
             [
                 ("jose", [1, 2, 3]),
                 ("li", [4, 5, 6]),
@@ -167,7 +167,7 @@ class TestFunctions:
             quinn.exists(lambda n: n > 5)(col("nums"))
         )
 
-        expected_df = spark.createDataFrame(
+        expected_df = self.spark.createDataFrame(
             [
                 ("jose", [1, 2, 3], False),
                 ("li", [4, 5, 6], True),
@@ -183,7 +183,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_forall(self):
-        source_df = spark.createDataFrame(
+        source_df = self.spark.createDataFrame(
             [
                 ("jose", [1, 2, 3]),
                 ("li", [4, 5, 6]),
@@ -200,7 +200,7 @@ class TestFunctions:
             quinn.forall(lambda n: n > 3)(col("nums"))
         )
 
-        expected_df = spark.createDataFrame(
+        expected_df = self.spark.createDataFrame(
             [
                 ("jose", [1, 2, 3], False),
                 ("li", [4, 5, 6], True),
@@ -216,7 +216,7 @@ class TestFunctions:
         assert expected_df.collect() == actual_df.collect()
 
     def test_multi_equals(self):
-        source_df = spark.create_df(
+        source_df = self.spark.create_df(
             [
                 ("cat", "cat"),
                 ("cat", "dog"),
@@ -235,7 +235,7 @@ class TestFunctions:
             quinn.multi_equals("cat")(col("s1"), col("s2"))
         )
 
-        expected_df = spark.create_df(
+        expected_df = self.spark.create_df(
             [
                 ("cat", "cat", True),
                 ("cat", "dog", False),

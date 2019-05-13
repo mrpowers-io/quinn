@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-install_requires = ['pytest']
+install_requires = ['pytest', 'pytest-cov']
 
-tests_require = ['pytest']
+tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='quinn',
-    version='0.3.1',
+    version='0.4.0',
     author='Matthew Powers',
     author_email='matthewkevinpowers@gmail.com',
     url='https://github.com/MrPowers/quinn',
