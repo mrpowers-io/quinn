@@ -1,3 +1,5 @@
+from pyspark.sql.types import IntegerType, StringType
+
 import quinn
 from tests.conftest import auto_inject_fixtures
 
@@ -34,3 +36,19 @@ class TestDataFrameHelpers:
         ]
 
         assert expected == actual
+    
+    def test_print_athena_create_table(self, capsys):
+        source_df = self.spark.createDataFrame(
+          [
+            ("jets", "football", 45),
+            ("nacional", "soccer", 10)
+          ],
+          [
+            "team","sport", "goals_for"
+          ]
+        )
+
+        quinn.print_athena_create_table(source_df, "athena_table", "s3://mock")
+        out, _ = capsys.readouterr()
+
+        assert out == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
