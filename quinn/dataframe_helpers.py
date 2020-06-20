@@ -24,3 +24,15 @@ def print_athena_create_table(df, athena_table_name, s3location):
     print(")")
     print("STORED AS PARQUET")
     print(f"LOCATION '{s3location}'\n")
+
+
+def show_output_to_df(show_output, spark):
+    l = show_output.split("\n")
+    ugly_column_names = l[1]
+    pretty_column_names = [i.strip() for i in ugly_column_names[1:-1].split("|")]
+    pretty_data = []
+    ugly_data = l[3:-1]
+    for row in ugly_data:
+        r = [i.strip() for i in row[1:-1].split("|")]
+        pretty_data.append(tuple(r))
+    return spark.createDataFrame(pretty_data, pretty_column_names)
