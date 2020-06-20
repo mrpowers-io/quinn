@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 
 import quinn
 from tests.conftest import auto_inject_fixtures
+import chispa
 
 
 @auto_inject_fixtures('spark')
@@ -15,9 +16,7 @@ def test_snake_case_col_names(spark):
     )
     data = [("jose", "a"), ("li", "b"), ("sam", "c")]
     source_df = spark.createDataFrame(data, schema)
-
     actual_df = quinn.snake_case_col_names(source_df)
-
     expected_df = spark.create_df(
         [
             ("jose", "a"),
@@ -26,11 +25,10 @@ def test_snake_case_col_names(spark):
         ],
         [
             ("i_like_cheese", StringType(), True),
-            ("YUMMMMY_stuff", StringType(), True)
+            ("yummmmy_stuff", StringType(), True)
         ]
     )
-
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(actual_df, expected_df)
 
 
 def test_sort_columns_asc(spark):
@@ -46,9 +44,7 @@ def test_sort_columns_asc(spark):
             ("gaming_system", StringType(), True),
         ]
     )
-
     actual_df = quinn.sort_columns(source_df, "asc")
-
     expected_df = spark.create_df(
         [
             ("switch", "jose", "oak"),
@@ -61,8 +57,7 @@ def test_sort_columns_asc(spark):
             ("tree", StringType(), True),
         ]
     )
-
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(actual_df, expected_df)
 
 
 def test_sort_columns_desc(spark):
@@ -78,9 +73,7 @@ def test_sort_columns_desc(spark):
             ("gaming_system", StringType(), True),
         ]
     )
-
     actual_df = quinn.sort_columns(source_df, "desc")
-
     expected_df = spark.create_df(
         [
             ("oak", "jose", "switch"),
@@ -93,8 +86,7 @@ def test_sort_columns_desc(spark):
             ("gaming_system", StringType(), True),
         ]
     )
-
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(actual_df, expected_df)
 
 
 def test_sort_columns_exception(spark):
@@ -110,7 +102,7 @@ def test_sort_columns_exception(spark):
             ("gaming_system", StringType(), True),
         ]
     )
-
     with pytest.raises(ValueError) as excinfo:
         quinn.sort_columns(source_df, "cats")
     assert excinfo.value.args[0] == "['asc', 'desc'] are the only valid sort orders and you entered a sort order of 'cats'"
+

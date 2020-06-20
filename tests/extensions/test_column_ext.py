@@ -1,11 +1,13 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType, BooleanType, IntegerType
 from quinn.extensions import *
+import chispa
 
 from tests.conftest import auto_inject_fixtures
 
 
 @auto_inject_fixtures('spark')
+
 
 def test_is_falsy(spark):
     source_df = spark.create_df(
@@ -19,9 +21,7 @@ def test_is_falsy(spark):
             ("has_stuff", BooleanType(), True)
         ]
     )
-
     actual_df = source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
-
     expected_df = spark.create_df(
         [
             ("jose", True, False),
@@ -31,11 +31,11 @@ def test_is_falsy(spark):
         [
             ("name", StringType(), True),
             ("has_stuff", BooleanType(), True),
-            ("is_stuff_falsy", BooleanType(), True)
+            ("is_stuff_falsy", BooleanType(), False)
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_is_truthy(spark):
     source_df = spark.create_df(
@@ -49,9 +49,7 @@ def test_is_truthy(spark):
             ("has_stuff", BooleanType(), True)
         ]
     )
-
     actual_df = source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
-
     expected_df = spark.create_df(
         [
             ("jose", True, True),
@@ -61,11 +59,11 @@ def test_is_truthy(spark):
         [
             ("name", StringType(), True),
             ("has_stuff", BooleanType(), True),
-            ("is_stuff_truthy", BooleanType(), True)
+            ("is_stuff_truthy", BooleanType(), False)
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_is_false(spark):
     source_df = spark.create_df(
@@ -80,7 +78,6 @@ def test_is_false(spark):
         ]
     )
     actual_df = source_df.withColumn("is_stuff_false", F.col("has_stuff").isFalse())
-
     expected_df = spark.create_df(
          [
             ("jose", True, False),
@@ -93,8 +90,8 @@ def test_is_false(spark):
             ("is_stuff_false", BooleanType(), True)
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_is_true(spark):
     source_df = spark.create_df(
@@ -108,9 +105,7 @@ def test_is_true(spark):
             ("has_stuff", BooleanType(), True)
         ]
     )
-
     actual_df = source_df.withColumn("is_stuff_true", F.col("has_stuff").isTrue())
-
     expected_df = spark.create_df(
         [
             ("jose", True, True),
@@ -123,8 +118,8 @@ def test_is_true(spark):
             ("is_stuff_true", BooleanType(), True)
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_is_null_or_blank(spark):
     source_df = spark.create_df(
@@ -139,9 +134,7 @@ def test_is_null_or_blank(spark):
             ("blah", StringType(), True),
         ]
     )
-
     actual_df = source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
-
     expected_df = spark.create_df(
         [
             ("jose", "", True),
@@ -155,8 +148,8 @@ def test_is_null_or_blank(spark):
             ("is_blah_null_or_blank", BooleanType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_is_not_in(spark):
     source_df = spark.create_df(
@@ -170,11 +163,8 @@ def test_is_not_in(spark):
             ("fun_thing", StringType(), True),
         ]
     )
-
     bobs_hobbies = ["dancing", "snowboarding"]
-
     actual_df = source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
-
     expected_df = spark.create_df(
         [
             ("jose", "surfing", True),
@@ -187,8 +177,8 @@ def test_is_not_in(spark):
             ("is_not_bobs_hobby", BooleanType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_null_between(spark):
     source_df = spark.create_df(
@@ -208,12 +198,10 @@ def test_null_between(spark):
              ("age", IntegerType(), True)
         ]
     )
-
     actual_df = source_df.withColumn(
         "is_between",
         F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
     )
-
     expected_df = spark.create_df(
         [
             (17, None, 94, True),
@@ -232,6 +220,5 @@ def test_null_between(spark):
             ("is_between", BooleanType(), True)
         ]
     )
-
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(actual_df, expected_df)
 

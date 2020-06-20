@@ -4,6 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType, BooleanType, 
 import quinn
 from quinn.extensions import *
 from tests.conftest import auto_inject_fixtures
+import chispa
 
 
 @auto_inject_fixtures('spark')
@@ -21,12 +22,10 @@ def test_single_space(spark):
             ("num", IntegerType(), True),
         ]
     )
-
     actual_df = source_df.withColumn(
         "words_single_spaced",
         quinn.single_space(col("words"))
     )
-
     expected_df = spark.create_df(
         [
             ("  I like     fish  ", 1, "I like fish"),
@@ -40,8 +39,8 @@ def test_single_space(spark):
             ("words_single_spaced", StringType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_remove_all_whitespace(spark):
     source_df = spark.create_df(
@@ -56,12 +55,10 @@ def test_remove_all_whitespace(spark):
             ("num", IntegerType(), True),
         ]
     )
-
     actual_df = source_df.withColumn(
         "words_without_whitespace",
         quinn.remove_all_whitespace(col("words"))
     )
-
     expected_df = spark.create_df(
         [
             ("  I like     fish  ", 1, "Ilikefish"),
@@ -72,11 +69,11 @@ def test_remove_all_whitespace(spark):
         [
             ("words", StringType(), True),
             ("num", IntegerType(), True),
-            ("words_single_spaced", StringType(), True),
+            ("words_without_whitespace", StringType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_remove_non_word_characters(spark):
     source_df = spark.create_df(
@@ -91,12 +88,10 @@ def test_remove_non_word_characters(spark):
             ("num", IntegerType(), True),
         ]
     )
-
     actual_df = source_df.withColumn(
         "words_without_nonword_chars",
         quinn.remove_non_word_characters(col("words"))
     )
-
     expected_df = spark.create_df(
         [
             ("I?like!fish>", 1, "Ilikefish"),
@@ -110,8 +105,8 @@ def test_remove_non_word_characters(spark):
             ("words_without_nonword_chars", StringType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_anti_trim(spark):
     source_df = spark.create_df(
@@ -126,12 +121,10 @@ def test_anti_trim(spark):
             ("num", IntegerType(), True),
         ]
     )
-
     actual_df = source_df.withColumn(
         "words_anti_trimmed",
         quinn.anti_trim(col("words"))
     )
-
     expected_df = spark.create_df(
         [
             ("  I like     fish  ", 1, "  Ilikefish  "),
@@ -145,8 +138,8 @@ def test_anti_trim(spark):
             ("words_anti_trimmed", StringType(), True),
         ]
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_exists(spark):
     source_df = spark.createDataFrame(
@@ -160,12 +153,10 @@ def test_exists(spark):
             StructField("nums", ArrayType(IntegerType(), True), True),
         ])
     )
-
     actual_df = source_df.withColumn(
         "any_num_greater_than_5",
         quinn.exists(lambda n: n > 5)(col("nums"))
     )
-
     expected_df = spark.createDataFrame(
         [
             ("jose", [1, 2, 3], False),
@@ -178,8 +169,8 @@ def test_exists(spark):
             StructField("any_num_greater_than_5", BooleanType(), True)
         ])
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_forall(spark):
     source_df = spark.createDataFrame(
@@ -193,12 +184,10 @@ def test_forall(spark):
             StructField("nums", ArrayType(IntegerType(), True), True),
         ])
     )
-
     actual_df = source_df.withColumn(
         "all_nums_greater_than_3",
         quinn.forall(lambda n: n > 3)(col("nums"))
     )
-
     expected_df = spark.createDataFrame(
         [
             ("jose", [1, 2, 3], False),
@@ -211,8 +200,8 @@ def test_forall(spark):
             StructField("all_nums_greater_than_3", BooleanType(), True)
         ])
     )
+    chispa.assert_df_equality(actual_df, expected_df)
 
-    assert expected_df.collect() == actual_df.collect()
 
 def test_multi_equals(spark):
     source_df = spark.create_df(
@@ -228,12 +217,10 @@ def test_multi_equals(spark):
             ("s2", StringType(), True)
         ]
     )
-
     actual_df = source_df.withColumn(
         "are_s1_and_s2_cat",
         quinn.multi_equals("cat")(col("s1"), col("s2"))
     )
-
     expected_df = spark.create_df(
         [
             ("cat", "cat", True),
@@ -248,5 +235,4 @@ def test_multi_equals(spark):
             ("are_s1_and_s2_cat", BooleanType(), True),
         ]
     )
-
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(actual_df, expected_df)

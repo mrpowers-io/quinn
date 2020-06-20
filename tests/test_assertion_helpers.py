@@ -1,6 +1,7 @@
 import pytest
 
 import quinn
+import chispa
 from tests.conftest import auto_inject_fixtures
 
 

@@ -17,6 +17,7 @@ pyspark = "2.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "3.9.2"
+chispa = "^0.4.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
