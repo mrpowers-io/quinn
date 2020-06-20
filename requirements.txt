@@ -1,6 +1,0 @@
-cytoolz==0.9.0.1
-pytest==3.9.2
-pytest-cov==2.6.0
-#pyspark.egg==info
-setuptools==28.8.0
-pyspark==2.4.0
