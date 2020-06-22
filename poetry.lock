@@ -26,11 +26,10 @@ description = "Pyspark test helper library"
 name = "chispa"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "0.4.0"
+version = "0.5.0"
 
 [package.dependencies]
-PrettyTable = ">=0.7.2,<0.8.0"
-pyspark = ">=2.0.0,<3.0.0"
+pyspark = ">2.0.0"
 
 [[package]]
 category = "main"
@@ -102,14 +101,6 @@ version = ">=0.12"
 
 [package.extras]
 dev = ["pre-commit", "tox"]
-
-[[package]]
-category = "dev"
-description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format."
-name = "prettytable"
-optional = false
-python-versions = "*"
-version = "0.7.2"
 
 [[package]]
 category = "main"
@@ -203,7 +194,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "af81b30d3f674655bb566769e37f8087cd22b007c689ace57bd983a6fa3ea4b9"
+content-hash = "b312f1af8aef3d7ae32a55b40d22e355a3b6e654825d1d74385e6ba3064bde1a"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -216,8 +207,8 @@ attrs = [
     {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
 ]
 chispa = [
-    {file = "chispa-0.4.0-py3-none-any.whl", hash = "sha256:2b3ace808b5a1e12ce3228627a52b0c87552b9ac618636dd8408c63f043a2da8"},
-    {file = "chispa-0.4.0.tar.gz", hash = "sha256:caa1fbcf62089f884276e6a63fbc827fdfa460351f077176113a71baa956e2be"},
+    {file = "chispa-0.5.0-py3-none-any.whl", hash = "sha256:15519b0e8941943cac5f43caa5f3c73d26824588baae79b4b0aaed3da1fc9fec"},
+    {file = "chispa-0.5.0.tar.gz", hash = "sha256:750df6128c634b1bf8baf1946b76c9630774d14fbbbc3b1f6b46d2406f349d2d"},
 ]
 colorama = [
     {file = "colorama-0.4.3-py2.py3-none-any.whl", hash = "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff"},
@@ -270,11 +261,6 @@ more-itertools = [
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
-]
-prettytable = [
-    {file = "prettytable-0.7.2.tar.bz2", hash = "sha256:853c116513625c738dc3ce1aee148b5b5757a86727e67eff6502c7ca59d43c36"},
-    {file = "prettytable-0.7.2.tar.gz", hash = "sha256:2d5460dc9db74a32bcc8f9f67de68b2c4f4d2f01fa3bd518764c69156d9cacd9"},
-    {file = "prettytable-0.7.2.zip", hash = "sha256:a53da3b43d7a5c229b5e3ca2892ef982c46b7923b51e98f0db49956531211c4f"},
 ]
 py = [
     {file = "py-1.8.1-py2.py3-none-any.whl", hash = "sha256:c20fdd83a5dbc0af9efd622bee9a5564e278f6380fffcacc43ba6f43db2813b0"},
