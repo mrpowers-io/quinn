@@ -1,6 +1,6 @@
 # Quinn
 
-[![Build Status](https://travis-ci.org/MrPowers/quinn.svg?branch=master)](https://travis-ci.org/MrPowers/quinn)
+![GitHub Build Status](https://github.com/mrpowers/quinn/workflows/master/badge.svg)
 
 Pyspark helper methods to maximize developer productivity.
 
