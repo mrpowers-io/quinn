@@ -32,7 +32,7 @@ def test_verbose_code_without_transform(spark):
         expected_data,
         ["name", "age", "greeting", "something"]
     )
-    chispa.assert_df_equality(df2, expected_df)
+    chispa.assert_df_equality(df2, expected_df, ignore_nullable = True)
 
 
 def test_transform_with_lambda(spark):
@@ -66,7 +66,7 @@ def test_transform_with_no_arg_fun(spark):
     actual_df = source_df.transform(lambda df: with_greeting(df))
     expected_data = [("jose", 1, "hi"), ("li", 2, "hi"), ("liz", 3, "hi")]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_transform_with_one_arg_fun(spark):
@@ -75,7 +75,7 @@ def test_transform_with_one_arg_fun(spark):
     actual_df = source_df.transform(lambda df: with_something(df, "crazy"))
     expected_data = [("jose", 1, "crazy"), ("li", 2, "crazy"), ("liz", 3, "crazy")]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "something"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_chain_transforms(spark):
@@ -86,7 +86,7 @@ def test_chain_transforms(spark):
         .transform(lambda df: with_something(df, "crazy")))
     expected_data = [("jose", 1, "hi", "crazy"), ("li", 2, "hi", "crazy"), ("liz", 3, "hi", "crazy")]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "something"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_transform_with_closure(spark):
@@ -101,7 +101,7 @@ def test_transform_with_closure(spark):
         ("liz", 3, "hi", "haha")
     ]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "funny"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_transform_with_functools_partial(spark):
@@ -116,7 +116,7 @@ def test_transform_with_functools_partial(spark):
         ("liz", 3, "hi", "warm")
     ]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "greeting", "jacket"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_currying(spark):
@@ -130,7 +130,7 @@ def test_currying(spark):
         ("liz", 3, "yoyo", "nice person")
     ]
     expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
 def test_reversed_currying(spark):
@@ -146,6 +146,6 @@ def test_reversed_currying(spark):
         ("li", 2, "nice person", "yoyo"),
         ("liz", 3, "nice person", "yoyo")
     ]
-    expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff2", "stuff1"])
-    chispa.assert_df_equality(actual_df, expected_df)
+    expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff1", "stuff2"])
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
