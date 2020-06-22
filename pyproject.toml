@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quinn"
-version = "0.4.0"
+version = "0.5.0"
 description = "Pyspark helper methods to maximize developer efficiency"
 authors = ["MrPowers <matthewkevinpowers@gmail.com>"]
 license = "Apache-2.0"
@@ -10,10 +10,10 @@ keywords = ['apachespark', 'spark', 'pyspark']
 
 [tool.poetry.dependencies]
 python = ">2.7"
-cytoolz = "0.9.0.1"
 pyspark = ">2.0.0"
 
 [tool.poetry.dev-dependencies]
+cytoolz = "0.9.0.1"
 pytest = "3.9.2"
 pytest-cov = "2.6.0"
 chispa = "^0.5.0"
