@@ -1,12 +1,18 @@
 from functools import reduce
 
 
+def modify_column_names(fun):
+    def _(df):
+        return reduce(
+            lambda memo_df, col_name: memo_df.withColumnRenamed(col_name, fun(col_name)),
+            df.columns,
+            df
+        )
+    return _
+
+
 def snake_case_col_names(df):
-    return reduce(
-        lambda memo_df, col_name: memo_df.withColumnRenamed(col_name, to_snake_case(col_name)),
-        df.columns,
-        df
-    )
+    return modify_column_names(to_snake_case)(df)
 
 
 def to_snake_case(s):

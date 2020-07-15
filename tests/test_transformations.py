@@ -9,6 +9,31 @@ import chispa
 @auto_inject_fixtures('spark')
 
 
+def test_modify_column_names(spark):
+    def dots_to_underscores(s):
+        return s.replace(".", "_")
+    schema = StructType([
+        StructField("i.like.cheese", StringType(), True),
+        StructField("yummy.stuff", StringType(), True)]
+    )
+    data = [("jose", "a"), ("li", "b"), ("sam", "c")]
+    source_df = spark.createDataFrame(data, schema)
+    actual_df = quinn.modify_column_names(dots_to_underscores)(source_df)
+    expected_df = spark.create_df(
+        [
+            ("jose", "a"),
+            ("li", "b"),
+            ("sam", "c")
+        ],
+        [
+            ("i_like_cheese", StringType(), True),
+            ("yummy_stuff", StringType(), True)
+        ]
+    )
+    chispa.assert_df_equality(actual_df, expected_df)
+
+
+
 def test_snake_case_col_names(spark):
     schema = StructType([
         StructField("I like CHEESE", StringType(), True),
