@@ -5,20 +5,22 @@ import quinn
 from tests.conftest import auto_inject_fixtures
 import chispa
 
+from functools import reduce
+
 
 @auto_inject_fixtures('spark')
 
 
-def test_modify_column_names(spark):
-    def dots_to_underscores(s):
-        return s.replace(".", "_")
+def test_with_columns_renamed_spaces_to_underscores(spark):
+    def spaces_to_underscores(s):
+        return s.replace(" ", "_")
     schema = StructType([
-        StructField("i.like.cheese", StringType(), True),
-        StructField("yummy.stuff", StringType(), True)]
+        StructField("i like cheese", StringType(), True),
+        StructField("yummy stuff", StringType(), True)]
     )
     data = [("jose", "a"), ("li", "b"), ("sam", "c")]
     source_df = spark.createDataFrame(data, schema)
-    actual_df = quinn.modify_column_names(dots_to_underscores)(source_df)
+    actual_df = quinn.with_columns_renamed(spaces_to_underscores)(source_df)
     expected_df = spark.create_df(
         [
             ("jose", "a"),
@@ -32,6 +34,82 @@ def test_modify_column_names(spark):
     )
     chispa.assert_df_equality(actual_df, expected_df)
 
+
+def test_with_columns_renamed_dots_to_underscores(spark):
+    def dots_to_underscores(s):
+        return s.replace(".", "_")
+    schema = StructType([
+        StructField("i.like.cheese", StringType(), True),
+        StructField("yummy.stuff", StringType(), True)]
+    )
+    data = [("jose", "a"), ("li", "b"), ("sam", "c")]
+    source_df = spark.createDataFrame(data, schema)
+    actual_df = quinn.with_columns_renamed(dots_to_underscores)(source_df)
+    expected_df = spark.create_df(
+        [
+            ("jose", "a"),
+            ("li", "b"),
+            ("sam", "c")
+        ],
+        [
+            ("i_like_cheese", StringType(), True),
+            ("yummy_stuff", StringType(), True)
+        ]
+    )
+    chispa.assert_df_equality(actual_df, expected_df)
+
+
+def test_with_some_columns_renamed(spark):
+    mapping = {"chips": "french_fries", "petrol": "gas"}
+    def british_to_american(s):
+      return mapping[s]
+    def change_col_name(s):
+      return s in mapping
+    schema = StructType([
+        StructField("chips", StringType(), True),
+        StructField("hi", StringType(), True),
+        StructField("petrol", StringType(), True)]
+    )
+    data = [("potatoe", "hola!", "disel")]
+    source_df = spark.createDataFrame(data, schema)
+    actual_df = quinn.with_some_columns_renamed(british_to_american, change_col_name)(source_df)
+    expected_df = spark.create_df(
+        [
+            ("potatoe", "hola!", "disel")
+        ],
+        [
+            ("french_fries", StringType(), True),
+            ("hi", StringType(), True),
+            ("gas", StringType(), True)
+        ]
+    )
+    chispa.assert_df_equality(actual_df, expected_df)
+
+
+def test_with_some_columns_renamed_with_dots(spark):
+    def dots_to_underscores(s):
+        return s.replace(".", "_")
+    def change_col_name(s):
+      return s.startswith("a")
+    schema = StructType([
+        StructField("a.person", StringType(), True),
+        StructField("a.thing", StringType(), True),
+        StructField("b.person", StringType(), True)]
+    )
+    data = [("frank", "hot dog", "mia")]
+    source_df = spark.createDataFrame(data, schema)
+    actual_df = quinn.with_some_columns_renamed(dots_to_underscores, change_col_name)(source_df)
+    expected_df = spark.create_df(
+        [
+            ("frank", "hot dog", "mia")
+        ],
+        [
+            ("a_person", StringType(), True),
+            ("a_thing", StringType(), True),
+            ("b.person", StringType(), True)
+        ]
+    )
+    chispa.assert_df_equality(actual_df, expected_df)
 
 
 def test_snake_case_col_names(spark):
