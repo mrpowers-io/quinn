@@ -16,6 +16,7 @@ pyspark = ">2.0.0"
 cytoolz = "0.9.0.1"
 pytest = "3.2.2"
 chispa = "0.6.0"
+pytest-describe = "^1.0.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

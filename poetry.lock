@@ -76,6 +76,17 @@ setuptools = "*"
 
 [[package]]
 category = "dev"
+description = "Describe-style plugin for pytest"
+name = "pytest-describe"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[package.dependencies]
+pytest = ">=2.6.0"
+
+[[package]]
+category = "dev"
 description = "List processing tools and functional utilities"
 name = "toolz"
 optional = false
@@ -83,7 +94,7 @@ python-versions = "*"
 version = "0.9.0"
 
 [metadata]
-content-hash = "e4dad30161525f45f66ee4e011302734b6d25bba0bf03a0586ca79904576ae4d"
+content-hash = "c0f807af6a2fb1cb98e1f5132c531bc9ab9758087c26fce41cbf42b1ffd19fe5"
 python-versions = ">2.7"
 
 [metadata.files]
@@ -112,6 +123,11 @@ pyspark = [
 pytest = [
     {file = "pytest-3.2.2-py2.py3-none-any.whl", hash = "sha256:b84f554f8ddc23add65c411bf112b2d88e2489fd45f753b1cae5936358bdf314"},
     {file = "pytest-3.2.2.tar.gz", hash = "sha256:f46e49e0340a532764991c498244a60e3a37d7424a532b3ff1a6a7653f1a403a"},
+]
+pytest-describe = [
+    {file = "pytest-describe-1.0.0.tar.gz", hash = "sha256:3e2ea0e77efa09edb98cf90423bf1da21a462ed90bd3120f8f98fe7519a167d5"},
+    {file = "pytest_describe-1.0.0-py2-none-any.whl", hash = "sha256:cc3862662faa5a6fb721927aaef46b46cf787e4a8163e5459fc8778e650fabad"},
+    {file = "pytest_describe-1.0.0-py3-none-any.whl", hash = "sha256:95fe78639d4d16c4a1e7d62c70f63030b217c08d2ee6dca49559fe6e730c6696"},
 ]
 toolz = [
     {file = "toolz-0.9.0.tar.gz", hash = "sha256:929f0a7ea7f61c178bd951bdae93920515d3fbdbafc8e6caf82d752b9b3b31c9"},
