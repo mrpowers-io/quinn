@@ -2,8 +2,11 @@ from pyspark.sql.types import StructType, StructField, StringType
 
 from tests.conftest import auto_inject_fixtures
 
+import chispa
+
 
 @auto_inject_fixtures('spark')
+
 
 def test_create_df(spark):
     schema = StructType([
@@ -18,4 +21,4 @@ def test_create_df(spark):
         [("name", StringType(), True), ("blah", StringType(), True)]
     )
 
-    assert expected_df.collect() == actual_df.collect()
+    chispa.assert_df_equality(expected_df, actual_df)
