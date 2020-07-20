@@ -72,12 +72,12 @@ def describe_with_some_columns_renamed():
             StructField("hi", StringType(), True),
             StructField("petrol", StringType(), True)]
         )
-        data = [("potatoe", "hola!", "disel")]
+        data = [("potato", "hola!", "disel")]
         source_df = spark.createDataFrame(data, schema)
         actual_df = quinn.with_some_columns_renamed(british_to_american, change_col_name)(source_df)
         expected_df = spark.create_df(
             [
-                ("potatoe", "hola!", "disel")
+                ("potato", "hola!", "disel")
             ],
             [
                 ("french_fries", StringType(), True),

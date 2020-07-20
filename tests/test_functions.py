@@ -1,10 +1,14 @@
+import pytest
+
 from pyspark.sql.functions import col
-from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, ArrayType
+from pyspark.sql.types import *
 
 import quinn
 from quinn.extensions import *
 from tests.conftest import auto_inject_fixtures
 import chispa
+
+import datetime
 
 
 @auto_inject_fixtures('spark')
@@ -148,3 +152,67 @@ def test_multi_equals(spark):
     )
     chispa.assert_column_equality(actual_df, "are_s1_and_s2_cat", "expected")
 
+
+def describe_week_start_date():
+    def it_defaults_to_start_date_of_monday(spark):
+        df = spark.create_df(
+            [
+                # converts a Thursday to the Monday before
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 30)),
+                # converts a Wednesday to the Monday before
+                (datetime.datetime(2020, 7, 15), datetime.datetime(2020, 7, 13)),
+                # doesn't change if the day in a Monday
+                (datetime.datetime(2020, 7, 20), datetime.datetime(2020, 7, 20)),
+                (None, None)
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "week_start_date",
+            quinn.week_start_date(col("some_date"))
+        )
+        chispa.assert_column_equality(actual_df, "week_start_date", "expected")
+
+
+    def it_also_works_with_sunday_week_start(spark):
+        df = spark.create_df(
+            [
+                # converts a Tuesday to the Sunday before
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
+                # converts a Wednesday to the Sunday before
+                (datetime.datetime(2020, 7, 15), datetime.datetime(2020, 7, 12)),
+                # doesn't change if the day is Sunday
+                (datetime.datetime(2020, 7, 26), datetime.datetime(2020, 7, 26)),
+                (None, None)
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "week_start_date",
+            quinn.week_start_date(col("some_date"), 'Sun')
+        )
+        chispa.assert_column_equality(actual_df, "week_start_date", "expected")
+
+
+    def it_errors_out_if_with_invalid_week_start_date(spark):
+        df = spark.create_df(
+            [
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        with pytest.raises(ValueError) as excinfo:
+            df.withColumn(
+                "week_start_date",
+                quinn.week_start_date(col("some_date"), 'hello')
+            )
+        assert excinfo.value.args[0] == "The day you entered 'hello' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
