@@ -282,3 +282,48 @@ def describe_week_end_date():
             )
         assert excinfo.value.args[0] == "The day you entered 'Friday' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
 
+
+def describe_approx_equal():
+    def it_works_with_floating_values(spark):
+        df = spark.create_df(
+            [
+                (1.1, 1.05, True),
+                (1.1, 11.6, False),
+                (1.02, 1.09, True),
+                (1.02, 1.34, False),
+                (None, None, None)
+            ],
+            [
+                ("num1", FloatType(), True),
+                ("num2", FloatType(), True),
+                ("expected", BooleanType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "are_nums_approx_equal",
+            quinn.approx_equal(col("num1"), col("num2"), lit(0.1))
+        )
+        chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
+
+
+    def it_works_with_integer_values(spark):
+        df = spark.create_df(
+            [
+                (12, 14, True),
+                (20, 26, False),
+                (44, 41, True),
+                (32, 9, False),
+                (None, None, None)
+            ],
+            [
+                ("num1", IntegerType(), True),
+                ("num2", IntegerType(), True),
+                ("expected", BooleanType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "are_nums_approx_equal",
+            quinn.approx_equal(col("num1"), col("num2"), lit(5))
+        )
+        chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
+

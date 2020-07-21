@@ -39,6 +39,7 @@ def nullBetween(self, lower, upper):
     )
 
 
+
 Column.isFalsy = isFalsy
 Column.isTruthy = isTruthy
 Column.isFalse = isFalse

@@ -58,3 +58,7 @@ def _raise_if_invalid_day(day):
         message = "The day you entered '{0}' is not valid.  Here are the valid days: [{1}]".format(day, ','.join(valid_days))
         raise ValueError(message)
 
+
+def approx_equal(col1, col2, threshhold):
+    return F.abs(col1 - col2) < threshhold
+
