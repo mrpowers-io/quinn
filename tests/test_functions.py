@@ -1,6 +1,6 @@
 import pytest
 
-from pyspark.sql.functions import col
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
 import quinn
@@ -154,7 +154,7 @@ def test_multi_equals(spark):
 
 
 def describe_week_start_date():
-    def it_defaults_to_start_date_of_monday(spark):
+    def it_works_with_start_date_of_monday(spark):
         df = spark.create_df(
             [
                 # converts a Thursday to the Monday before
@@ -172,12 +172,12 @@ def describe_week_start_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_start_date(col("some_date"))
+            quinn.week_start_date(col("some_date"), 'Mon')
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
 
-    def it_also_works_with_sunday_week_start(spark):
+    def it_defaults_to_sunday_start_date(spark):
         df = spark.create_df(
             [
                 # converts a Tuesday to the Sunday before
@@ -195,7 +195,7 @@ def describe_week_start_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_start_date(col("some_date"), 'Sun')
+            quinn.week_start_date(col("some_date"))
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
@@ -216,3 +216,69 @@ def describe_week_start_date():
                 quinn.week_start_date(col("some_date"), 'hello')
             )
         assert excinfo.value.args[0] == "The day you entered 'hello' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
+
+
+def describe_week_end_date():
+    def it_works_with_end_date_of_sunday(spark):
+        df = spark.create_df(
+            [
+                # converts a Thursday to the Sunday after
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2020, 1, 5)),
+                # converts a Wednesday to the Sunday after
+                (datetime.datetime(2020, 7, 15), datetime.datetime(2020, 7, 19)),
+                # doesn't change if the day in a Sunday
+                (datetime.datetime(2020, 7, 19), datetime.datetime(2020, 7, 19)),
+                (None, None)
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "week_start_date",
+            quinn.week_end_date(col("some_date"), 'Sun')
+        )
+        chispa.assert_column_equality(actual_df, "week_start_date", "expected")
+
+
+    def it_defaults_to_saturday_week_end(spark):
+        df = spark.create_df(
+            [
+                # converts a Tuesday to the Saturday after
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2020, 1, 4)),
+                # converts a Wednesday to the Saturday after
+                (datetime.datetime(2020, 7, 15), datetime.datetime(2020, 7, 18)),
+                # doesn't change if the day is Saturday
+                (datetime.datetime(2020, 7, 25), datetime.datetime(2020, 7, 25)),
+                (None, None)
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        actual_df = df.withColumn(
+            "week_start_date",
+            quinn.week_end_date(col("some_date"))
+        )
+        chispa.assert_column_equality(actual_df, "week_start_date", "expected")
+
+
+    def it_errors_out_if_with_invalid_week_end_date(spark):
+        df = spark.create_df(
+            [
+                (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
+            ],
+            [
+                ("some_date", DateType(), True),
+                ("expected", DateType(), True)
+            ]
+        )
+        with pytest.raises(ValueError) as excinfo:
+            df.withColumn(
+                "week_start_date",
+                quinn.week_end_date(col("some_date"), 'Friday')
+            )
+        assert excinfo.value.args[0] == "The day you entered 'Friday' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
+
