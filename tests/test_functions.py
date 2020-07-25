@@ -1,6 +1,6 @@
 import pytest
 
-from pyspark.sql.functions import *
+import pyspark.sql.functions as F
 from pyspark.sql.types import *
 
 import quinn
@@ -28,7 +28,7 @@ def test_single_space(spark):
     )
     actual_df = df.withColumn(
         "words_single_spaced",
-        quinn.single_space(col("words"))
+        quinn.single_space(F.col("words"))
     )
     chispa.assert_column_equality(actual_df, "words_single_spaced", "expected")
 
@@ -48,7 +48,7 @@ def test_remove_all_whitespace(spark):
     )
     actual_df = df.withColumn(
         "words_without_whitespace",
-        quinn.remove_all_whitespace(col("words"))
+        quinn.remove_all_whitespace(F.col("words"))
     )
     chispa.assert_column_equality(actual_df, "words_without_whitespace", "expected")
 
@@ -68,7 +68,7 @@ def test_remove_non_word_characters(spark):
     )
     actual_df = df.withColumn(
         "words_without_nonword_chars",
-        quinn.remove_non_word_characters(col("words"))
+        quinn.remove_non_word_characters(F.col("words"))
     )
     chispa.assert_column_equality(actual_df, "words_without_nonword_chars", "expected")
 
@@ -88,7 +88,7 @@ def test_anti_trim(spark):
     )
     actual_df = df.withColumn(
         "words_anti_trimmed",
-        quinn.anti_trim(col("words"))
+        quinn.anti_trim(F.col("words"))
     )
     chispa.assert_column_equality(actual_df, "words_anti_trimmed", "expected")
 
@@ -107,7 +107,7 @@ def test_exists(spark):
     )
     actual_df = df.withColumn(
         "any_num_greater_than_5",
-        quinn.exists(lambda n: n > 5)(col("nums"))
+        quinn.exists(lambda n: n > 5)(F.col("nums"))
     )
     chispa.assert_column_equality(actual_df, "any_num_greater_than_5", "expected")
 
@@ -126,7 +126,7 @@ def test_forall(spark):
     )
     actual_df = df.withColumn(
         "all_nums_greater_than_3",
-        quinn.forall(lambda n: n > 3)(col("nums"))
+        quinn.forall(lambda n: n > 3)(F.col("nums"))
     )
     chispa.assert_column_equality(actual_df, "all_nums_greater_than_3", "expected")
 
@@ -148,7 +148,7 @@ def test_multi_equals(spark):
     )
     actual_df = df.withColumn(
         "are_s1_and_s2_cat",
-        quinn.multi_equals("cat")(col("s1"), col("s2"))
+        quinn.multi_equals("cat")(F.col("s1"), F.col("s2"))
     )
     chispa.assert_column_equality(actual_df, "are_s1_and_s2_cat", "expected")
 
@@ -172,7 +172,7 @@ def describe_week_start_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_start_date(col("some_date"), 'Mon')
+            quinn.week_start_date(F.col("some_date"), 'Mon')
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
@@ -195,7 +195,7 @@ def describe_week_start_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_start_date(col("some_date"))
+            quinn.week_start_date(F.col("some_date"))
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
@@ -213,7 +213,7 @@ def describe_week_start_date():
         with pytest.raises(ValueError) as excinfo:
             df.withColumn(
                 "week_start_date",
-                quinn.week_start_date(col("some_date"), 'hello')
+                quinn.week_start_date(F.col("some_date"), 'hello')
             )
         assert excinfo.value.args[0] == "The day you entered 'hello' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
 
@@ -237,7 +237,7 @@ def describe_week_end_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_end_date(col("some_date"), 'Sun')
+            quinn.week_end_date(F.col("some_date"), 'Sun')
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
@@ -260,7 +260,7 @@ def describe_week_end_date():
         )
         actual_df = df.withColumn(
             "week_start_date",
-            quinn.week_end_date(col("some_date"))
+            quinn.week_end_date(F.col("some_date"))
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
@@ -278,7 +278,7 @@ def describe_week_end_date():
         with pytest.raises(ValueError) as excinfo:
             df.withColumn(
                 "week_start_date",
-                quinn.week_end_date(col("some_date"), 'Friday')
+                quinn.week_end_date(F.col("some_date"), 'Friday')
             )
         assert excinfo.value.args[0] == "The day you entered 'Friday' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
 
@@ -301,7 +301,7 @@ def describe_approx_equal():
         )
         actual_df = df.withColumn(
             "are_nums_approx_equal",
-            quinn.approx_equal(col("num1"), col("num2"), lit(0.1))
+            quinn.approx_equal(F.col("num1"), F.col("num2"), F.lit(0.1))
         )
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
@@ -323,7 +323,7 @@ def describe_approx_equal():
         )
         actual_df = df.withColumn(
             "are_nums_approx_equal",
-            quinn.approx_equal(col("num1"), col("num2"), lit(5))
+            quinn.approx_equal(F.col("num1"), F.col("num2"), F.lit(5))
         )
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
@@ -340,10 +340,17 @@ def test_array_choice(spark):
             ("letters", ArrayType(StringType(), True), True)
         ]
     )
+    df.show()
     actual_df = df.withColumn(
         "random_letter",
-        quinn.array_choice(col("letters"))
+        quinn.array_choice(F.col("letters"))
     )
+    actual_df.show()
     # actual_df.show()
     # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
+
+    # df = spark.createDataFrame([('a',), ('b',), ('c',)], ['letter'])
+    # df.show()
+    # cols = list(map(lambda c: F.lit(c), ['Retail', 'SME', 'Cor']))
+    # df.withColumn('business_vertical', quinn.array_choice(F.array(cols))).show()
 
