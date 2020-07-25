@@ -62,3 +62,8 @@ def _raise_if_invalid_day(day):
 def approx_equal(col1, col2, threshhold):
     return F.abs(col1 - col2) < threshhold
 
+
+def array_choice(col):
+    index = (F.rand()*F.size(col)).cast("int")
+    return col[index]
+
