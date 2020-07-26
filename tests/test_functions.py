@@ -1,5 +1,7 @@
 import pytest
 
+import re
+
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
 
@@ -340,12 +342,10 @@ def test_array_choice(spark):
             ("letters", ArrayType(StringType(), True), True)
         ]
     )
-    df.show()
     actual_df = df.withColumn(
         "random_letter",
         quinn.array_choice(F.col("letters"))
     )
-    actual_df.show()
     # actual_df.show()
     # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
@@ -353,4 +353,23 @@ def test_array_choice(spark):
     # df.show()
     # cols = list(map(lambda c: F.lit(c), ['Retail', 'SME', 'Cor']))
     # df.withColumn('business_vertical', quinn.array_choice(F.array(cols))).show()
+
+
+def test_regexp_extract_all(spark):
+    df = spark.create_df(
+        [
+            ("200 - 300 PA.", ['200', '300']),
+            ("400 PA.", ['400']),
+            (None, None)
+        ],
+        [
+            ("str", StringType(), True),
+            ("expected", ArrayType(StringType(), True), True),
+        ]
+    )
+    actual_df = df.withColumn(
+        "all_numbers",
+        quinn.regexp_extract_all(F.col("str"), F.lit(r'(\d+)'))
+    )
+    chispa.assert_column_equality(actual_df, "all_numbers", "expected")
 

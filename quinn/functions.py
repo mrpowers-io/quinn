@@ -1,6 +1,7 @@
+import re
 import pyspark.sql.functions as F
 
-from pyspark.sql.types import BooleanType
+from pyspark.sql.types import *
 
 
 def single_space(col):
@@ -66,4 +67,9 @@ def approx_equal(col1, col2, threshhold):
 def array_choice(col):
     index = (F.rand()*F.size(col)).cast("int")
     return col[index]
+
+
+@F.udf(returnType=ArrayType(StringType()))
+def regexp_extract_all(s, regexp):
+     return None if s == None else re.findall(regexp, s)
 
