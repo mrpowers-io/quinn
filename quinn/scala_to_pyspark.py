@@ -46,7 +46,7 @@ class ScalaToPyspark:
         print("".join(self.lines()))
 
     def clean_function_definition(self, s):
-        m = re.search('(\s*)def (\w+).*\((.*)\)', s)
+        m = re.search(r"(\s*)def (\w+).*\((.*)\)", s)
         if m:
             whitespace = m.group(1)
             method_name = m.group(2)
