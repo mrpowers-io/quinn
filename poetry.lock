@@ -1,57 +1,53 @@
 [[package]]
-category = "dev"
-description = "Pyspark test helper library"
 name = "chispa"
+version = "0.7.0"
+description = "Pyspark test helper library"
+category = "dev"
 optional = false
 python-versions = ">2.7"
-version = "0.6.0"
-
-[package.dependencies]
-pyspark = ">2.0.0"
 
 [[package]]
-category = "dev"
-description = "Cross-platform colored terminal text."
-marker = "sys_platform == \"win32\""
 name = "colorama"
+version = "0.3.9"
+description = "Cross-platform colored terminal text."
+category = "dev"
 optional = false
 python-versions = "*"
-version = "0.3.9"
 
 [[package]]
-category = "dev"
-description = "Cython implementation of Toolz: High performance functional utilities"
 name = "cytoolz"
+version = "0.9.0.1"
+description = "Cython implementation of Toolz: High performance functional utilities"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "0.9.0.1"
 
 [package.dependencies]
 toolz = ">=0.8.0"
 
 [[package]]
-category = "dev"
-description = "library with cross-python path, ini-parsing, io, code, log facilities"
 name = "py"
-optional = false
-python-versions = "*"
 version = "1.4.34"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+category = "dev"
+optional = false
+python-versions = "*"
 
 [[package]]
-category = "main"
-description = "Enables Python programs to dynamically access arbitrary Java objects"
 name = "py4j"
+version = "0.10.9"
+description = "Enables Python programs to dynamically access arbitrary Java objects"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "0.10.9"
 
 [[package]]
-category = "main"
-description = "Apache Spark Python API"
 name = "pyspark"
+version = "3.0.1"
+description = "Apache Spark Python API"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "3.0.0"
 
 [package.dependencies]
 py4j = "0.10.9"
@@ -62,45 +58,45 @@ mllib = ["numpy (>=1.7)"]
 sql = ["pandas (>=0.23.2)", "pyarrow (>=0.15.1)"]
 
 [[package]]
-category = "dev"
-description = "pytest: simple powerful testing with Python"
 name = "pytest"
+version = "3.2.2"
+description = "pytest: simple powerful testing with Python"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "3.2.2"
 
 [package.dependencies]
-colorama = "*"
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
 py = ">=1.4.33"
-setuptools = "*"
 
 [[package]]
-category = "dev"
-description = "Describe-style plugin for pytest"
 name = "pytest-describe"
+version = "1.0.0"
+description = "Describe-style plugin for pytest"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "1.0.0"
 
 [package.dependencies]
 pytest = ">=2.6.0"
 
 [[package]]
-category = "dev"
-description = "List processing tools and functional utilities"
 name = "toolz"
+version = "0.9.0"
+description = "List processing tools and functional utilities"
+category = "dev"
 optional = false
 python-versions = "*"
-version = "0.9.0"
 
 [metadata]
-content-hash = "c0f807af6a2fb1cb98e1f5132c531bc9ab9758087c26fce41cbf42b1ffd19fe5"
+lock-version = "1.1"
 python-versions = ">2.7"
+content-hash = "ed0fd4009afb88c866deaaf298770311e2875f01eaca1f0fe0395c36a90e5274"
 
 [metadata.files]
 chispa = [
-    {file = "chispa-0.6.0-py2.py3-none-any.whl", hash = "sha256:d045487fe42ce6aa3f7264090ccbb6d17672635e4985ff270f9f89c623dcd4d0"},
-    {file = "chispa-0.6.0.tar.gz", hash = "sha256:de828eb81cde4efd4fb7d2d6e9c855a5c5c9eed6001307fd7dc6a3b8cb82525f"},
+    {file = "chispa-0.7.0-py2.py3-none-any.whl", hash = "sha256:6ee7825588246d89cf5397590bdeafef2df6fec126b9d0167614ee545991cc5a"},
+    {file = "chispa-0.7.0.tar.gz", hash = "sha256:ea0bd7a02a13d1ca9f7a70484fa921552846343dc3c0c61ef067d723be53a229"},
 ]
 colorama = [
     {file = "colorama-0.3.9-py2.py3-none-any.whl", hash = "sha256:463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda"},
@@ -118,7 +114,7 @@ py4j = [
     {file = "py4j-0.10.9.tar.gz", hash = "sha256:36ec57f43ff8ced260a18aa9a4e46c3500a730cac8860e259cbaa546c2b9db2f"},
 ]
 pyspark = [
-    {file = "pyspark-3.0.0.tar.gz", hash = "sha256:8c6e5cc51d91eb8d43e81d0b7093292b5e144ac81445491d5f887d2cf4fe121f"},
+    {file = "pyspark-3.0.1.tar.gz", hash = "sha256:38b485d3634a86c9a2923c39c8f08f003fdd0e0a3d7f07114b2fb4392ce60479"},
 ]
 pytest = [
     {file = "pytest-3.2.2-py2.py3-none-any.whl", hash = "sha256:b84f554f8ddc23add65c411bf112b2d88e2489fd45f753b1cae5936358bdf314"},
