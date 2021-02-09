@@ -13,6 +13,7 @@ def with_something(df, something):
 def with_funny(word):
     def inner(df):
         return df.withColumn("funny", lit(word))
+
     return inner
 
 
@@ -22,13 +23,9 @@ def with_jacket(word, df):
 
 @curry
 def with_stuff1(arg1, arg2, df):
-    return df.withColumn(
-        "stuff1",
-        lit("{arg1} {arg2}".format(arg1=arg1, arg2=arg2))
-    )
+    return df.withColumn("stuff1", lit("{arg1} {arg2}".format(arg1=arg1, arg2=arg2)))
 
 
 @curry
 def with_stuff2(arg, df):
     return df.withColumn("stuff2", lit(arg))
-

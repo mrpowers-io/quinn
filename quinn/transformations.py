@@ -3,21 +3,29 @@ import pyspark.sql.functions as F
 
 def with_columns_renamed(fun):
     def _(df):
-        cols = list(map(
-            lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name)),
-            df.columns
-        ))
+        cols = list(
+            map(
+                lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name)),
+                df.columns,
+            )
+        )
         return df.select(*cols)
+
     return _
 
 
 def with_some_columns_renamed(fun, change_col_name):
     def _(df):
-        cols = list(map(
-            lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name)) if change_col_name(col_name) else F.col("`{0}`".format(col_name)),
-            df.columns
-        ))
+        cols = list(
+            map(
+                lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name))
+                if change_col_name(col_name)
+                else F.col("`{0}`".format(col_name)),
+                df.columns,
+            )
+        )
         return df.select(*cols)
+
     return _
 
 
@@ -36,8 +44,9 @@ def sort_columns(df, sort_order):
     elif sort_order == "desc":
         sorted_col_names = sorted(df.columns, reverse=True)
     else:
-        raise ValueError("['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
-            sort_order=sort_order
-        ))
+        raise ValueError(
+            "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
+                sort_order=sort_order
+            )
+        )
     return df.select(*sorted_col_names)
-

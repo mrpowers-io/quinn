@@ -5,9 +5,7 @@ from tests.conftest import auto_inject_fixtures
 import chispa
 
 
-@auto_inject_fixtures('spark')
-
-
+@auto_inject_fixtures("spark")
 def describe_column_to_list():
     def it_returns_a_list(spark):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
@@ -50,16 +48,23 @@ def describe_show_output_to_df():
         expected_data = [
             ("jose", "1", "nice person", "yoyo"),
             ("li", "2", "nice person", "yoyo"),
-            ("liz", "3", "nice person", "yoyo")
+            ("liz", "3", "nice person", "yoyo"),
         ]
-        expected_df = spark.createDataFrame(expected_data, ["name", "age", "stuff1", "stuff2"])
+        expected_df = spark.createDataFrame(
+            expected_data, ["name", "age", "stuff1", "stuff2"]
+        )
         chispa.assert_df_equality(expected_df, actual_df)
 
 
 def describe_print_athena_create_table():
     def it_prints_a_create_table_string_for_athena(spark, capsys):
-        source_df = spark.createDataFrame([("jets", "football", 45), ("nacional", "soccer", 10)], ["team","sport", "goals_for"])
+        source_df = spark.createDataFrame(
+            [("jets", "football", 45), ("nacional", "soccer", 10)],
+            ["team", "sport", "goals_for"],
+        )
         quinn.print_athena_create_table(source_df, "athena_table", "s3://mock")
         out, _ = capsys.readouterr()
-        assert out == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
-
+        assert (
+            out
+            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
+        )

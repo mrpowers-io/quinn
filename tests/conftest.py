@@ -22,15 +22,19 @@ def auto_inject_fixtures(*names):
 
 
 def test_spark_conf() -> SparkConf:
-    return SparkConf() \
-        .set('spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version', 2) \
-        .set('spark.speculation', False) \
-        .set("spark.sql.shuffle.partitions", "1") \
+    return (
+        SparkConf()
+        .set("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", 2)
+        .set("spark.speculation", False)
+        .set("spark.sql.shuffle.partitions", "1")
         .set("spark.ui.enabled", "false")
+    )
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def spark():
-    spark = SparkProvider.set_up_spark('Testing', 'local[*]', extra_dependencies=[], conf=test_spark_conf())
+    spark = SparkProvider.set_up_spark(
+        "Testing", "local[*]", extra_dependencies=[], conf=test_spark_conf()
+    )
     yield spark
     spark.stop()

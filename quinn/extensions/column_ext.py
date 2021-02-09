@@ -31,13 +31,12 @@ def nullBetween(self, lower, upper):
     return when(lower.isNull() & upper.isNull(), False).otherwise(
         when(self.isNull(), False).otherwise(
             when(lower.isNull() & upper.isNotNull() & (self <= upper), True).otherwise(
-                when(lower.isNotNull() & upper.isNull() & (self >= lower), True).otherwise(
-                    self.between(lower, upper)
-                )
+                when(
+                    lower.isNotNull() & upper.isNull() & (self >= lower), True
+                ).otherwise(self.between(lower, upper))
             )
         )
     )
-
 
 
 Column.isFalsy = isFalsy

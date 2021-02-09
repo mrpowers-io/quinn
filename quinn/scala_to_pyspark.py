@@ -2,7 +2,6 @@ import re
 
 
 class ScalaToPyspark:
-
     def __init__(self, scala_path):
         self.scala_path = scala_path
 
@@ -14,8 +13,18 @@ class ScalaToPyspark:
         result = list(filter(lambda l: not l.startswith("package"), result))
 
         # replace common import statements
-        result = ["from pyspark.sql.dataframe import DataFrame\n" if x.startswith("import org.apache.spark.sql.DataFrame") else x for x in result]
-        result = ["import pyspark.sql.functions as F\n" if x.startswith("import org.apache.spark.sql.functions") else x for x in result]
+        result = [
+            "from pyspark.sql.dataframe import DataFrame\n"
+            if x.startswith("import org.apache.spark.sql.DataFrame")
+            else x
+            for x in result
+        ]
+        result = [
+            "import pyspark.sql.functions as F\n"
+            if x.startswith("import org.apache.spark.sql.functions")
+            else x
+            for x in result
+        ]
 
         # remove scala import statements
         result = list(filter(lambda l: not l.startswith("import scala"), result))
@@ -28,7 +37,10 @@ class ScalaToPyspark:
         result = list(filter(lambda l: l.strip() != "}", result))
 
         # clean up the function definitions
-        result = [self.clean_function_definition(x) if x.lstrip().startswith("def") else x for x in result]
+        result = [
+            self.clean_function_definition(x) if x.lstrip().startswith("def") else x
+            for x in result
+        ]
 
         # prefix SQL functions with F
         result = [x.replace("col(", "F.col(") for x in result]
@@ -55,7 +67,7 @@ class ScalaToPyspark:
             return "{whitespace}def {method_name}({cleaned_args}):\n".format(
                 whitespace=whitespace,
                 method_name=method_name,
-                cleaned_args=cleaned_args
+                cleaned_args=cleaned_args,
             )
         return s
 
