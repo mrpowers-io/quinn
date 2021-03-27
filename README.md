@@ -77,18 +77,6 @@ spark.create_df(
 
 Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
 
-### DataFrame Extensions
-
-**transform()**
-
-```python
-source_df\
-    .transform(lambda df: with_greeting(df))\
-    .transform(lambda df: with_something(df, "crazy"))
-```
-
-Allows for multiple DataFrame transformations to be run and executed.
-
 ## Quinn Helper Functions
 
 ```python
