@@ -1,3 +1,6 @@
+import copy
+
+
 class DataFrameMissingColumnError(ValueError):
     """raise this when there's a DataFrame column error"""
 
@@ -20,11 +23,20 @@ def validate_presence_of_columns(df, required_col_names):
         raise DataFrameMissingColumnError(error_message)
 
 
-def validate_schema(df, required_schema):
-    all_struct_fields = df.schema
-    missing_struct_fields = [x for x in required_schema if x not in all_struct_fields]
+def validate_schema(df, required_schema, ignore_nullable=False):
+    _all_struct_fields = copy.deepcopy(df.schema)
+    _required_schema = copy.deepcopy(required_schema)
+
+    if ignore_nullable:
+        for x in _all_struct_fields:
+            x.nullable = None
+
+        for x in _required_schema:
+            x.nullable = None
+
+    missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
     error_message = "The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {all_struct_fields}".format(
-        missing_struct_fields=missing_struct_fields, all_struct_fields=all_struct_fields
+        missing_struct_fields=missing_struct_fields, all_struct_fields=_all_struct_fields
     )
     if missing_struct_fields:
         raise DataFrameMissingStructFieldError(error_message)
