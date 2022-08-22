@@ -1,15 +1,11 @@
 from functools import partial
-
 from cytoolz.functoolz import compose
 from pyspark.sql.functions import col
 
-from tests.conftest import auto_inject_fixtures
 from .dataframe_transformations import *
-
 import chispa
 
 
-@auto_inject_fixtures("spark")
 def test_verbose_code_without_transform(spark):
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])

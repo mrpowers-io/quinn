@@ -6,14 +6,11 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import *
 
 import quinn
-from quinn.extensions import *
-from tests.conftest import auto_inject_fixtures
 import chispa
 
 import datetime
 
 
-@auto_inject_fixtures("spark")
 def test_single_space(spark):
     df = spark.create_df(
         [

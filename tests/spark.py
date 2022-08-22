@@ -3,7 +3,7 @@ import os
 from typing import List, Optional
 
 from pyspark import SparkConf
-from pyspark.sql import SparkSession
+from quinn.extensions import SparkSession
 
 STANDALONE = "local[*]"
 
@@ -13,7 +13,7 @@ def quiet_py4j():
     logger.setLevel(logging.INFO)
 
 
-class SparkProvider:
+class TestSparkProvider:
     def __init__(
         self,
         app_name: str,

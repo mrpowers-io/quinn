@@ -1,11 +1,9 @@
 from pyspark.sql.types import IntegerType, StringType
 
 import quinn
-from tests.conftest import auto_inject_fixtures
 import chispa
 
 
-@auto_inject_fixtures("spark")
 def describe_column_to_list():
     def it_returns_a_list(spark):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]

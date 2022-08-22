@@ -2,13 +2,13 @@ import pytest
 from pyspark.sql.types import StructType, StructField, StringType
 
 import quinn
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
 import chispa
 
 from functools import reduce
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def describe_with_columns_renamed():
     def it_renames_spaces_to_underscores(spark):
         def spaces_to_underscores(s):

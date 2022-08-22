@@ -1,12 +1,8 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType, BooleanType, IntegerType
-from quinn.extensions import *
 import chispa
 
-from tests.conftest import auto_inject_fixtures
 
-
-@auto_inject_fixtures("spark")
 def test_is_falsy(spark):
     source_df = spark.create_df(
         [(True, False), (False, True), (None, True)],

@@ -3,22 +3,12 @@ from functools import partial
 import pytest
 from pyspark import SparkConf
 
-from quinn.spark import SparkProvider
+from tests.spark import TestSparkProvider
+import os
+import sys
 
-
-# FROM: https://hackebrot.github.io/pytest-tricks/fixtures_as_class_attributes/
-def _inject(cls, names):
-    @pytest.fixture(autouse=True)
-    def auto_injector_fixture(self, request):
-        for name in names:
-            setattr(self, name, request.getfixturevalue(name))
-
-    cls.__auto_injector_fixture = auto_injector_fixture
-    return cls
-
-
-def auto_inject_fixtures(*names):
-    return partial(_inject, names=names)
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 
 def test_spark_conf() -> SparkConf:
@@ -33,7 +23,7 @@ def test_spark_conf() -> SparkConf:
 
 @pytest.fixture(scope="session")
 def spark():
-    spark = SparkProvider.set_up_spark(
+    spark = TestSparkProvider.set_up_spark(
         "Testing", "local[*]", extra_dependencies=[], conf=test_spark_conf()
     )
     yield spark
