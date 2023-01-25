@@ -36,3 +36,14 @@ def show_output_to_df(show_output, spark):
         r = [i.strip() for i in row[1:-1].split("|")]
         pretty_data.append(tuple(r))
     return spark.createDataFrame(pretty_data, pretty_column_names)
+
+
+# same arguments as Python sorted function
+def reorder_columns_sorted(df, key=None, reverse=False, first_cols=None):
+    res = sorted(df.columns, key=key, reverse=reverse)
+    if first_cols:
+        for col in first_cols:
+            res.remove(col)
+        res = first_cols + res
+    return df.select(res)
+

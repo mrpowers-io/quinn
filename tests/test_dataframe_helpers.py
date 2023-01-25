@@ -1,4 +1,4 @@
-from pyspark.sql.types import IntegerType, StringType
+from pyspark.sql.types import IntegerType, StringType, StructType
 
 import quinn
 from tests.conftest import auto_inject_fixtures
@@ -68,3 +68,14 @@ def describe_print_athena_create_table():
             out
             == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
         )
+
+
+def describe_reorder_columns_sorted():
+    def reorder_columns_basic_example(spark):
+        data = [("jose", 1, "bb", "B"), ("li", 2, "bb", "B"), ("luisa", 3, "bb", "B")]
+        source_df = spark.createDataFrame(data, ["name", "age", "bb", "B"])
+        actual_df = quinn.reorder_columns_sorted(source_df, key=len, first_cols=["age"])
+        expected_data = [(1, "B", "bb", "jose"), (2, "B", "bb", "li"), (3, "B", "bb", "luisa")]
+        expected_df = spark.createDataFrame(expected_data, ["age", "B", "bb", "name"])
+        chispa.assert_df_equality(actual_df, expected_df)
+
