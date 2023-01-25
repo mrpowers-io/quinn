@@ -1,6 +1,5 @@
 from functools import partial
 
-from cytoolz.functoolz import compose
 from pyspark.sql.functions import col
 
 from tests.conftest import auto_inject_fixtures
@@ -107,34 +106,3 @@ def test_transform_with_functools_partial(spark):
     )
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
-
-def test_currying(spark):
-    data = [("jose", 1), ("li", 2), ("liz", 3)]
-    source_df = spark.createDataFrame(data, ["name", "age"])
-    pipeline = compose(with_stuff1("nice", "person"), with_stuff2("yoyo"))
-    actual_df = pipeline(source_df)
-    expected_data = [
-        ("jose", 1, "yoyo", "nice person"),
-        ("li", 2, "yoyo", "nice person"),
-        ("liz", 3, "yoyo", "nice person"),
-    ]
-    expected_df = spark.createDataFrame(
-        expected_data, ["name", "age", "stuff2", "stuff1"]
-    )
-    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
-
-
-def test_reversed_currying(spark):
-    data = [("jose", 1), ("li", 2), ("liz", 3)]
-    source_df = spark.createDataFrame(data, ["name", "age"])
-    pipeline = compose(*reversed([with_stuff1("nice", "person"), with_stuff2("yoyo")]))
-    actual_df = pipeline(source_df)
-    expected_data = [
-        ("jose", 1, "nice person", "yoyo"),
-        ("li", 2, "nice person", "yoyo"),
-        ("liz", 3, "nice person", "yoyo"),
-    ]
-    expected_df = spark.createDataFrame(
-        expected_data, ["name", "age", "stuff1", "stuff2"]
-    )
-    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)

@@ -9,13 +9,12 @@ homepage = "https://github.com/MrPowers/quinn/"
 keywords = ['apachespark', 'spark', 'pyspark']
 
 [tool.poetry.dependencies]
-python = ">2.7"
+python = ">=3.5"
 
 [tool.poetry.dev-dependencies]
 pyspark = ">2.0.0"
-cytoolz = "0.9.0.1"
 pytest = "3.2.2"
-chispa = "0.7.0"
+chispa = "0.9.2"
 pytest-describe = "^1.0.0"
 
 [build-system]
