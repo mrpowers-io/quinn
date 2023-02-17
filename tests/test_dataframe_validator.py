@@ -51,6 +51,17 @@ def describe_validate_schema():
         )
         quinn.validate_schema(source_df, required_schema)
 
+    def nullable_column_mismatches_are_ignored(spark):
+        data = [("jose", 1), ("li", 2), ("luisa", 3)]
+        source_df = spark.createDataFrame(data, ["name", "age"])
+        required_schema = StructType(
+            [
+                StructField("name", StringType(), True),
+                StructField("age", LongType(), False),
+            ]
+        )
+        quinn.validate_schema(source_df, required_schema, ignore_nullable=True)
+
 
 def describe_validate_absence_of_columns():
     def it_raises_when_a_unallowed_column_is_present(spark):
