@@ -1,6 +1,8 @@
 # Quinn
 
-![CI](https://github.com/MrPowers/quinn/workflows/CI/badge.svg?branch=master)
+![![image](https://github.com/MrPowers/quinn/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/ci.yml/badge.svg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/quinn)
+[![PyPI version](https://badge.fury.io/py/quinn.svg)](https://badge.fury.io/py/quinn)
 
 Pyspark helper methods to maximize developer productivity.
 
