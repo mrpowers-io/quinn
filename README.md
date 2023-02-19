@@ -79,18 +79,6 @@ spark.create_df(
 
 Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
 
-### DataFrame Extensions
-
-**transform()**
-
-```python
-source_df\
-    .transform(lambda df: with_greeting(df))\
-    .transform(lambda df: with_something(df, "crazy"))
-```
-
-Allows for multiple DataFrame transformations to be run and executed.
-
 ## Quinn Helper Functions
 
 ```python
@@ -169,28 +157,6 @@ actual_df = source_df.withColumn(
 ```
 
 Removes all non-word characters from a string (e.g. changes `"si%$#@!#$!@#mpsons"` to `"simpsons"`.
-
-**exists()**
-
-```python
-source_df.withColumn(
-    "any_num_greater_than_5",
-    quinn.exists(lambda n: n > 5)(col("nums"))
-)
-```
-
-`nums` contains lists of numbers and `exists()` returns `True` if any of the numbers in the list are greater than 5.  It's similar to the Python `any` function.
-
-**forall()**
-
-```python
-source_df.withColumn(
-    "all_nums_greater_than_3",
-    quinn.forall(lambda n: n > 3)(col("nums"))
-)
-```
-
-`nums` contains lists of numbers and `forall()` returns `True` if all of the numbers in the list are greater than 3.  It's similar to the Python `all` function.
 
 **multi_equals()**
 
