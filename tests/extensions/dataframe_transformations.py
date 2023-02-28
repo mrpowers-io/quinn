@@ -18,5 +18,3 @@ def with_funny(word):
 
 def with_jacket(word, df):
     return df.withColumn("jacket", lit(word))
-
-
