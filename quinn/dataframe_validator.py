@@ -36,7 +36,8 @@ def validate_schema(df, required_schema, ignore_nullable=False):
 
     missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
     error_message = "The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {all_struct_fields}".format(
-        missing_struct_fields=missing_struct_fields, all_struct_fields=_all_struct_fields
+        missing_struct_fields=missing_struct_fields,
+        all_struct_fields=_all_struct_fields,
     )
     if missing_struct_fields:
         raise DataFrameMissingStructFieldError(error_message)

@@ -105,4 +105,3 @@ def test_transform_with_functools_partial(spark):
         expected_data, ["name", "age", "greeting", "jacket"]
     )
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
-
