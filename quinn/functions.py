@@ -143,7 +143,7 @@ def explode_arrays(df, col_name):
     return df
 
 
-def flatten_maps(df, col_name, sep="_"):
+def flatten_maps(df, col_name, sep=":"):
     """
         This function appears to take a DataFrame df, a string column col_name, and a string separator sep, and returns a new DataFrame with the values in the map stored in col_name flattened into new columns.
 
