@@ -96,20 +96,83 @@ def array_choice(col):
 def regexp_extract_all(s, regexp):
     return None if s == None else re.findall(regexp, s)
 
+def get_complex_fields(df):
+    complex_fields = dict(
+        [
+            (field.name, field.dataType)
+            for field in df.schema.fields
+            if type(field.dataType) == ArrayType
+            or type(field.dataType) == StructType
+            or type(field.dataType) == MapType
+        ]
+    )
+    return complex_fields
 
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
+
+def flatten_structs(df, col_name, complex_fields, sep=":"):
+    expanded = [
+        col(col_name + "." + k).alias(col_name + sep + k)
+        for k in [n.name for n in complex_fields[col_name]]
+    ]
+    df = df.select("*", *expanded).drop(col_name)
+    return df
+
+def explode_arrays(df, col_name):
+    """
+    Explode an array column in a DataFrame.
+    This function takes a DataFrame df and a string col_name representing the name of an array column in df, and returns a new DataFrame with a row for each element in the array column. It first checks if the input column is indeed an array column using the isinstance function and ArrayType from the pyspark.sql.types module. If the input column is not an array column, it raises a ValueError. If the input column is an array column, it uses the withColumn method of df and the explode function from pyspark.sql.functions to explode the array column and create a new DataFrame.
+    Parameters
+    ----------
+    df: pyspark.sql.dataframe.DataFrame
+        The input DataFrame.
+    col_name: str
+        The name of the array column to explode.
+
+    Returns
+    -------
+    pyspark.sql.dataframe.DataFrame
+        A new DataFrame with a row for each element in the array column.
+    """
+    # Check if the input column is an array
+    if not isinstance(df.schema[col_name].dataType, ArrayType):
+        raise ValueError(f"Column {col_name} is not an array column.")
+
+    # Explode the array column
+    df = df.withColumn(col_name, explode_outer(col_name))
+
+    return df
+
+
+def flatten_maps(df, col_name, sep="_"):
+    """
+        This function appears to take a DataFrame df, a string column col_name, and a string separator sep, and returns a new DataFrame with the values in the map stored in col_name flattened into new columns.
+
+    Here's a breakdown of what the function does:
+
+    It extracts the distinct keys of the maps in col_name using the explode_outer and map_keys functions.
+    It creates a list of the extracted keys.
+    It creates a list of new columns for each key by using the getItem method on the col function and alias method. The new column names are the original column name concatenated with the separator and the key.
+    It creates a new DataFrame by selecting all the original columns except col_name, and adding the new key columns.
+    It returns the new DataFrame."""
+
+    keys_df = df.select(explode_outer(map_keys(col(col_name)))).distinct()
+    keys = list(map(lambda row: row[0], keys_df.collect()))
+    key_cols = list(
+        map(
+            lambda f: col(col_name).getItem(f).alias(str(col_name + sep + f)),
+            keys,
+        )
+    )
+    drop_column_list = [col_name]
+    df = df.select(
+        [col_name for col_name in df.columns if col_name not in drop_column_list]
+        + key_cols
+    )
+    return df
 
 
 def flatten_test(df, sep=":"):
-    """Returns a flattened dataframe.
-    .. versionadded:: x.X.X
-
-    Parameters
-    ----------
-    sep : str
-        Delimiter for flatted columns. Default `:`
-
+    """
     Notes
     -----
     Don`t use `.` as `sep`
@@ -251,65 +314,19 @@ def flatten_test(df, sep=":"):
     |-- name:middlename: string (nullable = true)
     |-- name:lastname: string (nullable = true)
     """
-    # compute Complex Fields (Arrays, Structs and Maptypes) in Schema
-    complex_fields = dict(
-        [
-            (field.name, field.dataType)
-            for field in df.schema.fields
-            if type(field.dataType) == ArrayType
-            or type(field.dataType) == StructType
-            or type(field.dataType) == MapType
-        ]
-    )
+
+    complex_fields = get_complex_fields(df)
 
     while len(complex_fields) != 0:
         col_name = list(complex_fields.keys())[0]
-        # print ("Processing :"+col_name+" Type : "+str(type(complex_fields[col_name])))
 
-        # if StructType then convert all sub element to columns.
-        # i.e. flatten structs
         if type(complex_fields[col_name]) == StructType:
-            expanded = [
-                col(col_name + "." + k).alias(col_name + sep + k)
-                for k in [n.name for n in complex_fields[col_name]]
-            ]
-            df = df.select("*", *expanded).drop(col_name)
-
-        # if ArrayType then add the Array Elements as Rows using the explode function
-        # i.e. explode Arrays
+            df = flatten_structs(df, col_name, complex_fields, sep)
         elif type(complex_fields[col_name]) == ArrayType:
-            df = df.withColumn(col_name, explode_outer(col_name))
-
-        # if MapType then convert all sub element to columns.
-        # i.e. flatten
+            df = explode_arrays(df, col_name)
         elif type(complex_fields[col_name]) == MapType:
-            keys_df = df.select(explode_outer(map_keys(col(col_name)))).distinct()
-            keys = list(map(lambda row: row[0], keys_df.collect()))
-            key_cols = list(
-                map(
-                    lambda f: col(col_name).getItem(f).alias(str(col_name + sep + f)),
-                    keys,
-                )
-            )
-            drop_column_list = [col_name]
-            df = df.select(
-                [
-                    col_name
-                    for col_name in df.columns
-                    if col_name not in drop_column_list
-                ]
-                + key_cols
-            )
+            df = flatten_maps(df, col_name, sep)
 
-        # recompute remaining Complex Fields in Schema
-        complex_fields = dict(
-            [
-                (field.name, field.dataType)
-                for field in df.schema.fields
-                if type(field.dataType) == ArrayType
-                or type(field.dataType) == StructType
-                or type(field.dataType) == MapType
-            ]
-        )
+        complex_fields = get_complex_fields(df)
 
-    return df
+    return df    
