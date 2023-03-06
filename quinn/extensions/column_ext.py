@@ -1,33 +1,34 @@
-from pyspark.sql.functions import when, lit, col, trim
+from typing import Any, List
 
 from pyspark.sql.column import Column
+from pyspark.sql.functions import lit, trim, when
 
 
-def isFalsy(self):
+def isFalsy(self: Column) -> Column:
     return when(self.isNull() | (self == lit(False)), True).otherwise(False)
 
 
-def isTruthy(self):
+def isTruthy(self: Column) -> Column:
     return ~(self.isFalsy())
 
 
-def isFalse(self):
+def isFalse(self: Column) -> Column:
     return self == False
 
 
-def isTrue(self):
+def isTrue(self: Column) -> Column:
     return self == True
 
 
-def isNullOrBlank(self):
+def isNullOrBlank(self: Column) -> Column:
     return (self.isNull()) | (trim(self) == "")
 
 
-def isNotIn(self, list):
+def isNotIn(self: Column, list: List[Any]) -> Column:
     return ~(self.isin(list))
 
 
-def nullBetween(self, lower, upper):
+def nullBetween(self: Column, lower: Column, upper: Column) -> Column:
     return when(lower.isNull() & upper.isNull(), False).otherwise(
         when(self.isNull(), False).otherwise(
             when(lower.isNull() & upper.isNotNull() & (self <= upper), True).otherwise(

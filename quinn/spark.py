@@ -15,18 +15,18 @@ def quiet_py4j():
 
 class SparkProvider:
     def __init__(
-        self,
+        self: "SparkProvider",
         app_name: str,
         conf: Optional[SparkConf] = None,
         extra_dependencies: Optional[List[str]] = None,
         extra_files: Optional[List[str]] = None,
-    ):
+    ) -> None:
         self.spark = self.set_up_spark(
             app_name, self.master, conf, extra_dependencies, extra_files
         )
 
     @property
-    def master(self) -> str:
+    def master(self: "SparkProvider") -> str:
         return os.getenv("SPARK_MASTER", STANDALONE)
 
     @staticmethod
@@ -58,7 +58,7 @@ class SparkProvider:
         return spark
 
     @staticmethod
-    def tear_down_spark(spark):
+    def tear_down_spark(spark: SparkSession) -> None:
         spark.stop()
         # To avoid Akka rebinding to the same port, since it doesn't unbind
         # immediately on shutdown

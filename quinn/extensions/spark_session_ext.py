@@ -1,5 +1,5 @@
-from pyspark.sql.types import StructType, StructField
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructField, StructType
 
 
 def create_df(self, rows_data, col_specs):
