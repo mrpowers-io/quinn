@@ -3,7 +3,7 @@ name: Flake8 check
 on:
   push:
     branches:
-    - main
+    - feat/add-flake8 
 
 jobs:
   build:
