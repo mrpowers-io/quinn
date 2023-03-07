@@ -1,6 +1,7 @@
 # Quinn
 
 ![![image](https://github.com/MrPowers/quinn/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/ci.yml/badge.svg)
+![![image](https://github.com/MrPowers/mack/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/flake8.yml/badge.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/quinn)
 [![PyPI version](https://badge.fury.io/py/quinn.svg)](https://badge.fury.io/py/quinn)
 
