@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.5
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.5
+        python-version: 3.9
     - name: flake8 Lint
       uses: py-actions/flake8@v2
       with:
