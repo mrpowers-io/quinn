@@ -1,8 +1,11 @@
+from typing import Callable
+
 import pyspark.sql.functions as F
+from pyspark.sql import DataFrame
 
 
-def with_columns_renamed(fun):
-    def _(df):
+def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], DataFrame]:
+    def _(df: DataFrame) -> DataFrame:
         cols = list(
             map(
                 lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name)),
@@ -14,7 +17,9 @@ def with_columns_renamed(fun):
     return _
 
 
-def with_some_columns_renamed(fun, change_col_name):
+def with_some_columns_renamed(
+    fun: Callable[[str], str], change_col_name: Callable[[str], str]
+) -> Callable[[DataFrame], DataFrame]:
     def _(df):
         cols = list(
             map(
@@ -29,15 +34,15 @@ def with_some_columns_renamed(fun, change_col_name):
     return _
 
 
-def snake_case_col_names(df):
+def snake_case_col_names(df: DataFrame) -> DataFrame:
     return with_columns_renamed(to_snake_case)(df)
 
 
-def to_snake_case(s):
+def to_snake_case(s: str) -> str:
     return s.lower().replace(" ", "_")
 
 
-def sort_columns(df, sort_order):
+def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
     sorted_col_names = None
     if sort_order == "asc":
         sorted_col_names = sorted(df.columns)

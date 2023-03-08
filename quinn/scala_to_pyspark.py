@@ -1,13 +1,14 @@
 import re
+from typing import List
 
 
 class ScalaToPyspark:
-    def __init__(self, scala_path):
+    def __init__(self: "ScalaToPyspark", scala_path: str) -> None:
         self.scala_path = scala_path
 
-    def lines(self):
-        text_file = open(self.scala_path, "r")
-        result = text_file.readlines()
+    def lines(self: "ScalaToPyspark") -> List[str]:
+        with open(self.scala_path, "r") as text_file:
+            result = text_file.readlines()
 
         # remove lines that start with package
         result = list(filter(lambda l: not l.startswith("package"), result))
@@ -54,10 +55,10 @@ class ScalaToPyspark:
 
         return result
 
-    def display(self):
+    def display(self: "ScalaToPyspark") -> str:
         print("".join(self.lines()))
 
-    def clean_function_definition(self, s):
+    def clean_function_definition(self: "ScalaToPyspark", s: str) -> str:
         m = re.search(r"(\s*)def (\w+).*\((.*)\)", s)
         if m:
             whitespace = m.group(1)
@@ -71,6 +72,6 @@ class ScalaToPyspark:
             )
         return s
 
-    def clean_args(self, args):
+    def clean_args(self: "ScalaToPyspark", args: str) -> str:
         unannoted_args_list = list(map(lambda a: a.split(": ")[0], args.split(", ")))
         return ", ".join(unannoted_args_list)

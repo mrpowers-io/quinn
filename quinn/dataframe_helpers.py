@@ -1,17 +1,26 @@
-def column_to_list(df, col_name):
+from typing import Any, Dict, List
+
+from pyspark.sql import DataFrame, SparkSession
+
+
+def column_to_list(df: DataFrame, col_name: str) -> List[Any]:
     return [x[col_name] for x in df.select(col_name).collect()]
 
 
-def two_columns_to_dictionary(df, key_col_name, value_col_name):
+def two_columns_to_dictionary(
+    df: DataFrame, key_col_name: str, value_col_name: str
+) -> Dict[str, Any]:
     k, v = key_col_name, value_col_name
     return {x[k]: x[v] for x in df.select(k, v).collect()}
 
 
-def to_list_of_dictionaries(df):
+def to_list_of_dictionaries(df: DataFrame) -> List[Dict[str, Any]]:
     return list(map(lambda r: r.asDict(), df.collect()))
 
 
-def print_athena_create_table(df, athena_table_name, s3location):
+def print_athena_create_table(
+    df: DataFrame, athena_table_name: str, s3location: str
+) -> None:
     fields = df.schema
 
     print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
@@ -26,7 +35,7 @@ def print_athena_create_table(df, athena_table_name, s3location):
     print(f"LOCATION '{s3location}'\n")
 
 
-def show_output_to_df(show_output, spark):
+def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
     l = show_output.split("\n")
     ugly_column_names = l[1]
     pretty_column_names = [i.strip() for i in ugly_column_names[1:-1].split("|")]
