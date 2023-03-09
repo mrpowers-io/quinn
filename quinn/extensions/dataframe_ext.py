@@ -7,4 +7,4 @@ def transform(self: DataFrame, f: Callable[[DataFrame], DataFrame]) -> DataFrame
     return f(self)
 
 
-DataFrame.transform = getattr(DataFrame, "transform", transform)
+DataFrame.transform = transform
