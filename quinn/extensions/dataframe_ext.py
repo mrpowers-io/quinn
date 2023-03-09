@@ -67,7 +67,11 @@ def _repr_column(column: T.StructField) -> str:
     return "".join(res)
 
 
+def print_schema_as_code(df: DataFrame) -> str:
+    return _repr_dtype(df.schema)
+
+
 DataFrame.transform = getattr(DataFrame, "transform", transform)
 DataFrame.printSchemaAsCode = getattr(
-    DataFrame, "printSchemaAsCode", _repr_dtype
+    DataFrame, "printSchemaAsCode", print_schema_as_code
 )
