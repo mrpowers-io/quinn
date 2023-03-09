@@ -9,7 +9,7 @@ Pyspark helper methods to maximize developer productivity.
 
 Quinn provides DataFrame validation functions, useful column functions / DataFrame transformations, and performant helper functions.
 
-![quinn](https://github.com/MrPowers/quinn/blob/master/quinn.png)
+![quinn](https://github.com/MrPowers/quinn/raw/master/quinn.png)
 
 ## Setup
 
