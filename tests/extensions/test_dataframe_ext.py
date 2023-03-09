@@ -1,11 +1,15 @@
 from functools import partial
 
-from pyspark.sql.functions import col
-
-from tests.conftest import auto_inject_fixtures
-from .dataframe_transformations import *
-
 import chispa
+from chispa.schema_comparer import assert_basic_schema_equality
+from pyspark.sql.dataframe import DataFrame
+from pyspark.sql.functions import col
+from pyspark.sql.types import *
+
+from quinn.extensions.dataframe_ext import _repr_dtype
+from tests.conftest import auto_inject_fixtures
+
+from .dataframe_transformations import *
 
 
 @auto_inject_fixtures("spark")
@@ -105,3 +109,27 @@ def test_transform_with_functools_partial(spark):
         expected_data, ["name", "age", "greeting", "jacket"]
     )
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
+
+
+def test_print_schema_as_code(spark):
+    fields = []
+    fields.append(StructField("simple_int", IntegerType()))
+    fields.append(StructField("decimal_with_nums", DecimalType(19, 8)))
+    fields.append(StructField("array", ArrayType(FloatType())))
+    fields.append(StructField("map", MapType(StringType(), ArrayType(DoubleType()))))
+    fields.append(
+        StructField(
+            "struct",
+            StructType(
+                [
+                    StructField("first", StringType()),
+                    StructField("second", TimestampType()),
+                ]
+            ),
+        )
+    )
+
+    schema = StructType(fields=fields)
+
+    assert_basic_schema_equality(schema, eval(_repr_dtype(schema)))
+    assert hasattr(DataFrame, "printSchemaAsCode")
