@@ -20,9 +20,18 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: 1.4.0
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v1
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run:
           poetry install --with mkdocs
+        if: steps.cache.outputs.cache-hit != 'true'
       - name: Setup GH
         run:
           git config user.name 'github-actions[bot]' && \
