@@ -33,8 +33,9 @@ jobs:
           poetry install --with mkdocs
         if: steps.cache.outputs.cache-hit != 'true'
       - name: Setup GH
-        run:
-          git config user.name 'github-actions[bot]' && \
+        run: |
+          sudo apt update && sudo apt install -y git
+          git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
       - name: Build and Deploy
         run:
