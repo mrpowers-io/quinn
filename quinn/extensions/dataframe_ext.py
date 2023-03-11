@@ -7,6 +7,6 @@ def _ext_function(self, f):
         category=DeprecationWarning,
         stacklevel=2
     )
-    return transform(self, f)
+    return f(self)
 
-DataFrame.transform = getattr(DataFrame, "transform", _ext_function)                                  
+DataFrame.transform = getattr(DataFrame, "transform", _ext_function)
