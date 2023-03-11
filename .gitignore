@@ -13,3 +13,20 @@ __pycache__/
 *.py[cod]
 
 .pytest_cache/
+
+# PyVenv
+.env
+.venv
+
+# Linters cache
+.mypy_cache
+.ruff_cache
+
+# MKDocs
+site
+
+# VSCode
+.vscode
+
+# Emacs
+.dir_locals.el
