@@ -39,4 +39,4 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
       - name: Build and Deploy
         run:
-          poetry run mkdocs gh-deploy
+          poetry run mkdocs gh-deploy --force
