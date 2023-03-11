@@ -4,12 +4,32 @@ from pyspark.sql import DataFrame, SparkSession
 
 
 def column_to_list(df: DataFrame, col_name: str) -> List[Any]:
+    """Collect column to list of values.
+
+    :param df: Input DataFrame
+    :type df: pyspark.sql.DataFrame
+    :param col_name: Column to collect
+    :type col_name: str
+    :return: List of values
+    :rtype: List[Any]
+    """
     return [x[col_name] for x in df.select(col_name).collect()]
 
 
 def two_columns_to_dictionary(
     df: DataFrame, key_col_name: str, value_col_name: str
 ) -> Dict[str, Any]:
+    """Collect two columns as dictionary when first column is key and second is value.
+
+    :param df: Input DataFrame
+    :type df: pyspark.sql.DataFrame
+    :param key_col_name: Key-column
+    :type key_col_name: str
+    :param value_col_name: Value-column
+    :type value_col_name: str
+    :return: Dictionary with values
+    :rtype: Dict[str, Any]
+    """
     k, v = key_col_name, value_col_name
     return {x[k]: x[v] for x in df.select(k, v).collect()}
 

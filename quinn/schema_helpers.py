@@ -4,15 +4,10 @@ from pyspark.sql import types as T
 def print_schema_as_code(dtype: T.DataType) -> str:
     """Represent DataType (including StructType) as valid Python code.
 
-    Parameters
-    ----------
-    dtype: pyspark.sql.types.DataType
-        The input DataType or Schema object
-
-    Returns
-    -------
-    str
-        A valid python code which generate the same schema.
+    :param dtype: The input DataType or Schema object
+    :type dtype: pyspark.sql.types.DataType
+    :return: A valid python code which generate the same schema.
+    :rtype: str
     """
     res = []
     if isinstance(dtype, T.StructType):
