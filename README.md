@@ -62,7 +62,6 @@ actual_df = source_df.withColumn(
 )
 ```
 
-
 Replaces all multispaces with single spaces (e.g. changes `"this has   some"` to `"this has some"`.
 
 **remove_all_whitespace()**
@@ -109,6 +108,94 @@ source_df.withColumn(
 
 `multi_equals` returns true if `s1` and `s2` are both equal to `"cat"`.
 
+**approx_equal()**
+
+This function takes 3 arguments which are 2 Pyspark DataFrames and one integer values as threshold, and returns the Boolean column which tells if the columns are equal in the threshold.
+
+```
+let the columns be
+col1 = [1.2, 2.5, 3.1, 4.0, 5.5]
+col2 = [1.3, 2.3, 3.0, 3.9, 5.6]
+threshold = 0.2
+
+result = approx_equal(col("col1"), col("col2"), threshold)
+result.show()
+
++-----+
+|value|
++-----+
+| true|
+|false|
+| true|
+| true|
+| true|
++-----+
+```
+
+**array_choice()**
+
+This function takes a Column as a parameter and returns a PySpark column that contains a random value from the input column parameter
+
+```
+df = spark.createDataFrame([(1,), (2,), (3,), (4,), (5,)], ["values"])
+result = df.select(array_choice(col("values")))
+
+The output is :=
++--------------+
+|array_choice()|
++--------------+
+|             2|
++--------------+
+
+```
+
+**regexp_extract_all()**
+
+The regexp_extract_all takes 2 parameters String `s` and `regexp` which is a regular expression. This function finds all the matches for the string which satisfies the regular expression.
+
+```
+print(regexp_extract_all("this is a example text message for testing application",r"\b\w*a\w*\b"))
+
+The output is :=
+['a', 'example', 'message', 'application']
+
+```
+
+Where `r"\b\w*a\w*\b"` pattern checks for words containing letter `a`
+
+**week_start_date()**
+
+It takes 2 parameters, column and week_start_day. It returns a Spark Dataframe column which contains the start date of the week. By default the week_start_day is set to "Sun".
+
+For input `["2023-03-05", "2023-03-06", "2023-03-07", "2023-03-08"]` the Output is
+
+```
+result = df.select("date", week_start_date(col("date"), "Sun"))
+result.show()
++----------+----------------+
+|      date|week_start_date |
++----------+----------------+
+|2023-03-05|      2023-03-05|
+|2023-03-07|      2023-03-05|
+|2023-03-08|      2023-03-05|
++----------+----------------+
+```
+
+**week_end_date()**
+
+It also takes 2 Paramters as Column and week_end_day, and returns the dateframe column which contains the end date of the week. By default the week_end_day is set to "sat"
+
+```
++---------+-------------+
+      date|week_end_date|
++---------+-------------+
+2023-03-05|   2023-03-05|
+2023-03-07|   2023-03-12|
+2023-03-08|   2023-03-12|
++---------+-------------+
+
+```
+
 ### Transformations
 
 **snake_case_col_names()**
@@ -117,7 +204,7 @@ source_df.withColumn(
 quinn.snake_case_col_names(source_df)
 ```
 
-Converts all the column names in a DataFrame to snake_case.  It's annoying to write SQL queries when columns aren't snake cased.
+Converts all the column names in a DataFrame to snake_case. It's annoying to write SQL queries when columns aren't snake cased.
 
 **sort_columns()**
 
@@ -125,7 +212,7 @@ Converts all the column names in a DataFrame to snake_case.  It's annoying to wr
 quinn.sort_columns(source_df, "asc")
 ```
 
-Sorts the DataFrame columns in alphabetical order.  Wide DataFrames are easier to navigate when they're sorted alphabetically.
+Sorts the DataFrame columns in alphabetical order. Wide DataFrames are easier to navigate when they're sorted alphabetically.
 
 ### DataFrame Helpers
 
@@ -143,7 +230,7 @@ Converts a column in a DataFrame to a list of values.
 quinn.two_columns_to_dictionary(source_df, "name", "age")
 ```
 
-Converts two columns of a DataFrame into a dictionary.  In this example, `name` is the key and `age` is the value.
+Converts two columns of a DataFrame into a dictionary. In this example, `name` is the key and `age` is the value.
 
 **to_list_of_dictionaries()**
 
@@ -212,7 +299,7 @@ Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
 ```
 
-Returns `True` if `age` is between `lower_age` and `upper_age`.  If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`.  If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
+Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ## Contributing
 
