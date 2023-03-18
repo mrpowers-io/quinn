@@ -1,17 +1,7 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
-
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 import quinn
-from quinn import append_if_schema_identical
-
 from tests.conftest import auto_inject_fixtures
 
-
-# spark = SparkSession.builder \
-#     .appName('so') \
-#     .getOrCreate()
-#
-# sc = spark.sparkContext
 
 @auto_inject_fixtures("spark")
 def test_append_if_schema_identical(spark):
