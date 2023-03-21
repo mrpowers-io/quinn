@@ -96,237 +96,247 @@ def array_choice(col):
 def regexp_extract_all(s, regexp):
     return None if s == None else re.findall(regexp, s)
 
-def get_complex_fields(df):
-    complex_fields = dict(
-        [
-            (field.name, field.dataType)
-            for field in df.schema.fields
-            if type(field.dataType) == ArrayType
-            or type(field.dataType) == StructType
-            or type(field.dataType) == MapType
-        ]
-    )
+
+from pyspark.sql.types import StructType, ArrayType, MapType
+from pyspark.sql import DataFrame
+from pyspark.sql import functions as F
+import re
+from typing import Dict, List
+from pathlib import Path
+
+def sanitize_column_name(name: str, replace_char: str = "_") -> str:
+    """
+    Sanitizes column names by replacing special characters with the specified character.
+    
+    Args:
+        name (str): The original column name.
+        replace_char (str, optional): The character to replace special characters with. Defaults to '_'.
+    
+    Returns:
+        str: The sanitized column name.
+    """
+    return re.sub(r"[^a-zA-Z0-9_]", replace_char, name)
+
+def get_complex_fields(df: DataFrame) -> Dict[str, object]:
+    """
+    Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
+    
+    Args:
+        df (DataFrame): The input PySpark DataFrame.
+    
+    Returns:
+        Dict[str, object]: A dictionary with complex field names as keys and their respective data types as values.
+    """
+    complex_fields = {
+        field.name: field.dataType
+        for field in df.schema.fields
+        if isinstance(field.dataType, (ArrayType, StructType, MapType))
+    }
     return complex_fields
 
-
-def flatten_structs(df, col_name, complex_fields, sep=":"):
+def flatten_structs(df: DataFrame, col_name: str, complex_fields: dict, sep: str = ":", replace_char: str = "_") -> DataFrame:
+    """
+    Flattens the specified StructType column in the input DataFrame and returns a new DataFrame with the flattened columns.
+    
+    Args:
+        df (DataFrame): The input PySpark DataFrame.
+        col_name (str): The column name of the StructType to be flattened.
+        complex_fields (dict): A dictionary of complex field names and their data types.
+        sep (str, optional): The separator to use in the resulting flattened column names. Defaults to ':'.
+        replace_char (str, optional): The character to replace special characters with in column names. Defaults to '_'.
+    
+    Returns:
+        DataFrame: The DataFrame with the flattened StructType column.
+    """
     expanded = [
-        col(col_name + "." + k).alias(col_name + sep + k)
+        F.col(col_name + "." + k).alias(sanitize_column_name(col_name + sep + k, replace_char))
         for k in [n.name for n in complex_fields[col_name]]
     ]
     df = df.select("*", *expanded).drop(col_name)
     return df
 
-def explode_arrays(df, col_name):
+def explode_arrays(df: DataFrame, col_name: str) -> DataFrame:
     """
-    Explode an array column in a DataFrame.
-    This function takes a DataFrame df and a string col_name representing the name of an array column in df, and returns a new DataFrame with a row for each element in the array column. It first checks if the input column is indeed an array column using the isinstance function and ArrayType from the pyspark.sql.types module. If the input column is not an array column, it raises a ValueError. If the input column is an array column, it uses the withColumn method of df and the explode function from pyspark.sql.functions to explode the array column and create a new DataFrame.
-    Parameters
-    ----------
-    df: pyspark.sql.dataframe.DataFrame
-        The input DataFrame.
-    col_name: str
-        The name of the array column to explode.
-
-    Returns
-    -------
-    pyspark.sql.dataframe.DataFrame
-        A new DataFrame with a row for each element in the array column.
+    Explodes the specified ArrayType column in the input DataFrame and returns a new DataFrame with the exploded column.
+    
+    Args:
+        df (DataFrame): The input PySpark DataFrame.
+        col_name (str): The column name of the ArrayType to be exploded.
+    
+    Returns:
+        DataFrame: The DataFrame with the exploded ArrayType column.
+    
+    Raises:
+        ValueError: If the specified column is not an ArrayType column.
     """
-    # Check if the input column is an array
     if not isinstance(df.schema[col_name].dataType, ArrayType):
         raise ValueError(f"Column {col_name} is not an array column.")
-
-    # Explode the array column
-    df = df.withColumn(col_name, explode_outer(col_name))
-
+    df = df.withColumn(col_name, F.explode_outer(col_name))
     return df
 
-
-def flatten_maps(df, col_name, sep=":"):
+def flatten_maps(df: DataFrame, col_name: str, sep: str = ":", replace_char: str = "_") -> DataFrame:
     """
-        This function appears to take a DataFrame df, a string column col_name, and a string separator sep, and returns a new DataFrame with the values in the map stored in col_name flattened into new columns.
-
-    Here's a breakdown of what the function does:
-
-    It extracts the distinct keys of the maps in col_name using the explode_outer and map_keys functions.
-    It creates a list of the extracted keys.
-    It creates a list of new columns for each key by using the getItem method on the col function and alias method. The new column names are the original column name concatenated with the separator and the key.
-    It creates a new DataFrame by selecting all the original columns except col_name, and adding the new key columns.
-    It returns the new DataFrame."""
-
-    keys_df = df.select(explode_outer(map_keys(col(col_name)))).distinct()
+    Flattens the specified MapType column in the input DataFrame and returns a new DataFrame with the flattened columns.
+    
+    Args:
+        df (DataFrame): The input PySpark DataFrame.
+        col_name (str): The column name of the MapType to be flattened.
+        sep (str, optional): The separator to use in the resulting flattened column names. Defaults to ':'.
+    
+    Returns:
+        DataFrame: The DataFrame with the flattened MapType column.
+    """
+    keys_df = df.select(F.explode_outer(F.map_keys(F.col(col_name)))).distinct()
     keys = list(map(lambda row: row[0], keys_df.collect()))
     key_cols = list(
         map(
-            lambda f: col(col_name).getItem(f).alias(str(col_name + sep + f)),
+            lambda f: F.col(col_name).getItem(f).alias(sanitize_column_name(col_name + sep + f, replace_char)),
             keys,
         )
     )
     drop_column_list = [col_name]
     df = df.select(
-        [col_name for col_name in df.columns if col_name not in drop_column_list]
+        [
+            col_to_keep for col_to_keep in df.columns if col_to_keep not in drop_column_list
+        ]
         + key_cols
     )
     return df
 
-
-def flatten_test(df, sep=":"):
+def flatten_dataframe(
+    df: DataFrame,
+    sep: str = ":",
+    sort_columns: bool = True,
+    replace_char: str = "_"
+) -> DataFrame:
     """
-    Notes
-    -----
-    Don`t use `.` as `sep`
-    It won't work on nested data frames with more than one level.
-    And you will have to use `columns.name`.
+    Flattens all complex data types (StructType, ArrayType, and MapType) in the input DataFrame and returns a
+    new DataFrame with the flattened columns.
+    
+    Args:
+        df (DataFrame): The input PySpark DataFrame.
+        sep (str, optional): The separator to use in the resulting flattened column names. Defaults to ':'.
+        sort_columns (bool, optional): Sort the columns alphabetically. Defaults to False.
+        replace_char (str, optional): The character to replace special characters with in column names. Defaults to '_'.
+        
+    Returns:
+        DataFrame: The DataFrame with all complex data types flattened.
 
-    Flattening Map Types will have to find every key in the column.
-    This can be slow.
+    Note:
+        This function assumes the input DataFrame has a consistent schema across all rows. If you have files with
+        different schemas, use the read_and_flatten_nested_files function instead.
 
-    Examples
-    --------
-
-    data_mixed = [
-        {
-            "state": "Florida",
-            "shortname": "FL",
-            "info": {"governor": "Rick Scott"},
-            "counties": [
-                {"name": "Dade", "population": 12345},
-                {"name": "Broward", "population": 40000},
-                {"name": "Palm Beach", "population": 60000},
-            ],
-        },
-        {
-            "state": "Ohio",
-            "shortname": "OH",
-            "info": {"governor": "John Kasich"},
-            "counties": [
-                {"name": "Summit", "population": 1234},
-                {"name": "Cuyahoga", "population": 1337},
-            ],
-        },
-    ]
-
-    data_mixed = spark.createDataFrame(data=data_mixed)
-
-    data_mixed.printSchema()
-
-    root
-    |-- counties: array (nullable = true)
-    |    |-- element: map (containsNull = true)
-    |    |    |-- key: string
-    |    |    |-- value: string (valueContainsNull = true)
-    |-- info: map (nullable = true)
-    |    |-- key: string
-    |    |-- value: string (valueContainsNull = true)
-    |-- shortname: string (nullable = true)
-    |-- state: string (nullable = true)
-
-
-    data_mixed_flat = flatten_test(df, sep=":")
-    data_mixed_flat.printSchema()
-    root
-    |-- shortname: string (nullable = true)
-    |-- state: string (nullable = true)
-    |-- counties:name: string (nullable = true)
-    |-- counties:population: string (nullable = true)
-    |-- info:governor: string (nullable = true)
-
-
-
-
-    data = [
-        {
-            "id": 1,
-            "name": "Cole Volk",
-            "fitness": {"height": 130, "weight": 60},
-        },
-        {"name": "Mark Reg", "fitness": {"height": 130, "weight": 60}},
-        {
-            "id": 2,
-            "name": "Faye Raker",
-            "fitness": {"height": 130, "weight": 60},
-        },
-    ]
-
-
-    df = spark.createDataFrame(data=data)
-
-    df.printSchema()
-
-    root
-    |-- fitness: map (nullable = true)
-    |    |-- key: string
-    |    |-- value: long (valueContainsNull = true)
-    |-- id: long (nullable = true)
-    |-- name: string (nullable = true)
-
-    df_flat = flatten_test(df, sep=":")
-
-    df_flat.printSchema()
-
-    root
-    |-- id: long (nullable = true)
-    |-- name: string (nullable = true)
-    |-- fitness:height: long (nullable = true)
-    |-- fitness:weight: long (nullable = true)
-
-    data_struct = [
-            (("James",None,"Smith"),"OH","M"),
-            (("Anna","Rose",""),"NY","F"),
-            (("Julia","","Williams"),"OH","F"),
-            (("Maria","Anne","Jones"),"NY","M"),
-            (("Jen","Mary","Brown"),"NY","M"),
-            (("Mike","Mary","Williams"),"OH","M")
-            ]
-
-
-    schema = StructType([
-        StructField('name', StructType([
-            StructField('firstname', StringType(), True),
-            StructField('middlename', StringType(), True),
-            StructField('lastname', StringType(), True)
-            ])),
-        StructField('state', StringType(), True),
-        StructField('gender', StringType(), True)
+    Example:
+    >>> data = [
+            (
+                1,
+                ("Alice", 25),
+                {"A": 100, "B": 200},
+                ["apple", "banana"],
+                {"key": {"nested_key": 10}},
+                {"A#": 1000, "B@": 2000},
+            ),
+            (
+                2,
+                ("Bob", 30),
+                {"A": 150, "B": 250},
+                ["orange", "grape"],
+                {"key": {"nested_key": 20}},
+                {"A#": 1500, "B@": 2500},
+            ),
+        ]
+    >>> schema = StructType([
+            StructField("id", IntegerType(), True),
+            StructField("name_age", StructType([
+                StructField("name", StringType(), True),
+                StructField("age", IntegerType(), True)
+            ]), True),
+            StructField("scores", MapType(StringType(), IntegerType()), True),
+            StructField("fruits", ArrayType(StringType()), True),
+            StructField("nested_key_map", MapType(StringType(), MapType(StringType(), IntegerType())), True),
+            StructField("special_chars_map", MapType(StringType(), IntegerType()), True),
         ])
-
-    df_struct = spark.createDataFrame(data = data_struct, schema = schema)
-
-    df_struct.printSchema()
-
-    root
-    |-- name: struct (nullable = true)
-    |    |-- firstname: string (nullable = true)
-    |    |-- middlename: string (nullable = true)
-    |    |-- lastname: string (nullable = true)
-    |-- state: string (nullable = true)
-    |-- gender: string (nullable = true)
-
-    df_struct_flat = flatten_test(df_struct, sep=":")
-
-    df_struct_flat.printSchema()
-
-    root
-    |-- state: string (nullable = true)
-    |-- gender: string (nullable = true)
-    |-- name:firstname: string (nullable = true)
-    |-- name:middlename: string (nullable = true)
-    |-- name:lastname: string (nullable = true)
+    >>> df = spark.createDataFrame(data, schema)
+    >>> flattened_df = flatten_dataframe(df)
+    >>> flattened_df.show()
+    >>> flattened_df_with_hyphen = flatten_dataframe(df, replace_char="-")
+    >>> flattened_df_with_hyphen.show()
     """
-
     complex_fields = get_complex_fields(df)
 
     while len(complex_fields) != 0:
         col_name = list(complex_fields.keys())[0]
 
-        if type(complex_fields[col_name]) == StructType:
-            df = flatten_structs(df, col_name, complex_fields, sep)
-        elif type(complex_fields[col_name]) == ArrayType:
+        if isinstance(complex_fields[col_name], StructType):
+            df = flatten_structs(df, col_name, complex_fields, sep, replace_char)
+        elif isinstance(complex_fields[col_name], ArrayType):
             df = explode_arrays(df, col_name)
-        elif type(complex_fields[col_name]) == MapType:
-            df = flatten_maps(df, col_name, sep)
+        elif isinstance(complex_fields[col_name], MapType):
+            df = flatten_maps(df, col_name, sep, replace_char)
 
         complex_fields = get_complex_fields(df)
+        
+    if sort_columns:
+        df = df.select(sorted(df.columns))
+        
+    return df
 
-    return df    
+
+def read_and_flatten_nested_files(
+    data_directory: str,
+    file_format: str = "json",
+    sep: str = ":",
+    sort_columns: bool = True,
+    replace_char: str = "_",
+    multiline: bool = False,
+    allow_missing_columns: bool = False
+) -> DataFrame:
+    """
+    Reads nested data files (JSON, Parquet, or Avro) in the given directory, processes each nested structure with
+    flatten_dataframe, and returns a flattened DataFrame.
+
+    Args:
+        data_directory (str): The directory path containing data files.
+        file_format (str, optional): The file format of the data files. Can be one of ["json", "parquet", "avro", "json_multiline"]. Defaults to "json".
+        sep (str, optional): The separator to use in the resulting flattened column names. Defaults to ':'.
+        sort_columns (bool, optional): Sort the columns alphabetically. Defaults to True.
+        replace_char (str, optional): The character to replace special characters with in column names. Defaults to '_'.
+        multiline (bool, optional): If True, file_format is "json" and the JSON files have multiline records. Defaults to False.
+        allow_missing_columns (bool, optional): If True, allows missing columns when using unionByName. Defaults to False.
+
+    Returns:
+        DataFrame: The combined flattened DataFrame.
+    """
+    supported_formats = ["json", "parquet", "avro", "json_multiline"]
+    file_format = file_format.lower()
+
+    if file_format not in supported_formats:
+        raise ValueError(f"Unsupported file format. Supported formats are {supported_formats}")
+
+    # Get a list of files in the directory
+    data_files = list(Path(data_directory).rglob(f"*.{file_format}"))
+
+    # Read and flatten each file separately
+    flattened_dfs = []
+    for file in data_files:
+        # Read the data file based on the file format
+        if file_format == "json":
+            df = spark.read.json(str(file), multiLine=multiline)
+        elif file_format == "parquet":
+            df = spark.read.parquet(str(file))
+        elif file_format == "avro":
+            df = spark.read.format("avro").load(str(file))
+
+        # Process the nested data structure by applying the flatten_dataframe function with the provided parameters
+        flattened_df = flatten_dataframe(df, sep=sep, sort_columns=sort_columns, replace_char=replace_char)
+        flattened_dfs.append(flattened_df)
+
+    # Combine the flattened DataFrames using unionByName
+    combined_df = flattened_dfs[0]
+    for df in flattened_dfs[1:]:
+        combined_df = combined_df.unionByName(df, allowMissingColumns=allow_missing_columns)
+
+    if sort_columns:
+        combined_df = combined_df.select(sorted(combined_df.columns))
+
+    return combined_df
