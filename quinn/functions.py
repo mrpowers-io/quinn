@@ -143,10 +143,10 @@ def flatten_struct(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
     """
     struct_type = get_complex_fields(df)[col_name]
     expanded = [
-        F.col(col_name + "." + k).alias(col_name + sep + k)
+        F.col(f"`{col_name}`.`{k}`").alias(col_name + sep + k)
         for k in [n.name for n in struct_type.fields]
     ]
-    return df.select("*", *expanded).drop(col_name)
+    return df.select("*", *expanded).drop(F.col(f"`{col_name}`"))
 
 def explode_array(df: DataFrame, col_name: str) -> DataFrame:
     """
@@ -159,7 +159,7 @@ def explode_array(df: DataFrame, col_name: str) -> DataFrame:
     :return: The DataFrame with the exploded ArrayType column.
     :rtype: DataFrame
     """
-    return df.select("*", F.explode_outer(F.col(col_name)).alias(col_name)).drop(col_name)
+    return df.select("*", F.explode_outer(F.col(f"`{col_name}`")).alias(col_name)).drop(col_name)
 
 def flatten_map(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
     """
@@ -174,10 +174,10 @@ def flatten_map(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
     :return: The DataFrame with the flattened MapType column.
     :rtype: DataFrame
     """
-    keys_df = df.select(F.explode_outer(F.map_keys(F.col(col_name)))).distinct()
+    keys_df = df.select(F.explode_outer(F.map_keys(F.col(f"`{col_name}`")))).distinct()
     keys = [row[0] for row in keys_df.collect()]
-    key_cols = [F.col(col_name).getItem(k).alias(col_name + sep + k) for k in keys]
-    return df.select([col for col in df.columns if col != col_name] + key_cols)
+    key_cols = [F.col(f"`{col_name}`").getItem(k).alias(col_name + sep + k) for k in keys]
+    return df.select([F.col(f"`{col}`") for col in df.columns if col != col_name] + key_cols)
 
 def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sanitized_columns: bool = False) -> DataFrame:
     """
