@@ -328,7 +328,7 @@ def test_regexp_extract_all(spark):
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
 
 
-def test_flatten_structs():
+def test_flatten_structs(spark):
     data = [
         (1, ("name1", "address1", 20)),
         (2, ("name2", "address2", 30)),
@@ -367,12 +367,12 @@ def test_flatten_structs():
     ]
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    flattened_df = flatten_structs(df, "details", complex_fields)
+    flattened_df = flatten_struct(df, "details")
     assert flattened_df.schema == expected_schema
     assert flattened_df.collect() == expected_df.collect()
 
 
-def test_flatten_maps():
+def test_flatten_maps(spark):
     data = [
         (1, {"name": "Alice", "age": 25}),
         (2, {"name": "Bob", "age": 30}),
@@ -399,7 +399,7 @@ def test_flatten_maps():
     ]
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    flattened_df = flatten_maps(df, "details")
+    flattened_df = flatten_map(df, "details")
     assert flattened_df.schema == expected_schema
     assert flattened_df.collect() == expected_df.collect()    
     
@@ -408,7 +408,7 @@ def test_flatten_maps():
 
     
     
-def test_flatten_test(spark_session):
+def test_flatten_dataframe(spark):
 
     # Define input data
     data = [
@@ -467,7 +467,7 @@ def test_flatten_test(spark_session):
             ),
         ]
     )
-    df = spark_session.createDataFrame(data, schema)
+    df = spark.createDataFrame(data, schema)
 
     # Define expected output
     expected_data = [
@@ -487,10 +487,10 @@ def test_flatten_test(spark_session):
             StructField("phone_numbers_number", StringType(), True),
         ]
     )
-    expected_df = spark_session.createDataFrame(expected_data, expected_schema)
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     # Apply function to input data
-    result_df = flatten_test(df)
+    result_df = flatten_dataframe(df)
 
     # Check if result matches expected output
     assert result_df.collect() == expected_df.collect()
