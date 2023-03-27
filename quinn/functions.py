@@ -196,7 +196,7 @@ def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sa
     :rtype: DataFrame
 
     .. note:: This function assumes the input DataFrame has a consistent schema across all rows. If you have files with
-        different schemas, use the read_and_flatten_nested_files function instead.
+        different schemas, process each separately instead.
 
     .. example:: Example usage:
 
