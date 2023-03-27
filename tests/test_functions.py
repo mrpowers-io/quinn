@@ -328,7 +328,7 @@ def test_regexp_extract_all(spark):
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
 
 
-def test_flatten_structs(spark):
+def test_flatten_struct(spark):
     data = [
         (1, ("name1", "address1", 20)),
         (2, ("name2", "address2", 30)),
@@ -372,7 +372,7 @@ def test_flatten_structs(spark):
     assert flattened_df.collect() == expected_df.collect()
 
 
-def test_flatten_maps(spark):
+def test_flatten_map(spark):
     data = [
         (1, {"name": "Alice", "age": 25}),
         (2, {"name": "Bob", "age": 30}),
@@ -388,8 +388,8 @@ def test_flatten_maps(spark):
     expected_schema = StructType(
         [
             StructField("id", IntegerType(), True),
-            StructField("details_name", StringType(), True),
-            StructField("details_age", StringType(), True),
+            StructField("details:name", StringType(), True),
+            StructField("details:age", StringType(), True),
         ]
     )
     expected_data = [
@@ -479,12 +479,12 @@ def test_flatten_dataframe(spark):
         [
             StructField("id", IntegerType(), True),
             StructField("name", StringType(), True),
-            StructField("details_age", IntegerType(), True),
-            StructField("details_gender", StringType(), True),
-            StructField("details_address_city", StringType(), True),
-            StructField("details_address_state", StringType(), True),
-            StructField("phone_numbers_type", StringType(), True),
-            StructField("phone_numbers_number", StringType(), True),
+            StructField("details:age", IntegerType(), True),
+            StructField("details:gender", StringType(), True),
+            StructField("details:address:city", StringType(), True),
+            StructField("details:address:state", StringType(), True),
+            StructField("phone:numbers:type", StringType(), True),
+            StructField("phone:numbers:number", StringType(), True),
         ]
     )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
