@@ -113,7 +113,7 @@ def sanitize_column_name(name: str, replace_char: str = "_") -> str:
     """
     return re.sub(r"[^a-zA-Z0-9_]", replace_char, name)
 
-def get_complex_fields(df: DataFrame) -> Dict[str, object]:
+def _get_complex_fields(df: DataFrame) -> Dict[str, object]:
     """
     Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
 
@@ -141,7 +141,7 @@ def flatten_struct(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
     :return: The DataFrame with the flattened StructType column.
     :rtype: List[Column]
     """
-    struct_type = get_complex_fields(df)[col_name]
+    struct_type = _get_complex_fields(df)[col_name]
     expanded = [
         F.col(f"`{col_name}`.`{k}`").alias(col_name + sep + k)
         for k in [n.name for n in struct_type.fields]
@@ -225,7 +225,7 @@ def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sa
         >>> flattened_df_with_hyphen = flatten_dataframe(df, replace_char="-")
         >>> flattened_df_with_hyphen.show()
     """
-    complex_fields = get_complex_fields(df)
+    complex_fields = _get_complex_fields(df)
 
     while len(complex_fields) != 0:
         col_name = list(complex_fields.keys())[0]
@@ -239,7 +239,7 @@ def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sa
         elif isinstance(complex_fields[col_name], MapType):
             df = flatten_map(df, col_name, sep)
 
-        complex_fields = get_complex_fields(df)
+        complex_fields = _get_complex_fields(df)
 
     # Sanitize column names with the specified replace_char
     if sanitized_columns:
