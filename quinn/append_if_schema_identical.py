@@ -1,5 +1,4 @@
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
+from pyspark.sql import DataFrame
 
 
 class SchemaMismatchError(ValueError):
