@@ -26,10 +26,13 @@ def append_if_schema_identical(source_df: DataFrame, target_df: DataFrame) -> Da
     unmatched_cols = [col for col in source_schema_list if col not in target_schema_list]
     error_message = f"The schemas of the source and target dataframes are not identical." \
                     f"From source schema column {unmatched_cols} is missing in target schema"
+    # Check if the column names in the source and target schemas are the same, regardless of their order
     if set(source_schema.fieldNames()) != set(target_schema.fieldNames()):
         raise SchemaMismatchError(error_message)
+    # Check if the column names and data types in the source and target schemas are the same, in the same order
     if sorted(source_schema_list) != sorted(target_schema_list):
         raise SchemaMismatchError(error_message)
 
+    # Append the dataframes if the schemas are identical
     appended_df = target_df.unionByName(source_df)
     return appended_df

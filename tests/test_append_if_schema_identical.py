@@ -5,13 +5,13 @@ from tests.conftest import auto_inject_fixtures
 
 @auto_inject_fixtures("spark")
 def test_append_if_schema_identical(spark):
-    source_data = [(1, "Alice", 25), (2, "Bob", 30)]
+    source_data = [(1, "capetown", "Alice"), (2, "delhi", "Bob")]
     target_data = [(3, "Charlie", "New York"), (4, "Dave", "Los Angeles")]
 
     source_df = spark.createDataFrame(source_data, schema=StructType([
         StructField("id", IntegerType()),
-        StructField("name", StringType()),
-        StructField("age", IntegerType())
+        StructField("city", StringType()),
+        StructField("name", StringType())
     ]))
 
     target_df = spark.createDataFrame(target_data, schema=StructType([
