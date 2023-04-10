@@ -35,12 +35,26 @@ def two_columns_to_dictionary(
 
 
 def to_list_of_dictionaries(df: DataFrame) -> List[Dict[str, Any]]:
+    """Convert a Spark DataFrame to a list of dictionaries.
+
+    :param df: The Spark DataFrame to convert.
+    :type df: :py:class:`pyspark.sql.DataFrame`
+    :return: A list of dictionaries representing the rows in the DataFrame.
+    :rtype: List[Dict[str, Any]]
+    """
     return list(map(lambda r: r.asDict(), df.collect()))
 
 
 def print_athena_create_table(
     df: DataFrame, athena_table_name: str, s3location: str
 ) -> None:
+    """Generates the Athena create table statement for a given DataFrame
+
+    :param df: The pyspark.sql.DataFrame to use
+    :param athena_table_name: The name of the athena table to generate
+    :param s3location: The S3 location of the parquet data
+    :return: None
+    """
     fields = df.schema
 
     print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
@@ -56,6 +70,15 @@ def print_athena_create_table(
 
 
 def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
+    """Show output as spark DataFrame
+
+    :param show_output: String representing output of 'show' command in spark
+    :type show_output: str
+    :param spark: SparkSession object
+    :type spark: SparkSession
+    :return: DataFrame object containing output of a show command in spark
+    :rtype: Dataframe
+    """
     l = show_output.split("\n")
     ugly_column_names = l[1]
     pretty_column_names = [i.strip() for i in ugly_column_names[1:-1].split("|")]
