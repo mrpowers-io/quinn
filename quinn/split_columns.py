@@ -4,7 +4,7 @@ from pyspark.sql.functions import col, split, when, length
 
 
 def split_col(df: DataFrame, col_name: str, delimiter: str,
-              new_col_names: List[str], mode: str = "permissive") -> DataFrame:
+              new_col_names: List[str], mode: str = "strict") -> DataFrame:
     """
     Splits the given column based on the delimiter and creates new columns with the split values.
     :param df: The input DataFrame
