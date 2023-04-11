@@ -29,7 +29,9 @@ markdown-include = "^0.8.1"
 mkdocs = "^1.4.2"
 
 [tool.ruff]
+# Allow lines to be as long as 150 characters.
 line-length = 150
+ignore = ["D100"]
 
 [build-system]
 requires = ["poetry>=0.12"]
