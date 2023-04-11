@@ -28,8 +28,8 @@ mkdocs-section-index = "^0.3.5"
 markdown-include = "^0.8.1"
 mkdocs = "^1.4.2"
 
-[tool.flake8]
-max-line-length = 150
+[tool.ruff]
+line-length = 150
 
 [build-system]
 requires = ["poetry>=0.12"]
