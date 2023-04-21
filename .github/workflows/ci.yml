@@ -9,6 +9,15 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - pyspark-version: 2.4.8  # latest published 2.x version
+          - pyspark-version: 3.0.3
+          - pyspark-version: 3.1.3
+          - pyspark-version: 3.2.4
+          - pyspark-version: 3.3.2
+          - pyspark-version: 3.4.0
 
     steps:
       - uses: actions/checkout@v1
@@ -35,5 +44,10 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Run tests with pytest
+      - name: Change PySpark to version ${{ matrix.pyspark-version }}
+        env:
+          PYSPARK_VERSION_NUMBER: ${{ matrix.pyspark-version }}
+        run: poetry add "pyspark==$PYSPARK_VERSION_NUMBER"
+
+      - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest
