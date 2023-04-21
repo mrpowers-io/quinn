@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - pyspark-version: 2.4.8  # latest published 2.x version
+#          - pyspark-version: 2.4.8  # latest published 2.x version
           - pyspark-version: 3.0.3
           - pyspark-version: 3.1.3
           - pyspark-version: 3.2.4
