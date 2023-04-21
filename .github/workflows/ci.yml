@@ -46,10 +46,10 @@ jobs:
         run: poetry install -vvv
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Change PySpark to version
+      - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
           PYSPARK_VERSION_NUMBER: ${{ matrix.pyspark-version }}
         run: pip install pyspark==$PYSPARK_VERSION_NUMBER
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
-        run: poetry run pytest
+        run: poetry run pytest -v
