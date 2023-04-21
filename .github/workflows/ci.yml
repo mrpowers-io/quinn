@@ -14,7 +14,7 @@ jobs:
       matrix:
         include:
           - pyspark-version: 2.4.8  # latest published 2.x version
-            pip-packages: "pypandoc==1.7 pyspark==2.4.8"
+            pip-packages: "pypandoc==1.7 pyspark==2.4.8"  # necessary downgrade of pypandoc
           - pyspark-version: 3.0.3
             pip-packages: "pyspark==3.0.3"
           - pyspark-version: 3.1.3
@@ -49,13 +49,15 @@ jobs:
             poetry-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: poetry install -vvv
+        run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
           PYSPARK_VERSION_NUMBER: ${{ matrix.pyspark-version }}
-        run: pip install pipenv install $PIP_PACKAGES
+        run: |
+          poetry shell
+          pip install pipenv install $PIP_PACKAGES
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest -s
