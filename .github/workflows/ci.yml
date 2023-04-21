@@ -52,4 +52,4 @@ jobs:
         run: pip install pyspark==$PYSPARK_VERSION_NUMBER
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
-        run: poetry run pytest -v
+        run: poetry run pytest -s
