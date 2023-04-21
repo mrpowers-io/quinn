@@ -55,7 +55,7 @@ jobs:
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
           PIP_PACKAGES: ${{ matrix.pip-packages }}
-        run: poetry add $PIP_PACKAGES
+        run: poetry run pip install $PIP_PACKAGES
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest -s
