@@ -32,17 +32,18 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up Python 3.7  # PySpark 2.x does not support Python 3.8+
-        if: startsWith(matrix.pyspark-version, '2.')
-        uses: actions/setup-python@v2
+      - name: Get Python Version depending on PySpark
+        uses: haya14busa/action-cond@v1
+        id: python_version
         with:
-          python-version: 3.7
+          cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
+          if_true: '3.7'  # PySpark 2.x
+          if_false: '3.9'  # PySpark 3+
 
-      - name: Set up Python 3.9
-        if: !startsWith(matrix.pyspark-version, '2.')
+      - name: Set up Python ${{ steps.python_version.outputs.value }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: ${{ steps.python_version.outputs.value }}
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
