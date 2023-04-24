@@ -32,10 +32,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.7  # PySpark 2.x does not support Python 3.8+
+        if: startsWith(matrix.pyspark-version, '2.')
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.7
+
+      - name: Set up Python 3.9
+        if: !startsWith(matrix.pyspark-version, '2.')
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -56,7 +63,7 @@ jobs:
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
           PIP_PACKAGES: ${{ matrix.pip-packages }}
-        run: poetry run pip install $PIP_PACKAGES  # `poetry add` fails for pyspark==2.4.8
+        run: poetry run pip install $PIP_PACKAGES  # Doesn't mess up poetry.lock cache
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest
