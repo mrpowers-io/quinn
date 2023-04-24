@@ -36,6 +36,5 @@ def spark():
     spark = SparkProvider.set_up_spark(
         "Testing", "local[*]", extra_dependencies=[], conf=test_spark_conf()
     )
-    print(f"Spark version: {spark.version}")
     yield spark
     spark.stop()

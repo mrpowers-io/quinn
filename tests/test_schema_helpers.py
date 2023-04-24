@@ -28,4 +28,5 @@ def test_print_schema_as_code(spark):
 
     schema = StructType(fields=fields)
 
+
     assert_basic_schema_equality(schema, eval(print_schema_as_code(schema)))

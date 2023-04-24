@@ -38,7 +38,10 @@ def print_schema_as_code(dtype: T.DataType) -> str:
         res.append(f"DecimalType({dtype.precision}, {dtype.scale})")
 
     else:
-        res.append(f"{dtype}()")
+        if str(dtype).endswith("()"):  # PySpark 3.3+
+            res.append(str(dtype))
+        else:
+            res.append(f"{dtype}()")
 
     return "".join(res)
 

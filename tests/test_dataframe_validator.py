@@ -1,5 +1,6 @@
 import pytest
 from pyspark.sql.types import StructType, StructField, StringType, LongType
+import semver
 
 import quinn
 from tests.conftest import auto_inject_fixtures
@@ -35,10 +36,20 @@ def describe_validate_schema():
         )
         with pytest.raises(quinn.DataFrameMissingStructFieldError) as excinfo:
             quinn.validate_schema(source_df, required_schema)
-        assert (
-            excinfo.value.args[0]
-            == "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true),StructField(age,LongType,true)))"
-        )
+
+        if semver.compare(spark.version, "3.3.0") >= 0:  # Spark 3.3+
+            expected_error_message = (
+                "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame "
+                "with the following StructFields StructType([StructField('name', StringType(), True), "
+                "StructField('age', LongType(), True)])"
+            )
+        else:
+            expected_error_message = (
+                "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame "
+                "with the following StructFields StructType(List(StructField(name,StringType,true),"
+                "StructField(age,LongType,true)))"
+            )
+        assert excinfo.value.args[0] == expected_error_message
 
     def it_does_nothing_when_the_schema_matches(spark):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
