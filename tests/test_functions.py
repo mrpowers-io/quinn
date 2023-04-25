@@ -326,3 +326,25 @@ def test_regexp_extract_all(spark):
         "all_numbers", quinn.regexp_extract_all(F.col("str"), F.lit(r"(\d+)"))
     )
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
+
+def test_business_days_between(spark):
+    df = spark.create_df(
+        [
+            (datetime.datetime(2020,12,23), datetime.datetime(2021,1,2), 7),
+            (datetime.datetime(2020,12,23), datetime.datetime(2021,1,5), 9),
+            (datetime.datetime(2020,12,23), datetime.datetime(2019,1,5), 512),
+            (datetime.datetime(2020,12,23), datetime.datetime(2020,12,23), 0),
+            (datetime.datetime(2020,12,23), None, None),
+            (None, None, None)
+        ],
+        [
+            ("start_date", DateType(), True),
+            ("end_date", DateType(), True),
+            ("expected", IntegerType(), True)
+        ],
+    )
+    actual_df = df.withColumn(
+        "business_days_between", 
+        quinn.business_days_between(F.col("start_date"),F.col("end_date"))
+    )
+    chispa.assert_column_equality(actual_df, "business_days_between", "expected")
