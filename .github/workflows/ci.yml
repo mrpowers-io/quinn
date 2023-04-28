@@ -32,7 +32,13 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Get Python Version depending on PySpark
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8'  # Supported by Spark 2.x & 3.x
+
+      - name: Get supported Python Version depending on PySpark
         uses: haya14busa/action-cond@v1
         id: python_version
         with:
