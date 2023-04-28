@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - pyspark-version: 2.4.8  # latest published 2.x version
-            pip-packages: "pypandoc==1.7 pyspark==2.4.8"  # necessary downgrade of pypandoc
+            pip-packages: "pypandoc==1.7 pyspark==2.4.8"  # downgrade of pypandoc necessary
           - pyspark-version: 3.0.3
             pip-packages: "pyspark==3.0.3"
           - pyspark-version: 3.1.3
@@ -43,7 +43,7 @@ jobs:
         id: python_version
         with:
           cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
-          if_true: '3.7'  # PySpark 2.x
+          if_true: '3.7'  # latest supported version for PySpark 2.x
           if_false: '3.9'  # PySpark 3+
 
       - name: Set up Python ${{ steps.python_version.outputs.value }}
@@ -70,7 +70,7 @@ jobs:
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
           PIP_PACKAGES: ${{ matrix.pip-packages }}
-        run: poetry run pip install $PIP_PACKAGES  # Doesn't mess up poetry.lock cache
+        run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest
