@@ -28,8 +28,11 @@ mkdocs-section-index = "^0.3.5"
 markdown-include = "^0.8.1"
 mkdocs = "^1.4.2"
 
-[tool.flake8]
-max-line-length = 150
+[tool.ruff]
+# Allow lines to be as long as 150 characters.
+line-length = 150
+ignore = ["D100"]
+required-version = "0.0.261"
 
 [build-system]
 requires = ["poetry>=0.12"]
