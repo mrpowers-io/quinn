@@ -16,6 +16,7 @@ pyspark = ">2.0.0"
 pytest = "3.2.2"
 chispa = "0.9.2"
 pytest-describe = "^1.0.0"
+semver = "3.0.0"
 
 [tool.poetry.group.mkdocs]
 optional = true

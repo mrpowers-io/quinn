@@ -4,21 +4,52 @@ on:
   push:
     branches:
     - main
+  workflow_dispatch:
 
 jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pyspark-version: 2.4.8  # latest published 2.x version
+            pip-packages: "pypandoc==1.7 pyspark==2.4.8"  # downgrade of pypandoc necessary
+          - pyspark-version: 3.0.3
+            pip-packages: "pyspark==3.0.3"
+          - pyspark-version: 3.1.3
+            pip-packages: "pyspark==3.1.3"
+          - pyspark-version: 3.2.4
+            pip-packages: "pyspark==3.2.4"
+          - pyspark-version: 3.3.2
+            pip-packages: "pyspark==3.3.2"
+          - pyspark-version: 3.4.0
+            pip-packages: "pyspark==3.4.0"
 
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
 
-      - name: Set up Python 3.9
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8'  # Supported by Spark 2.x & 3.x
+
+      - name: Get supported Python Version depending on PySpark
+        uses: haya14busa/action-cond@v1
+        id: python_version
+        with:
+          cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
+          if_true: '3.7'  # latest supported version for PySpark 2.x
+          if_false: '3.9'  # PySpark 3+
+
+      - name: Set up Python ${{ steps.python_version.outputs.value }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ steps.python_version.outputs.value }}
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -31,9 +62,15 @@ jobs:
           key: poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             poetry-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Run tests with pytest
+      - name: Change PySpark to version ${{ matrix.pyspark-version }}
+        env:
+          PIP_PACKAGES: ${{ matrix.pip-packages }}
+        run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
+
+      - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: poetry run pytest
