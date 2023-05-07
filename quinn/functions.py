@@ -1,4 +1,5 @@
 import re
+import uuid
 from numbers import Number
 from typing import Any, Callable, List, Optional
 
@@ -227,3 +228,37 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :return: List of matches
     """
     return None if s == None else re.findall(regexp, s)
+
+
+def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
+    """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
+
+    Sets variant to RFC 4122 one.
+
+    :param col: Column that will be hashed.
+    :type col: Column
+    :param namespace: Namespace to be used. (default: `uuid.NAMESPACE_DNS`)
+    :type namespace: str
+    :param extra_string: In case of collisions one can pass an extra string to hash on.
+    :type extra_string: str
+    :return: String representation of generated UUIDv5
+    :rtype: Column
+    """
+    ns = F.lit(namespace.bytes)
+    salted_col = F.concat(F.lit(extra_string), col)
+    encoded = F.encode(salted_col, "utf-8")
+    encoded_with_ns = F.concat(ns, encoded)
+    hashed = F.sha1(encoded_with_ns)
+    variant_part = F.substring(hashed, 17, 4)
+    variant_part = F.conv(variant_part, 16, 2)
+    variant_part = F.lpad(variant_part, 16, "0")
+    variant_part = F.concat(F.lit("10"), F.substring(variant_part, 3, 16))  # RFC 4122 variant.
+    variant_part = F.lower(F.conv(variant_part, 2, 16))
+    return F.concat_ws(
+        "-",
+        F.substring(hashed, 1, 8),
+        F.substring(hashed, 9, 4),
+        F.concat(F.lit("5"), F.substring(hashed, 14, 3)),  # Set version.
+        variant_part,
+        F.substring(hashed, 21, 12),
+    )

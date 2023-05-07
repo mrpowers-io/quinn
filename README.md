@@ -196,6 +196,27 @@ It also takes 2 Paramters as Column and week_end_day, and returns the dateframe 
 
 ```
 
+**uuid5()**
+
+This function generates UUIDv5 in string form from the passed column and optionally namespace and optional extra salt.
+By default namespace is NAMESPACE_DNS UUID and no extra string used to reduce hash collisions.
+
+```
+
+df = spark.createDataFrame([("lorem",), ("ipsum",)], ["values"])
+result = df.select(quinn.uuid5(F.col("values")).alias("uuid5"))
+result.show(truncate=False)
+
+The output is :=
++------------------------------------+
+|uuid5                               |
++------------------------------------+
+|35482fda-c10a-5076-8da2-dc7bf22d6be4|
+|51b79c1d-d06c-5b30-a5c6-1fadcd3b2103|
++------------------------------------+
+
+```
+
 ### Transformations
 
 **snake_case_col_names()**
