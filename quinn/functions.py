@@ -5,7 +5,11 @@ from typing import Any, Callable, List, Optional
 
 import pyspark.sql.functions as F
 from pyspark.sql import Column
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    ArrayType,
+    StringType,
+    BooleanType,
+)
 
 
 def single_space(col: Column) -> Column:
@@ -73,8 +77,8 @@ def exists(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(l):
-        return any(map(f, l))
+    def temp_udf(list):
+        return any(map(f, list))
 
     return F.udf(temp_udf, BooleanType())
 
@@ -93,8 +97,8 @@ def forall(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(l):
-        return all(map(f, l))
+    def temp_udf(list):
+        return all(map(f, list))
 
     return F.udf(temp_udf, BooleanType())
 
@@ -227,7 +231,7 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :param regexp: string `re` pattern
     :return: List of matches
     """
-    return None if s == None else re.findall(regexp, s)
+    return None if s is None else re.findall(regexp, s)
 
 
 def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:

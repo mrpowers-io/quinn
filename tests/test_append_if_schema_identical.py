@@ -21,4 +21,4 @@ def test_append_if_schema_identical(spark):
     ]))
 
     # Call the append_if_schema_identical function
-    appended_df = quinn.append_if_schema_identical(source_df, target_df)
+    quinn.append_if_schema_identical(source_df, target_df)
