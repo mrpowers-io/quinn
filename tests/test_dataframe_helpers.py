@@ -1,4 +1,3 @@
-from pyspark.sql.types import IntegerType, StringType
 
 import quinn
 from tests.conftest import auto_inject_fixtures

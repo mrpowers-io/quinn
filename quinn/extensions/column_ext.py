@@ -36,7 +36,7 @@ def isFalse(self: Column) -> Column:
     :return: Column
     :rtype: Column
     """
-    return self == False
+    return self is False
 
 
 def isTrue(self: Column) -> Column:
@@ -51,7 +51,7 @@ def isTrue(self: Column) -> Column:
     :returns: Column object
     :rtype: Column
     """
-    return self == True
+    return self is True
 
 
 def isNullOrBlank(self: Column) -> Column:
