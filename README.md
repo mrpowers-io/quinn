@@ -1,7 +1,8 @@
 # Quinn
 
 ![![image](https://github.com/MrPowers/quinn/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/ci.yml/badge.svg)
-![![image](https://github.com/MrPowers/mack/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/flake8.yml/badge.svg)
+<!-- ![![image](https://github.com/MrPowers/mack/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/flake8.yml/badge.svg) -->
+[![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-brightgreen?style=flat-square)](https://github.com/MrPowers/quinn/actions/workflows/ruff.yml/badge.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/quinn)
 [![PyPI version](https://badge.fury.io/py/quinn.svg)](https://badge.fury.io/py/quinn)
 
@@ -260,6 +261,24 @@ quinn.to_list_of_dictionaries(source_df)
 ```
 
 Converts an entire DataFrame into a list of dictionaries.
+
+**show_output_to_df()**
+
+```python
+quinn.show_output_to_df(output_str, spark)
+```
+
+Parses a spark DataFrame output string into a spark DataFrame. Useful for quickly pulling data from a log into a DataFrame. In this example, output_str is a string of the form:
+
+```
++----+---+-----------+------+
+|name|age|     stuff1|stuff2|
++----+---+-----------+------+
+|jose|  1|nice person|  yoyo|
+|  li|  2|nice person|  yoyo|
+| liz|  3|nice person|  yoyo|
++----+---+-----------+------+
+```
 
 ## Pyspark Core Class Extensions
 

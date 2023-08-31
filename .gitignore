@@ -17,6 +17,7 @@ __pycache__/
 # PyVenv
 .env
 .venv
+venv
 
 # Linters cache
 .mypy_cache

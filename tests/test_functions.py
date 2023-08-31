@@ -307,12 +307,12 @@ def describe_approx_equal():
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
 
-# def test_array_choice(spark):
-#     df = spark.create_df(
-#         [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
-#         [("letters", ArrayType(StringType(), True), True)],
-#     )
-#     actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
+def test_array_choice(spark):
+    df = spark.create_df(
+        [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
+        [("letters", ArrayType(StringType(), True), True)],
+    )
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
     # actual_df.show()
     # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
