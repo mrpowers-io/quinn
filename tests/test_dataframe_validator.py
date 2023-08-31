@@ -37,7 +37,7 @@ def describe_validate_schema():
         with pytest.raises(quinn.DataFrameMissingStructFieldError) as excinfo:
             quinn.validate_schema(source_df, required_schema)
 
-        if semver.compare(spark.version, "3.3.0") >= 0:  # Spark 3.3+
+        if semver.compare(spark.version, "3.2.0") >= 0:  # Spark 3.3+
             expected_error_message = "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame with the following StructFields StructType([StructField('name', StringType(), True), StructField('age', LongType(), True)])" # noqa
         else:
             expected_error_message = "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true), StructField(age,LongType,true)))" # noqa
