@@ -1,6 +1,5 @@
 import pytest
 
-import re
 
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
@@ -305,7 +304,7 @@ def test_array_choice(spark):
         [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
         [("letters", ArrayType(StringType(), True), True)],
     )
-    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
+    df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
     # actual_df.show()
     # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 

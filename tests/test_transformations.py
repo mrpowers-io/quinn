@@ -5,8 +5,6 @@ import quinn
 from tests.conftest import auto_inject_fixtures
 import chispa
 
-from functools import reduce
-
 
 @auto_inject_fixtures("spark")
 def describe_with_columns_renamed():

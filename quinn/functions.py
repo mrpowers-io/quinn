@@ -189,20 +189,20 @@ def _raise_if_invalid_day(day: str) -> None:
         raise ValueError(message)
 
 
-def approx_equal(col1: Column, col2: Column, threshhold: Number) -> Column:
+def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
     """Compares two ``Column`` objects by checking if the difference between them
-    is less than a specified ``threshhold``.
+    is less than a specified ``threshold``.
 
     :param col1: the first ``Column``
     :type col1: Column
     :param col2: the second ``Column``
     :type col2: Column
-    :param threshhold: value to compare with
-    :type threshhold: Number
+    :param threshold: value to compare with
+    :type threshold: Number
     :return: Boolean ``Column`` with ``True`` indicating that ``abs(col1 -
-    col2)`` is less than ``threshhold``
+    col2)`` is less than ``threshold``
     """
-    return F.abs(col1 - col2) < threshhold
+    return F.abs(col1 - col2) < threshold
 
 
 def array_choice(col: Column) -> Column:
@@ -227,7 +227,7 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :param regexp: string `re` pattern
     :return: List of matches
     """
-    return None if s == None else re.findall(regexp, s)
+    return None if s is None else re.findall(regexp, s)
 
 
 def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
