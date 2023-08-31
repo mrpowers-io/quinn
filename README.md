@@ -261,6 +261,24 @@ quinn.to_list_of_dictionaries(source_df)
 
 Converts an entire DataFrame into a list of dictionaries.
 
+**show_output_to_df()**
+
+```python
+quinn.show_output_to_df(output_str, spark)
+```
+
+Parses a spark DataFrame output string into a spark DataFrame. Useful for quickly pulling data from a log into a DataFrame. In this example, output_str is a string of the form:
+
+```
++----+---+-----------+------+
+|name|age|     stuff1|stuff2|
++----+---+-----------+------+
+|jose|  1|nice person|  yoyo|
+|  li|  2|nice person|  yoyo|
+| liz|  3|nice person|  yoyo|
++----+---+-----------+------+
+```
+
 ## Pyspark Core Class Extensions
 
 ```
