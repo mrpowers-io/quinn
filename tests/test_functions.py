@@ -1,11 +1,19 @@
 import pytest
 
-
 import pyspark.sql.functions as F
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    StructField,
+    StructType,
+    BooleanType,
+    DateType,
+    IntegerType,
+    ArrayType,
+    FloatType,
+    StringType,
+)
 
 import quinn
-from quinn.extensions import *
+from quinn.extensions import create_df # noqa: F401
 from tests.conftest import auto_inject_fixtures
 import chispa
 
@@ -304,7 +312,7 @@ def test_array_choice(spark):
         [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
         [("letters", ArrayType(StringType(), True), True)],
     )
-    df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
     # actual_df.show()
     # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 

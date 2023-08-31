@@ -1,4 +1,3 @@
-
 import quinn
 from tests.conftest import auto_inject_fixtures
 import chispa
@@ -65,5 +64,5 @@ def describe_print_athena_create_table():
         out, _ = capsys.readouterr()
         assert (
             out
-            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
+            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n" # noqa
         )

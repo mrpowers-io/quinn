@@ -38,17 +38,9 @@ def describe_validate_schema():
             quinn.validate_schema(source_df, required_schema)
 
         if semver.compare(spark.version, "3.3.0") >= 0:  # Spark 3.3+
-            expected_error_message = (
-                "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame "
-                "with the following StructFields StructType([StructField('name', StringType(), True), "
-                "StructField('age', LongType(), True)])"
-            )
+            expected_error_message = "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame with the following StructFields StructType([StructField('name', StringType(), True), StructField('age', LongType(), True)])" # noqa
         else:
-            expected_error_message = (
-                "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame "
-                "with the following StructFields StructType(List(StructField(name,StringType,true),"
-                "StructField(age,LongType,true)))"
-            )
+            expected_error_message = "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true),StructField(age,LongType,true)))" # noqa
         assert excinfo.value.args[0] == expected_error_message
 
     def it_does_nothing_when_the_schema_matches(spark):
@@ -82,7 +74,7 @@ def describe_validate_absence_of_columns():
             quinn.validate_absence_of_columns(source_df, ["age", "cool"])
         assert (
             excinfo.value.args[0]
-            == "The ['age'] columns are not allowed to be included in the DataFrame with the following columns ['name', 'age']"
+            == "The ['age'] columns are not allowed to be included in the DataFrame with the following columns ['name', 'age']" # noqa
         )
 
     def it_does_nothing_when_no_unallowed_columns_are_present(spark):

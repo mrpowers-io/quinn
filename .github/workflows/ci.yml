@@ -51,8 +51,18 @@ jobs:
         with:
           python-version: ${{ steps.python_version.outputs.value }}
 
+      - name: Get supported Poetry version
+        uses: haya14busa/action-cond@v1
+        id: poetry_version
+        with:
+          cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
+          if_true: '1.5.1'  # latest supported version for PySpark 2.x
+          if_false: '1.6.1'  # PySpark 3+
+
       - name: Install Poetry
         uses: snok/install-poetry@v1
+        with:
+          version: ${{ steps.poetry_version.outputs.value }}
 
       - name: Cache Poetry virtualenv
         uses: actions/cache@v1
