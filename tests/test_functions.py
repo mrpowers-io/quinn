@@ -1,16 +1,24 @@
 import pytest
 
-import re
-
 import pyspark.sql.functions as F
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    StructField,
+    StructType,
+    BooleanType,
+    DateType,
+    IntegerType,
+    ArrayType,
+    FloatType,
+    StringType,
+)
 
 import quinn
-from quinn.extensions import *
+from quinn.extensions import create_df # noqa: F401
 from tests.conftest import auto_inject_fixtures
 import chispa
 
 import datetime
+import uuid
 
 
 @auto_inject_fixtures("spark")
@@ -327,6 +335,7 @@ def test_regexp_extract_all(spark):
     )
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
 
+
 def test_business_days_between(spark):
     df = spark.create_df(
         [
@@ -348,3 +357,43 @@ def test_business_days_between(spark):
         quinn.business_days_between(F.col("start_date"),F.col("end_date"))
     )
     chispa.assert_column_equality(actual_df, "business_days_between", "expected")
+
+def describe_uuid5():
+    def test_no_extra_string(spark):
+        df = spark.create_df(
+            [
+                # Manually calculated with Namespace: animals.com, no extra string argument.
+                ("cat", "c04e5a9e-8088-5d64-8b81-26e74ede56f8"),
+                ("dog", "08d3c582-5d77-5bb0-8eeb-b415942c67cd"),
+                ("pig", "58baf419-4019-5f7f-bbf1-54af269c57df"),
+            ],
+            [
+                ("s1", StringType(), True),
+                ("expected", StringType(), True),
+            ],
+        )
+        actual_df = df.withColumn(
+            "uuid5_of_s1", quinn.uuid5(F.col("s1"), namespace=uuid.uuid5(uuid.NAMESPACE_DNS, "animals.com"))
+        )
+        chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
+
+    def test_with_extra_string(spark):
+        df = spark.create_df(
+            [
+                # Manually calculated with Namespace: animals.com, "domesticated" as extra string.
+                ("cat", "d433fd86-8cc9-50b0-a53e-a285f6873c18"),
+                ("dog", "af2dbcba-7a71-574c-92a6-f501b43c6266"),
+                ("pig", "c06bb8b8-1889-5018-adc1-4d73e943b985"),
+            ],
+            [
+                ("s1", StringType(), True),
+                ("expected", StringType(), True),
+            ],
+        )
+        actual_df = df.withColumn(
+            "uuid5_of_s1",
+            quinn.uuid5(
+                F.col("s1"), namespace=uuid.uuid5(uuid.NAMESPACE_DNS, "animals.com"), extra_string="domesticated"
+            )
+        )
+        chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")

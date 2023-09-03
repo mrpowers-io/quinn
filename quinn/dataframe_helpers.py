@@ -79,11 +79,11 @@ def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
     :return: DataFrame object containing output of a show command in spark
     :rtype: Dataframe
     """
-    l = show_output.split("\n")
-    ugly_column_names = l[1]
+    lines = show_output.split("\n")
+    ugly_column_names = lines[1]
     pretty_column_names = [i.strip() for i in ugly_column_names[1:-1].split("|")]
     pretty_data = []
-    ugly_data = l[3:-1]
+    ugly_data = lines[3:-1]
     for row in ugly_data:
         r = [i.strip() for i in row[1:-1].split("|")]
         pretty_data.append(tuple(r))

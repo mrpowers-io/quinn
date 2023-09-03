@@ -1,6 +1,6 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType, BooleanType, IntegerType
-from quinn.extensions import *
+from quinn.extensions import * # noqa
 import chispa
 
 from tests.conftest import auto_inject_fixtures

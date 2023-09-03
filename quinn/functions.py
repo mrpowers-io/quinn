@@ -1,10 +1,15 @@
 import re
+import uuid
 from numbers import Number
 from typing import Any, Callable, List, Optional
 
 import pyspark.sql.functions as F
 from pyspark.sql import Column
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    ArrayType,
+    StringType,
+    BooleanType,
+)
 
 
 def single_space(col: Column) -> Column:
@@ -72,8 +77,8 @@ def exists(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(l):
-        return any(map(f, l))
+    def temp_udf(list):
+        return any(map(f, list))
 
     return F.udf(temp_udf, BooleanType())
 
@@ -92,8 +97,8 @@ def forall(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(l):
-        return all(map(f, l))
+    def temp_udf(list):
+        return all(map(f, list))
 
     return F.udf(temp_udf, BooleanType())
 
@@ -188,20 +193,20 @@ def _raise_if_invalid_day(day: str) -> None:
         raise ValueError(message)
 
 
-def approx_equal(col1: Column, col2: Column, threshhold: Number) -> Column:
+def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
     """Compares two ``Column`` objects by checking if the difference between them
-    is less than a specified ``threshhold``.
+    is less than a specified ``threshold``.
 
     :param col1: the first ``Column``
     :type col1: Column
     :param col2: the second ``Column``
     :type col2: Column
-    :param threshhold: value to compare with
-    :type threshhold: Number
+    :param threshold: value to compare with
+    :type threshold: Number
     :return: Boolean ``Column`` with ``True`` indicating that ``abs(col1 -
-    col2)`` is less than ``threshhold``
+    col2)`` is less than ``threshold``
     """
-    return F.abs(col1 - col2) < threshhold
+    return F.abs(col1 - col2) < threshold
 
 
 def array_choice(col: Column) -> Column:
@@ -239,10 +244,43 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
     :returns: a Column with the number of business days between the start and the end date
     :rtype: Column
     """
-
+    
     all_days = F.sequence(start_date, end_date)
     days_of_week = F.transform(all_days, lambda day: F.date_format(day, 'E'))
     filter_weekends = F.filter(days_of_week, lambda day: day.isNotIn(['Sat','Sun']))
     num_business_days = F.size(filter_weekends) - 1
 
     return F.when(num_business_days < 0, None).otherwise(num_business_days)
+
+def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
+    """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
+
+    Sets variant to RFC 4122 one.
+
+    :param col: Column that will be hashed.
+    :type col: Column
+    :param namespace: Namespace to be used. (default: `uuid.NAMESPACE_DNS`)
+    :type namespace: str
+    :param extra_string: In case of collisions one can pass an extra string to hash on.
+    :type extra_string: str
+    :return: String representation of generated UUIDv5
+    :rtype: Column
+    """
+    ns = F.lit(namespace.bytes)
+    salted_col = F.concat(F.lit(extra_string), col)
+    encoded = F.encode(salted_col, "utf-8")
+    encoded_with_ns = F.concat(ns, encoded)
+    hashed = F.sha1(encoded_with_ns)
+    variant_part = F.substring(hashed, 17, 4)
+    variant_part = F.conv(variant_part, 16, 2)
+    variant_part = F.lpad(variant_part, 16, "0")
+    variant_part = F.concat(F.lit("10"), F.substring(variant_part, 3, 16))  # RFC 4122 variant.
+    variant_part = F.lower(F.conv(variant_part, 2, 16))
+    return F.concat_ws(
+        "-",
+        F.substring(hashed, 1, 8),
+        F.substring(hashed, 9, 4),
+        F.concat(F.lit("5"), F.substring(hashed, 14, 3)),  # Set version.
+        variant_part,
+        F.substring(hashed, 21, 12),
+    )

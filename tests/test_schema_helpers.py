@@ -1,4 +1,15 @@
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    StructType,
+    IntegerType,
+    DecimalType,
+    ArrayType,
+    FloatType,
+    MapType,
+    StringType,
+    DoubleType,
+    TimestampType,
+    StructField,
+)
 
 from quinn.schema_helpers import print_schema_as_code
 

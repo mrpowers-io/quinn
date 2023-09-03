@@ -1,7 +1,7 @@
 # Quinn
 
 ![![image](https://github.com/MrPowers/quinn/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/ci.yml/badge.svg)
-![![image](https://github.com/MrPowers/mack/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/flake8.yml/badge.svg)
+![![image](https://github.com/MrPowers/quinn/workflows/build/badge.svg)](https://github.com/MrPowers/quinn/actions/workflows/ruff.yml/badge.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/quinn)
 [![PyPI version](https://badge.fury.io/py/quinn.svg)](https://badge.fury.io/py/quinn)
 
@@ -196,6 +196,27 @@ It also takes 2 Paramters as Column and week_end_day, and returns the dateframe 
 
 ```
 
+**uuid5()**
+
+This function generates UUIDv5 in string form from the passed column and optionally namespace and optional extra salt.
+By default namespace is NAMESPACE_DNS UUID and no extra string used to reduce hash collisions.
+
+```
+
+df = spark.createDataFrame([("lorem",), ("ipsum",)], ["values"])
+result = df.select(quinn.uuid5(F.col("values")).alias("uuid5"))
+result.show(truncate=False)
+
+The output is :=
++------------------------------------+
+|uuid5                               |
++------------------------------------+
+|35482fda-c10a-5076-8da2-dc7bf22d6be4|
+|51b79c1d-d06c-5b30-a5c6-1fadcd3b2103|
++------------------------------------+
+
+```
+
 ### Transformations
 
 **snake_case_col_names()**
@@ -239,6 +260,24 @@ quinn.to_list_of_dictionaries(source_df)
 ```
 
 Converts an entire DataFrame into a list of dictionaries.
+
+**show_output_to_df()**
+
+```python
+quinn.show_output_to_df(output_str, spark)
+```
+
+Parses a spark DataFrame output string into a spark DataFrame. Useful for quickly pulling data from a log into a DataFrame. In this example, output_str is a string of the form:
+
+```
++----+---+-----------+------+
+|name|age|     stuff1|stuff2|
++----+---+-----------+------+
+|jose|  1|nice person|  yoyo|
+|  li|  2|nice person|  yoyo|
+| liz|  3|nice person|  yoyo|
++----+---+-----------+------+
+```
 
 ## Pyspark Core Class Extensions
 

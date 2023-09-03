@@ -11,7 +11,7 @@ class ScalaToPyspark:
             result = text_file.readlines()
 
         # remove lines that start with package
-        result = list(filter(lambda l: not l.startswith("package"), result))
+        result = list(filter(lambda line: not line.startswith("package"), result))
 
         # replace common import statements
         result = [
@@ -28,14 +28,14 @@ class ScalaToPyspark:
         ]
 
         # remove scala import statements
-        result = list(filter(lambda l: not l.startswith("import scala"), result))
+        result = list(filter(lambda line: not line.startswith("import scala"), result))
 
         # remove the vals and vars
         result = [x.replace("val ", "") for x in result]
         result = [x.replace("var ", "") for x in result]
 
         # remove ending curly braces (low hanging fruit)
-        result = list(filter(lambda l: l.strip() != "}", result))
+        result = list(filter(lambda line: line.strip() != "}", result))
 
         # clean up the function definitions
         result = [

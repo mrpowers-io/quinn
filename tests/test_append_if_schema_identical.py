@@ -5,7 +5,7 @@ from tests.conftest import auto_inject_fixtures
 
 @auto_inject_fixtures("spark")
 def test_append_if_schema_identical(spark):
-    source_data = [(1, "capetown", "Alice"), (2, "delhi", "Bob")]
+    source_data = [(1, "cape town", "Alice"), (2, "delhi", "Bob")]
     target_data = [(3, "Charlie", "New York"), (4, "Dave", "Los Angeles")]
 
     source_df = spark.createDataFrame(source_data, schema=StructType([
@@ -21,4 +21,4 @@ def test_append_if_schema_identical(spark):
     ]))
 
     # Call the append_if_schema_identical function
-    appended_df = quinn.append_if_schema_identical(source_df, target_df)
+    quinn.append_if_schema_identical(source_df, target_df)
