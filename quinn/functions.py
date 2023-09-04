@@ -231,8 +231,26 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :param regexp: string `re` pattern
     :return: List of matches
     """
-    return None if s is None else re.findall(regexp, s)
+    return None if s == None else re.findall(regexp, s)
 
+def business_days_between(start_date: Column, end_date: Column) -> Column:
+    """This function takes two Spark `Columns` and returns a `Column` with the number of business
+    days between the start and the end date.
+
+    :param start_date: The column with the start dates
+    :type start_date: Column
+    :param end_date: The column with the end dates
+    :type end_date: Column
+    :returns: a Column with the number of business days between the start and the end date
+    :rtype: Column
+    """
+    
+    all_days = F.sequence(start_date, end_date)
+    days_of_week = F.transform(all_days, lambda day: F.date_format(day, 'E'))
+    filter_weekends = F.filter(days_of_week, lambda day: day.isNotIn(['Sat','Sun']))
+    num_business_days = F.size(filter_weekends) - 1
+
+    return F.when(num_business_days < 0, None).otherwise(num_business_days)
 
 def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
     """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
