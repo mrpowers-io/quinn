@@ -279,6 +279,29 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 +----+---+-----------+------+
 ```
 
+### Schema Helpers
+
+**schema_from_csv()**
+```python
+quinn.schema_from_csv("schema.csv")
+```
+
+Returns a ```StructType()``` containing ```StructFields()``` using a .csv defined schema. The .csv must contain the following columns:
+- name: the name of the column, must be unique
+- type: the type of the column, must be one of the following: string, int, long, float, double, boolean, timestamp, date
+- nullable: whether the column can contain null values, must be TRUE or FALSE
+- metadata: optional metadata for the column, must be a valid JSON string
+
+
+An example configuration is provided below:
+```
+name,type,nullable,metadata
+person,string,FALSE,{"description":"The person's name"}
+address,string,TRUE,{"description":"The person's address"}
+phoneNumber,string,TRUE,{"description":"The person's phone number"}
+age,int,FALSE,{"description":"The person's age"}
+```
+
 ## Pyspark Core Class Extensions
 
 ```
