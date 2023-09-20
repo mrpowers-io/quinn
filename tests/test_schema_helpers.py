@@ -10,8 +10,9 @@ from pyspark.sql.types import (
     TimestampType,
     StructField,
 )
+import pyspark.sql.dataframe
 
-from quinn.schema_helpers import print_schema_as_code
+from quinn.schema_helpers import print_schema_as_code, schema_from_csv
 
 from chispa.schema_comparer import assert_basic_schema_equality
 
@@ -40,3 +41,61 @@ def test_print_schema_as_code(spark):
     schema = StructType(fields=fields)
 
     assert_basic_schema_equality(schema, eval(print_schema_as_code(schema)))
+
+
+@auto_inject_fixtures("spark")
+def test_schema_from_csv_equality(spark):
+    """ 
+    Tests that schema_from_csv returns the expected schema from schema_from_csv_test_file.csv
+    """
+    expected_schema_fields: list = [
+        StructField("person", StringType(), False, {"description": "The person's name"}),
+        StructField("address", StringType(), True, {"description": "The person's address"}),
+        StructField("phoneNumber", StringType(), True, {"description": "The person's phone number"}),
+        StructField("age", IntegerType(), False, {"description": "The person's age"}),
+    ]
+    expected_schema = StructType(fields=expected_schema_fields)
+
+    test_file_path = 'tests/test_files/schema_from_csv_test_file.csv'
+    parsed_schema = schema_from_csv(spark, test_file_path)
+
+    assert_basic_schema_equality(expected_schema, parsed_schema)
+
+
+@auto_inject_fixtures("spark")
+def test_schema_from_csv_validation(spark):
+    """
+    Tests that schema_from_csv raises an exception when the schema is not valid for a malformed dataframe
+    """
+
+    def _check_good_df(spark, schema) -> None:
+        data = [
+            ('Alice', '123 Apple Lane', '111-222-3333', 27),
+            ('Bob', '456 Berry Drive', '444-555-6666', 28)
+        ]
+
+        good_df = spark.createDataFrame(data, schema=schema)
+        check_creation = isinstance(good_df, pyspark.sql.dataframe.DataFrame)
+
+        if not check_creation:
+            raise ValueError("Expected good dataframe to pass validation")
+
+    def _check_bad_df(spark, schema) -> None:
+        # expected to fail because of the string age values
+        data = [
+            ('Alice', '123 Apple Lane', '111-222-3333', '27'),
+            ('Bob', None, None, '28')
+        ]
+        check_if_data_error_caught = False
+
+        try:
+            spark.createDataFrame(data, schema=schema)
+        except TypeError:
+            check_if_data_error_caught = True
+
+        if not check_if_data_error_caught:
+            raise ValueError("Expected bad dataframe to fail validation")
+
+    schema = schema_from_csv(spark, 'tests/test_files/schema_from_csv_test_file.csv')
+    _check_good_df(spark, schema)
+    _check_bad_df(spark, schema)
