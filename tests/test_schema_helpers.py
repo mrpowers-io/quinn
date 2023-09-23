@@ -45,8 +45,9 @@ def test_print_schema_as_code(spark):
 
 @auto_inject_fixtures("spark")
 def test_schema_from_csv_equality(spark):
-    """ 
-    Tests that schema_from_csv returns the expected schema from schema_from_csv_test_file.csv
+    """
+    Input: tests/test_files/schema_from_csv_test_file.csv
+    Tests that schema_from_csv() returns the expected schema from the provided schema configuration
     """
     expected_schema_fields: list = [
         StructField("person", StringType(), False, {"description": "The person's name"}),
@@ -65,7 +66,10 @@ def test_schema_from_csv_equality(spark):
 @auto_inject_fixtures("spark")
 def test_schema_from_csv_validation(spark):
     """
-    Tests that schema_from_csv raises an exception when the schema is not valid for a malformed dataframe
+    Input: tests/test_files/schema_from_csv_test_file.csv
+    Tests
+     1. schema_from_csv() successfully creates a dataframe for data that adheres to the parsed schema
+     2. raises an exception when the data does not adhere to the parsed schema
     """
 
     def _check_good_df(spark, schema) -> None:

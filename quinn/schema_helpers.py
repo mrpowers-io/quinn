@@ -71,6 +71,19 @@ def _repr_column(column: T.StructField) -> str:
 
 
 def schema_from_csv(spark, file_path) -> T.StructType:
+    """Return a StructType from a CSV file containing schema configuration.
+
+    :param spark: The SparkSession object
+    :type spark: pyspark.sql.session.SparkSession
+
+    :param file_path: The path to the CSV file containing the schema configuration
+    :type file_path: str
+
+    :raises ValueError: If the CSV file does not contain the expected columns: name, type, nullable, description
+
+    :return: A StructType object representing the schema configuration
+    :rtype: pyspark.sql.types.StructType
+    """
     def _validate_json(metadata: str) -> dict:
         try:
             metadata_dict = json.loads(metadata)
