@@ -76,9 +76,3 @@ def test_append_if_schema_identical(spark):
         raise AssertionError(
             "append_if_schema_identical should raise an error if the schemas are not identical"
         )
-
-
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.appName("My App").master("local").getOrCreate()
-test_append_if_schema_identical(spark)
