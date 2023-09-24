@@ -279,24 +279,37 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 +----+---+-----------+------+
 ```
 
+**create_df()**
+
+```python
+data = [("jose", "a"), ("li", "b"), ("sam", "c")]
+schema = [("name", StringType(), True), ("blah", StringType(), True)]
+
+df = quinn.create_df(spark, data, schema)
+```
+
+Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
+
+```python
+df.show()
+```
+
+```md
++----+----+
+|name|blah|
++----+----+
+|jose|   a|
+|  li|   b|
+| sam|   c|
++----+----+
+```
+
+
 ## Pyspark Core Class Extensions
 
 ```
 from quinn.extensions import *
 ```
-
-### SparkSession Extensions
-
-**create_df()**
-
-```python
-spark.create_df(
-    [("jose", "a"), ("li", "b"), ("sam", "c")],
-    [("name", StringType(), True), ("blah", StringType(), True)]
-)
-```
-
-Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
 
 ### Column Extensions
 
