@@ -17,7 +17,7 @@ def create_df(self, rows_data, col_specs):
     """
 
     warnings.warn(
-        "Extensions in the future versions of quinn. Please use `quinn.create_df()` instead",
+        "Extensions may be removed in the future versions of quinn. Please use `quinn.create_df()` instead",
         category=DeprecationWarning,
         stacklevel=2,
     )
