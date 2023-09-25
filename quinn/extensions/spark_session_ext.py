@@ -1,3 +1,4 @@
+import warnings
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType
 
@@ -14,6 +15,13 @@ def create_df(self, rows_data, col_specs):
     :return: a new DataFrame
     :rtype: DataFrame
     """
+
+    warnings.warn(
+        "Extensions in the future versions of quinn. Please use `quinn.create_df()` instead",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     struct_fields = list(map(lambda x: StructField(*x), col_specs))
     return self.createDataFrame(data=rows_data, schema=StructType(struct_fields))
 
