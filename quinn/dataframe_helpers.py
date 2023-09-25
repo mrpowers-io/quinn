@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import StructField, StructType
 
 
 def column_to_list(df: DataFrame, col_name: str) -> List[Any]:
@@ -88,3 +89,22 @@ def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
         r = [i.strip() for i in row[1:-1].split("|")]
         pretty_data.append(tuple(r))
     return spark.createDataFrame(pretty_data, pretty_column_names)
+
+
+def create_df(spark: SparkSession, rows_data, col_specs) -> DataFrame:
+    """Creates a new DataFrame from the given data and column specs. The returned
+    DataFrame is created using the StructType and StructField classes provided by
+    PySpark.
+
+    :param spark: SparkSession object
+    :type spark: SparkSession
+    :param rows_data: the data used to create the DataFrame
+    :type rows_data: array-like
+    :param col_specs: list of tuples containing the name and type of the field 
+    :type col_specs: list of tuples
+    :return: a new DataFrame
+    :rtype: DataFrame
+    """
+
+    struct_fields = list(map(lambda x: StructField(*x), col_specs))
+    return spark.createDataFrame(data=rows_data, schema=StructType(struct_fields))
