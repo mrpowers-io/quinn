@@ -309,12 +309,11 @@ def describe_approx_equal():
 
 def test_array_choice(spark):
     df = spark.create_df(
-        [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
-        [("letters", ArrayType(StringType(), True), True)],
+        [(["a", "b", "c"], "c"), (["a", "b", "c", "d"], "a"), (["x"], "x"), ([None], None)],
+        [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
     )
-    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
-    actual_df.show()
-    # TODO: Add an assertion here
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+    chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
 def test_regexp_extract_all(spark):
