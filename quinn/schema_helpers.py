@@ -85,6 +85,9 @@ def schema_from_csv(spark, file_path) -> T.StructType:
     :rtype: pyspark.sql.types.StructType
     """
     def _validate_json(metadata: str) -> dict:
+        if metadata is None:
+            return {}
+
         try:
             metadata_dict = json.loads(metadata)
 
@@ -112,6 +115,9 @@ def schema_from_csv(spark, file_path) -> T.StructType:
         return type_lookup[type_str]
 
     def _convert_nullable(null_str: str) -> bool:
+        if null_str is None:
+            return True
+        
         parsed_val = null_str.lower()
         if parsed_val not in ['true', 'false']:
             raise ValueError(f'Invalid nullable value: {null_str}. Expecting True or False.')
