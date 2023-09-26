@@ -231,7 +231,7 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :param regexp: string `re` pattern
     :return: List of matches
     """
-    return None if s == None else re.findall(regexp, s)
+    return None if s is None else re.findall(regexp, s)
 
 def business_days_between(start_date: Column, end_date: Column) -> Column:
     """This function takes two Spark `Columns` and returns a `Column` with the number of business
