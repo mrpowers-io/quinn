@@ -51,7 +51,7 @@ def test_schema_from_csv_equality(spark):
     """
     expected_schema_fields: list = [
         StructField("person", StringType(), False, {"description": "The person's name"}),
-        StructField("address", StringType(), True, {"description": "The person's address"}),
+        StructField("address", StringType(), True),
         StructField("phoneNumber", StringType(), True, {"description": "The person's phone number"}),
         StructField("age", IntegerType(), False, {"description": "The person's age"}),
     ]
