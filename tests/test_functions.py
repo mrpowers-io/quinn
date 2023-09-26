@@ -307,19 +307,14 @@ def describe_approx_equal():
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
 
-# def test_array_choice(spark):
-#     df = spark.create_df(
-#         [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
-#         [("letters", ArrayType(StringType(), True), True)],
-#     )
-#     actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
-    # actual_df.show()
-    # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
-
-    # df = spark.createDataFrame([('a',), ('b',), ('c',)], ['letter'])
-    # df.show()
-    # cols = list(map(lambda c: F.lit(c), ['Retail', 'SME', 'Cor']))
-    # df.withColumn('business_vertical', quinn.array_choice(F.array(cols))).show()
+def test_array_choice(spark):
+    df = spark.create_df(
+        [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
+        [("letters", ArrayType(StringType(), True), True)],
+    )
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
+    actual_df.show()
+    # TODO: Add an assertion here
 
 
 def test_regexp_extract_all(spark):
