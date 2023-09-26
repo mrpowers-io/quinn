@@ -287,10 +287,10 @@ quinn.schema_from_csv("schema.csv")
 ```
 
 Returns a ```StructType()``` containing ```StructFields()``` using a .csv defined schema. The .csv must contain the following columns:
-- name: the name of the column, must be unique
-- type: the type of the column, must be one of the following: string, int, long, float, double, boolean, timestamp, date
-- nullable: whether the column can contain null values, must be TRUE or FALSE
-- metadata: optional metadata for the column, must be a valid JSON string
+- name: required name of the column, must be unique
+- type: required type of the column, must be one of the following: string, int, long, float, double, boolean, timestamp, date
+- nullable: optional indication whether the column can contain null values. If not specified, the column will be nullable
+- metadata: optional metadata for the column. If present, must be a valid JSON string
 
 
 An example configuration is provided below:
