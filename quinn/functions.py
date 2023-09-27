@@ -209,7 +209,7 @@ def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
     return F.abs(col1 - col2) < threshold
 
 
-def array_choice(col: Column) -> Column:
+def array_choice(col: Column, seed: Optional[int] = None) -> Column:
     """Returns one random element from the given column.
 
     :param col: Column from which element is chosen
@@ -217,7 +217,7 @@ def array_choice(col: Column) -> Column:
     :return: random element from the given column
     :rtype: Column
     """
-    index = (F.rand() * F.size(col)).cast("int")
+    index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
 
 
