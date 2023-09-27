@@ -233,6 +233,7 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     """
     return None if s is None else re.findall(regexp, s)
 
+
 def business_days_between(start_date: Column, end_date: Column) -> Column:
     """This function takes two Spark `Columns` and returns a `Column` with the number of business
     days between the start and the end date.
@@ -252,7 +253,10 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
 
     return F.when(num_business_days < 0, None).otherwise(num_business_days)
 
-def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
+
+def uuid5(
+    col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = ""
+) -> Column:
     """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
 
     Sets variant to RFC 4122 one.
@@ -274,7 +278,9 @@ def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: 
     variant_part = F.substring(hashed, 17, 4)
     variant_part = F.conv(variant_part, 16, 2)
     variant_part = F.lpad(variant_part, 16, "0")
-    variant_part = F.concat(F.lit("10"), F.substring(variant_part, 3, 16))  # RFC 4122 variant.
+    variant_part = F.concat(
+        F.lit("10"), F.substring(variant_part, 3, 16)
+    )  # RFC 4122 variant.
     variant_part = F.lower(F.conv(variant_part, 2, 16))
     return F.concat_ws(
         "-",

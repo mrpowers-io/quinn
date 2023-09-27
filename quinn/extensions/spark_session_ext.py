@@ -10,7 +10,7 @@ def create_df(self, rows_data, col_specs):
 
     :param rows_data: the data used to create the DataFrame
     :type rows_data: array-like
-    :param col_specs: list of tuples containing the name and type of the field 
+    :param col_specs: list of tuples containing the name and type of the field
     :type col_specs: list of tuples
     :return: a new DataFrame
     :rtype: DataFrame

@@ -21,7 +21,8 @@ def describe_with_columns_renamed():
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
         source_df = spark.createDataFrame(data, schema)
         actual_df = quinn.with_columns_renamed(spaces_to_underscores)(source_df)
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [("jose", "a"), ("li", "b"), ("sam", "c")],
             [
                 ("i_like_cheese", StringType(), True),
@@ -43,7 +44,8 @@ def describe_with_columns_renamed():
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
         source_df = spark.createDataFrame(data, schema)
         actual_df = quinn.with_columns_renamed(dots_to_underscores)(source_df)
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [("jose", "a"), ("li", "b"), ("sam", "c")],
             [
                 ("i_like_cheese", StringType(), True),
@@ -75,7 +77,8 @@ def describe_with_some_columns_renamed():
         actual_df = quinn.with_some_columns_renamed(
             british_to_american, change_col_name
         )(source_df)
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [("potato", "hola!", "disel")],
             [
                 ("french_fries", StringType(), True),
@@ -104,7 +107,8 @@ def describe_with_some_columns_renamed():
         actual_df = quinn.with_some_columns_renamed(
             dots_to_underscores, change_col_name
         )(source_df)
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [("frank", "hot dog", "mia")],
             [
                 ("a_person", StringType(), True),
@@ -126,7 +130,8 @@ def describe_snake_case_col_names():
         data = [("jose", "a"), ("li", "b"), ("sam", "c")]
         source_df = spark.createDataFrame(data, schema)
         actual_df = quinn.snake_case_col_names(source_df)
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [("jose", "a"), ("li", "b"), ("sam", "c")],
             [
                 ("i_like_cheese", StringType(), True),
@@ -138,7 +143,8 @@ def describe_snake_case_col_names():
 
 def describe_sort_columns():
     def it_sorts_columns_in_asc_order(spark):
-        source_df = spark.create_df(
+        source_df = quinn.create_df(
+            spark,
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),
@@ -151,7 +157,8 @@ def describe_sort_columns():
             ],
         )
         actual_df = quinn.sort_columns(source_df, "asc")
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [
                 ("switch", "jose", "oak"),
                 ("xbox", "li", "redwood"),
@@ -166,7 +173,8 @@ def describe_sort_columns():
         chispa.assert_df_equality(actual_df, expected_df)
 
     def it_sorts_columns_in_desc_order(spark):
-        source_df = spark.create_df(
+        source_df = quinn.create_df(
+            spark,
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),
@@ -179,7 +187,8 @@ def describe_sort_columns():
             ],
         )
         actual_df = quinn.sort_columns(source_df, "desc")
-        expected_df = spark.create_df(
+        expected_df = quinn.create_df(
+            spark,
             [
                 ("oak", "jose", "switch"),
                 ("redwood", "li", "xbox"),
@@ -194,7 +203,8 @@ def describe_sort_columns():
         chispa.assert_df_equality(actual_df, expected_df)
 
     def it_throws_an_error_if_the_sort_order_is_invalid(spark):
-        source_df = spark.create_df(
+        source_df = quinn.create_df(
+            spark,
             [
                 ("jose", "oak", "switch"),
                 ("li", "redwood", "xbox"),

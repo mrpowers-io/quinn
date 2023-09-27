@@ -100,7 +100,7 @@ def create_df(spark: SparkSession, rows_data, col_specs) -> DataFrame:
     :type spark: SparkSession
     :param rows_data: the data used to create the DataFrame
     :type rows_data: array-like
-    :param col_specs: list of tuples containing the name and type of the field 
+    :param col_specs: list of tuples containing the name and type of the field
     :type col_specs: list of tuples
     :return: a new DataFrame
     :rtype: DataFrame
