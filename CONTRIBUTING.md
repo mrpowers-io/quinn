@@ -42,7 +42,7 @@ poetry env use python3.9
 
 After that you should install all the dependencies including development:
 ```shell
-poetry install
+make install_deps
 ```
 
 #### Setup Java
@@ -53,7 +53,10 @@ To run spark tests you need to have properly configured Java. Apache Spark curre
 ### Rinning Tests
 
 This project uses `pytest` and `chispa` for running spark tests. Please run all the tests before creating a pull request. In the case when you are working on new functionality you should also add new tests.
-
+You can run test as following:
+```shell
+make test
+```
 ### Code style
 
 This project follows the [PySpark style guide](https://github.com/MrPowers/spark-style-guide/blob/main/PYSPARK_STYLE_GUIDE.md). All public functions and methods should be documented in `README.md` and also should have docstrings in `sphinx format`:
