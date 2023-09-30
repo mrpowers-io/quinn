@@ -1,14 +1,16 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType, BooleanType, IntegerType
-from quinn.extensions import * # noqa
+import quinn
 import chispa
 
 from tests.conftest import auto_inject_fixtures
+from quinn.extensions import *  # noqa
 
 
 @auto_inject_fixtures("spark")
 def test_is_falsy(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [(True, False), (False, True), (None, True)],
         [
             ("has_stuff", BooleanType(), True),
@@ -20,7 +22,8 @@ def test_is_falsy(spark):
 
 
 def test_is_truthy(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [(True, True), (False, False), (None, False)],
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
@@ -31,7 +34,8 @@ def test_is_truthy(spark):
 
 
 def test_is_false(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [(True, False), (False, True), (None, None)],
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
@@ -40,7 +44,8 @@ def test_is_false(spark):
 
 
 def test_is_true(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [(True, True), (False, False), (None, None)],
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
@@ -49,7 +54,8 @@ def test_is_true(spark):
 
 
 def test_is_null_or_blank(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [
             ("", True),
             ("   ", True),
@@ -68,7 +74,8 @@ def test_is_null_or_blank(spark):
 
 
 def test_is_not_in(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [
             ("surfing", True),
             ("swimming", True),
@@ -87,7 +94,8 @@ def test_is_not_in(spark):
 
 
 def test_null_between(spark):
-    source_df = spark.create_df(
+    source_df = quinn.create_df(
+        spark,
         [
             (17, None, 94, True),
             (17, None, 10, False),
