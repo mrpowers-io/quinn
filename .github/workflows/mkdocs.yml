@@ -30,7 +30,7 @@ jobs:
             poetry-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run:
-          poetry install --with mkdocs
+          make install_deps
         if: steps.cache.outputs.cache-hit != 'true'
       - name: Setup GH
         run: |
