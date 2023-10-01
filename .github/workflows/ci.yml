@@ -74,7 +74,7 @@ jobs:
             poetry-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: poetry install
+        run: make install_deps
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
@@ -83,4 +83,4 @@ jobs:
         run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
-        run: poetry run pytest
+        run: make test

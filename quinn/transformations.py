@@ -18,6 +18,7 @@ def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], Dat
     :param fun: Renaming function
     :returns: Function which takes DataFrame as parameter.
     """
+
     def _(df: DataFrame) -> DataFrame:
         cols = list(
             map(
@@ -47,6 +48,7 @@ def with_some_columns_renamed(
     `DataFrame` and returns a `DataFrame` with some of its columns renamed.
     :rtype: `Callable[[DataFrame], DataFrame]`
     """
+
     def _(df):
         cols = list(
             map(
@@ -95,7 +97,7 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
     :type df: pandas.DataFrame
     :param sort_order: The order in which to sort the columns in the DataFrame
     :type sort_order: str
-    :return: A DataFrame with the columns sorted in the chosen order 
+    :return: A DataFrame with the columns sorted in the chosen order
     :rtype: pandas.DataFrame
     """
     sorted_col_names = None

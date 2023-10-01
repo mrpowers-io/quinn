@@ -209,7 +209,7 @@ def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
     return F.abs(col1 - col2) < threshold
 
 
-def array_choice(col: Column) -> Column:
+def array_choice(col: Column, seed: Optional[int] = None) -> Column:
     """Returns one random element from the given column.
 
     :param col: Column from which element is chosen
@@ -217,7 +217,7 @@ def array_choice(col: Column) -> Column:
     :return: random element from the given column
     :rtype: Column
     """
-    index = (F.rand() * F.size(col)).cast("int")
+    index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
 
 
@@ -231,7 +231,8 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
     :param regexp: string `re` pattern
     :return: List of matches
     """
-    return None if s == None else re.findall(regexp, s)
+    return None if s is None else re.findall(regexp, s)
+
 
 def business_days_between(start_date: Column, end_date: Column) -> Column:
     """This function takes two Spark `Columns` and returns a `Column` with the number of business
@@ -244,15 +245,18 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
     :returns: a Column with the number of business days between the start and the end date
     :rtype: Column
     """
-    
-    all_days = F.sequence(start_date, end_date)
-    days_of_week = F.transform(all_days, lambda day: F.date_format(day, 'E'))
-    filter_weekends = F.filter(days_of_week, lambda day: day.isNotIn(['Sat','Sun']))
+
+    all_days = "sequence(start_date, end_date)"
+    days_of_week = f"transform({all_days}, x -> date_format(x, 'E'))"
+    filter_weekends = F.expr(f"filter({days_of_week}, x -> x NOT IN ('Sat', 'Sun'))")
     num_business_days = F.size(filter_weekends) - 1
 
     return F.when(num_business_days < 0, None).otherwise(num_business_days)
 
-def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "") -> Column:
+
+def uuid5(
+    col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = ""
+) -> Column:
     """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
 
     Sets variant to RFC 4122 one.
@@ -274,7 +278,9 @@ def uuid5(col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: 
     variant_part = F.substring(hashed, 17, 4)
     variant_part = F.conv(variant_part, 16, 2)
     variant_part = F.lpad(variant_part, 16, "0")
-    variant_part = F.concat(F.lit("10"), F.substring(variant_part, 3, 16))  # RFC 4122 variant.
+    variant_part = F.concat(
+        F.lit("10"), F.substring(variant_part, 3, 16)
+    )  # RFC 4122 variant.
     variant_part = F.lower(F.conv(variant_part, 2, 16))
     return F.concat_ws(
         "-",

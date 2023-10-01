@@ -282,24 +282,26 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 ### Schema Helpers
 
 **schema_from_csv()**
+
 ```python
 quinn.schema_from_csv("schema.csv")
 ```
 
-Returns a ```StructType()``` containing ```StructFields()``` using a .csv defined schema. The .csv must contain the following columns:
-- name: required name of the column, must be unique
-- type: required type of the column, must be one of the following: string, int, long, float, double, boolean, timestamp, date
-- nullable: optional indication whether the column can contain null values. If not specified, the column will be nullable
-- metadata: optional metadata for the column. If present, must be a valid JSON string
+Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the following columns:
 
+- column name
+- column type
+- nullable (optional)
+- metadata (optional)
 
-An example configuration is provided below:
+Here's an example configuration:
+
 ```
 name,type,nullable,metadata
 person,string,FALSE,{"description":"The person's name"}
 address,string,TRUE,{"description":"The person's address"}
-phoneNumber,string,TRUE,{"description":"The person's phone number"}
-age,int,FALSE,{"description":"The person's age"}
+phoneNumber,string
+age,int,FALSE
 ```
 
 ## Pyspark Core Class Extensions
@@ -307,19 +309,6 @@ age,int,FALSE,{"description":"The person's age"}
 ```
 from quinn.extensions import *
 ```
-
-### SparkSession Extensions
-
-**create_df()**
-
-```python
-spark.create_df(
-    [("jose", "a"), ("li", "b"), ("sam", "c")],
-    [("name", StringType(), True), ("blah", StringType(), True)]
-)
-```
-
-Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
 
 ### Column Extensions
 
