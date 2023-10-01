@@ -1,5 +1,5 @@
 from pyspark.sql import types as T
-
+import json
 
 def print_schema_as_code(dtype: T.DataType) -> str:
     """Represent DataType (including StructType) as valid Python code.
@@ -68,3 +68,79 @@ def _repr_column(column: T.StructField) -> str:
         )
 
     return "".join(res)
+
+
+def schema_from_csv(spark, file_path) -> T.StructType:
+    """Return a StructType from a CSV file containing schema configuration.
+
+    :param spark: The SparkSession object
+    :type spark: pyspark.sql.session.SparkSession
+
+    :param file_path: The path to the CSV file containing the schema configuration
+    :type file_path: str
+
+    :raises ValueError: If the CSV file does not contain the expected columns: name, type, nullable, description
+
+    :return: A StructType object representing the schema configuration
+    :rtype: pyspark.sql.types.StructType
+    """
+    def _validate_json(metadata: str) -> dict:
+        if metadata is None:
+            return {}
+
+        try:
+            metadata_dict = json.loads(metadata)
+
+        except json.JSONDecodeError:
+            raise ValueError(f'Invalid JSON: {metadata}')
+
+        return metadata_dict
+
+    def _lookup_type(type_str: str) -> T.DataType:
+        type_lookup = {
+            'string': T.StringType(),
+            'int': T.IntegerType(),
+            'float': T.FloatType(),
+            'double': T.DoubleType(),
+            'boolean': T.BooleanType(),
+            'bool': T.BooleanType(),
+            'timestamp': T.TimestampType(),
+            'date': T.DateType(),
+            'binary': T.BinaryType(),
+        }
+
+        if type_str not in type_lookup:
+            raise ValueError(f'Invalid type: {type_str}. Expecting one of: {type_lookup.keys()}')
+
+        return type_lookup[type_str]
+
+    def _convert_nullable(null_str: str) -> bool:
+        if null_str is None:
+            return True
+        
+        parsed_val = null_str.lower()
+        if parsed_val not in ['true', 'false']:
+            raise ValueError(f'Invalid nullable value: {null_str}. Expecting True or False.')
+
+        return parsed_val == 'true'
+
+    schema_df = spark.read.csv(file_path, header=True)
+    expected_columns = ['name', 'type', 'nullable', 'metadata']
+
+    # ensure that csv contains the expected columns: name, type, nullable, description
+    if schema_df.columns != expected_columns:
+        raise ValueError(f'CSV must contain columns in this order: {expected_columns}')
+
+    # create a structype per field
+    fields = []
+    for row in schema_df.collect():
+        field = T.StructField(
+            name=row['name'],
+            dataType=_lookup_type(row['type']),
+            nullable=_convert_nullable(row['nullable']),
+            metadata=_validate_json(row['metadata'])
+        )
+        fields.append(field)
+
+    schema = T.StructType(fields=fields)
+    return schema

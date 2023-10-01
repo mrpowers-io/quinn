@@ -279,31 +279,30 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 +----+---+-----------+------+
 ```
 
-**create_df()**
+### Schema Helpers
+
+**schema_from_csv()**
 
 ```python
-data = [("jose", "a"), ("li", "b"), ("sam", "c")]
-schema = [("name", StringType(), True), ("blah", StringType(), True)]
-
-df = quinn.create_df(spark, data, schema)
+quinn.schema_from_csv("schema.csv")
 ```
 
-Creates DataFrame with a syntax that's less verbose than the built-in `createDataFrame` method.
+Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the following columns:
 
-```python
-df.show()
+- column name
+- column type
+- nullable (optional)
+- metadata (optional)
+
+Here's an example configuration:
+
 ```
-
-```md
-+----+----+
-|name|blah|
-+----+----+
-|jose|   a|
-|  li|   b|
-| sam|   c|
-+----+----+
+name,type,nullable,metadata
+person,string,FALSE,{"description":"The person's name"}
+address,string,TRUE,{"description":"The person's address"}
+phoneNumber,string
+age,int,FALSE
 ```
-
 
 ## Pyspark Core Class Extensions
 
