@@ -42,7 +42,7 @@ semver = "^3"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
-chispa = "^0.9"
+chispa = "0.9.4"
 pytest-describe = "^2"
 
 [tool.poetry.group.linting.dependencies]
