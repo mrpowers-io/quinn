@@ -1,20 +1,31 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+      from numbers import Number
+
+      from pyspark.sql import Column
+      from pyspark.sql.functions import udf
+
+
 import re
 import uuid
-from numbers import Number
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable
 
 import pyspark.sql.functions as F
-from pyspark.sql import Column
 from pyspark.sql.types import (
-    ArrayType,
-    StringType,
-    BooleanType,
+      ArrayType,
+      BooleanType,
+      StringType,
 )
 
 
 def single_space(col: Column) -> Column:
-    """This function takes a column and replaces all the multiple white spaces with a
-    single space. It then trims the column to make all the texts consistent.
+    """Function takes a column and replaces all the multiple white spaces with a single space.
+
+    It then trims the column to make all the texts consistent.
+
     :param col: The column which needs to be spaced
     :type col: Column
     :returns: A trimmed column with single space
@@ -24,9 +35,10 @@ def single_space(col: Column) -> Column:
 
 
 def remove_all_whitespace(col: Column) -> Column:
-    """This function takes a `Column` object as a parameter and returns a `Column` object
-    with all white space removed. It does this using the regexp_replace function
-    from F, which replaces all whitespace with an empty string.
+    """Function takes a `Column` object as a parameter and returns a `Column` object with all white space removed.
+
+    It does this using the regexp_replace function from F, which replaces all whitespace with an empty string.
+
     :param col: a `Column` object
     :type col: Column
     :returns: a `Column` object with all white space removed
@@ -36,8 +48,7 @@ def remove_all_whitespace(col: Column) -> Column:
 
 
 def anti_trim(col: Column) -> Column:
-    """Removes whitespace from the boundaries of ``col`` using the regexp_replace
-    function.
+    """Remove whitespace from the boundaries of ``col`` using the regexp_replace function.
 
     :param col: Column on which to perform the regexp_replace.
     :type col: Column
@@ -48,11 +59,11 @@ def anti_trim(col: Column) -> Column:
 
 
 def remove_non_word_characters(col: Column) -> Column:
-    """Removes non-word characters from a column.
+    r"""Removes non-word characters from a column.
 
     The non-word characters which will be removed are those identified by the
     regular expression ``"[^\\w\\s]+"``.  This expression represents any character
-    that is not a word character (e.g. `\w`) or whitespace (`\s`).
+    that is not a word character (e.g. `\\w`) or whitespace (`\\s`).
 
     :param col: A Column object.
     :return: A Column object with non-word characters removed.
@@ -61,12 +72,11 @@ def remove_non_word_characters(col: Column) -> Column:
     return F.regexp_replace(col, "[^\\w\\s]+", "")
 
 
-def exists(f: Callable[[Any], bool]):
-    """
-    Create a user-defined function that takes a list expressed as a column of
-    type ``ArrayType(AnyType)`` as an argument and returns a boolean value indicating
-    whether any element in the list is true according to the argument ``f`` of the
-    ``exists()`` function.
+def exists(f: Callable[[Any], bool]) -> udf:
+    """Create a user-defined function.
+
+    It takes a list expressed as a column of type ``ArrayType(AnyType)`` as an argument and returns a boolean value indicating
+    whether any element in the list is true according to the argument ``f`` of the ``exists()`` function.
 
     :param f: Callable function - A callable function that takes an element of
     type Any and returns a boolean value.
@@ -77,19 +87,17 @@ def exists(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(list):
-        return any(map(f, list))
+    def temp_udf(list_: list) -> bool:
+        return any(map(f, list_))
 
     return F.udf(temp_udf, BooleanType())
 
 
-def forall(f: Callable[[Any], bool]):
-    """The **forall** function allows for mapping a given boolean function to a list of
-    arguments and return a single boolean value as the result of applying the
-    boolean function to each element of the list. It does this by creating a Spark
-    UDF which takes in a list of arguments, applying the given boolean function to
-    each element of the list and returning a single boolean value if all the
-    elements pass through the given boolean function.
+def forall(f: Callable[[Any], bool]) -> udf:
+    """The **forall** function allows for mapping a given boolean function to a list of arguments and return a single boolean value.
+
+    It does this by creating a Spark UDF which takes in a list of arguments, applying the given boolean function to
+    each element of the list and returning a single boolean value if all the elements pass through the given boolean function.
 
     :param f: A callable function ``f`` which takes in any type and returns a boolean
     :return: A spark UDF which accepts a list of arguments and returns True if all
@@ -97,15 +105,14 @@ def forall(f: Callable[[Any], bool]):
     :rtype: UserDefinedFunction
     """
 
-    def temp_udf(list):
-        return all(map(f, list))
+    def temp_udf(list_: list) -> bool:
+        return all(map(f, list_))
 
     return F.udf(temp_udf, BooleanType())
 
 
-def multi_equals(value: Any):
-    """Create a user-defined function that checks if all the given columns have the
-    designated value.
+def multi_equals(value: Any) -> udf:  # noqa: ANN401
+    """Create a user-defined function that checks if all the given columns have the designated value.
 
     :param value: The designated value.
     :type value: Any
@@ -113,16 +120,16 @@ def multi_equals(value: Any):
     :rtype: UserDifinedFunction
     """
 
-    def temp_udf(*cols):
-        return all(map(lambda col: col == value, cols))
+    def temp_udf(*cols) -> bool:  # noqa: ANN002
+        return all(map(lambda col: col == value, cols)) # noqa: C417
 
     return F.udf(temp_udf, BooleanType())
 
 
 def week_start_date(col: Column, week_start_day: str = "Sun") -> Column:
-    """This function takes a Spark `Column` and an optional `week_start_day` string
-    argument and returns a `Column` with the corresponding start of week dates. The
-    "standard week" in Spark starts on Sunday, however an optional argument can be
+    """Function takes a Spark `Column` and an optional `week_start_day` argument and returns a `Column` with the corresponding start of week dates.
+
+    The "standard week" in Spark starts on Sunday, however an optional argument can be
     used to start the week from a different day, e.g. Monday. The `week_start_day`
     argument is a string corresponding to the day of the week to start the week
     from, e.g. `"Mon"`, `"Tue"`, and must be in the set: `{"Sun", "Mon", "Tue", "Wed",
@@ -152,8 +159,7 @@ def week_start_date(col: Column, week_start_day: str = "Sun") -> Column:
 
 
 def week_end_date(col: Column, week_end_day: str = "Sat") -> Column:
-    """
-    Returns a date column for the end of week for a given day.
+    """Return a date column for the end of week for a given day.
 
     The Spark function `dayofweek` considers Sunday as the first day of the week, and
     uses the default value of 1 to indicate Sunday. Usage of the `when` and `otherwise`
@@ -180,22 +186,19 @@ def week_end_date(col: Column, week_end_day: str = "Sat") -> Column:
         "Sat": 7,
     }
     return F.when(
-        F.dayofweek(col).eqNullSafe(F.lit(day_of_week_mapping[week_end_day])), col
+        F.dayofweek(col).eqNullSafe(F.lit(day_of_week_mapping[week_end_day])), col,
     ).otherwise(F.next_day(col, week_end_day))
 
 
 def _raise_if_invalid_day(day: str) -> None:
     valid_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     if day not in valid_days:
-        message = "The day you entered '{0}' is not valid.  Here are the valid days: [{1}]".format(
-            day, ",".join(valid_days)
-        )
+        message = "The day you entered '{}' is not valid.  Here are the valid days: [{}]".format(day, ",".join(valid_days))
         raise ValueError(message)
 
 
 def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
-    """Compares two ``Column`` objects by checking if the difference between them
-    is less than a specified ``threshold``.
+    """Compare two ``Column`` objects by checking if the difference between them is less than a specified ``threshold``.
 
     :param col1: the first ``Column``
     :type col1: Column
@@ -209,7 +212,7 @@ def approx_equal(col1: Column, col2: Column, threshold: Number) -> Column:
     return F.abs(col1 - col2) < threshold
 
 
-def array_choice(col: Column, seed: Optional[int] = None) -> Column:
+def array_choice(col: Column, seed: int | None = None) -> Column:
     """Returns one random element from the given column.
 
     :param col: Column from which element is chosen
@@ -222,9 +225,10 @@ def array_choice(col: Column, seed: Optional[int] = None) -> Column:
 
 
 @F.udf(returnType=ArrayType(StringType()))
-def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
-    """This function uses the Python `re` library to extract regular expressions from a
-    string (`s`) using a regex pattern (`regexp`). It returns a list of all matches, or    `None` if `s` is `None`.
+def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
+    """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
+
+    It returns a list of all matches, or    `None` if `s` is `None`.
 
     :param s: input string (`Column`)
     :type s: str
@@ -235,8 +239,7 @@ def regexp_extract_all(s: str, regexp: str) -> Optional[List[re.Match]]:
 
 
 def business_days_between(start_date: Column, end_date: Column) -> Column:
-    """This function takes two Spark `Columns` and returns a `Column` with the number of business
-    days between the start and the end date.
+    """Function takes two Spark `Columns` and returns a `Column` with the number of business days between the start and the end date.
 
     :param start_date: The column with the start dates
     :type start_date: Column
@@ -245,7 +248,6 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
     :returns: a Column with the number of business days between the start and the end date
     :rtype: Column
     """
-
     all_days = "sequence(start_date, end_date)"
     days_of_week = f"transform({all_days}, x -> date_format(x, 'E'))"
     filter_weekends = F.expr(f"filter({days_of_week}, x -> x NOT IN ('Sat', 'Sun'))")
@@ -255,9 +257,9 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
 
 
 def uuid5(
-    col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = ""
+    col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "",
 ) -> Column:
-    """This function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
+    """Function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
 
     Sets variant to RFC 4122 one.
 
@@ -279,7 +281,7 @@ def uuid5(
     variant_part = F.conv(variant_part, 16, 2)
     variant_part = F.lpad(variant_part, 16, "0")
     variant_part = F.concat(
-        F.lit("10"), F.substring(variant_part, 3, 16)
+        F.lit("10"), F.substring(variant_part, 3, 16),
     )  # RFC 4122 variant.
     variant_part = F.lower(F.conv(variant_part, 2, 16))
     return F.concat_ws(

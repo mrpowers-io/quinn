@@ -68,5 +68,7 @@ ignore = [
     "D203", # Ignore blank line before summary of class
     "D213", # Ignore multiline summary second line
     "T201", # Allow print() in code.
-    "D401"  # Docstrings should be in imperative mode
-    ]
+    "D401", # Docstrings should be in imperative mode
+    "N812", # Allow import pyspark.sql.functions as F(lower case 'functions' as non-lower case F)
+
+]
