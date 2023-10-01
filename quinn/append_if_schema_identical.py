@@ -2,11 +2,12 @@ from pyspark.sql import DataFrame
 
 
 class SchemaMismatchError(ValueError):
-    """raise this when there's a schema mismatch between source & target schema"""
+    """raise this when there's a schema mismatch between source & target schema."""
 
 
 def append_if_schema_identical(source_df: DataFrame, target_df: DataFrame) -> DataFrame:
-    """Compares the schema of source & target dataframe .
+    """Compare the schema of source & target dataframe.
+
     :param source_df: Input DataFrame
     :type source_df: pyspark.sql.DataFrame
     :param target_df: Input DataFrame
@@ -37,5 +38,4 @@ def append_if_schema_identical(source_df: DataFrame, target_df: DataFrame) -> Da
         raise SchemaMismatchError(error_message)
 
     # Append the dataframes if the schemas are identical
-    appended_df = target_df.unionByName(source_df)
-    return appended_df
+    return target_df.unionByName(source_df)
