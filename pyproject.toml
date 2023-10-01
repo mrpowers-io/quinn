@@ -61,6 +61,14 @@ mkdocs = "^1.4.2"
 ###########################################################################
 
 [tool.ruff]
+select = ["ALL"]
 line-length = 150
-ignore = ["D100"]
-required-version = "0.0.291"
+ignore = [
+    "D100",
+    "D203", # Ignore blank line before summary of class
+    "D213", # Ignore multiline summary second line
+    "T201", # Allow print() in code.
+    "D401", # Docstrings should be in imperative mode
+    "N812", # Allow import pyspark.sql.functions as F(lower case 'functions' as non-lower case F)
+
+]
