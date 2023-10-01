@@ -2,8 +2,22 @@
 """quinn API."""
 
 from quinn.append_if_schema_identical import append_if_schema_identical
-from quinn.dataframe_helpers import column_to_list, create_df, print_athena_create_table, show_output_to_df, to_list_of_dictionaries
-from quinn.dataframe_validator import validate_absence_of_columns, validate_presence_of_columns, validate_schema
+from quinn.dataframe_helpers import (
+    column_to_list,
+    create_df,
+    print_athena_create_table,
+    show_output_to_df,
+    to_list_of_dictionaries,
+    two_columns_to_dictionary,
+)
+from quinn.dataframe_validator import (
+    DataFrameMissingColumnError,
+    DataFrameMissingStructFieldError,
+    DataFrameProhibitedColumnError,
+    validate_absence_of_columns,
+    validate_presence_of_columns,
+    validate_schema,
+)
 from quinn.functions import (
     anti_trim,
     approx_equal,
@@ -24,8 +38,12 @@ from quinn.transformations import snake_case_col_names, sort_columns, to_snake_c
 
 # Use __all__ to let developers know what is part of the public API.
 __all__ = [
+    "DataFrameMissingColumnError",
+    "DataFrameMissingStructFieldError",
+    "DataFrameProhibitedColumnError",
     "column_to_list",
     "to_list_of_dictionaries",
+    "two_columns_to_dictionary",
     "print_athena_create_table",
     "show_output_to_df",
     "create_df",
