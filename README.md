@@ -287,21 +287,52 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 quinn.schema_from_csv("schema.csv")
 ```
 
-Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the following columns:
+Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the column name and type.  The nullable and metadata columns are optional.
 
-- column name
-- column type
-- nullable (optional)
-- metadata (optional)
+Here's an example CSV file:
 
-Here's an example configuration:
+```
+name,type
+person,string
+address,string
+phoneNumber,string
+age,int
+```
+
+Here's how to convert that CSV file to a PySpark schema:
+
+```python
+schema = schema_from_csv(spark, "some_file.csv")
+
+StructType([
+    StructField("person", StringType(), True),
+    StructField("address", StringType(), True),
+    StructField("phoneNumber", StringType(), True),
+    StructField("age", IntegerType(), True),
+])
+```
+
+Here's a more complex CSV file:
 
 ```
 name,type,nullable,metadata
-person,string,FALSE,{"description":"The person's name"}
-address,string,TRUE,{"description":"The person's address"}
-phoneNumber,string
-age,int,FALSE
+person,string,false,{"description":"The person's name"}
+address,string
+phoneNumber,string,TRUE,{"description":"The person's phone number"}
+age,int,False
+```
+
+Here's how to read this CSV file into a PySpark schema:
+
+```python
+another_schema = schema_from_csv(spark, "some_file.csv")
+
+StructType([
+    StructField("person", StringType(), False, {"description": "The person's name"}),
+    StructField("address", StringType(), True),
+    StructField("phoneNumber", StringType(), True, {"description": "The person's phone number"}),
+    StructField("age", IntegerType(), False),
+])
 ```
 
 ## Pyspark Core Class Extensions

@@ -125,20 +125,22 @@ def schema_from_csv(spark, file_path) -> T.StructType:
         return parsed_val == 'true'
 
     schema_df = spark.read.csv(file_path, header=True)
-    expected_columns = ['name', 'type', 'nullable', 'metadata']
+    possible_columns = ['name', 'type', 'nullable', 'metadata']
+    num_cols = len(schema_df.columns)
+    expected_columns = possible_columns[0:num_cols]
 
     # ensure that csv contains the expected columns: name, type, nullable, description
     if schema_df.columns != expected_columns:
         raise ValueError(f'CSV must contain columns in this order: {expected_columns}')
 
-    # create a structype per field
+    # create a StructType per field
     fields = []
     for row in schema_df.collect():
         field = T.StructField(
             name=row['name'],
             dataType=_lookup_type(row['type']),
-            nullable=_convert_nullable(row['nullable']),
-            metadata=_validate_json(row['metadata'])
+            nullable=_convert_nullable(row['nullable']) if 'nullable' in row else True,
+            metadata=_validate_json(row['metadata'] if 'metadata' in row else None)
         )
         fields.append(field)
 

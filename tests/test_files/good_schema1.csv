@@ -2,4 +2,4 @@
 person,string,false,{"description":"The person's name"}
 address,string
 phoneNumber,string,TRUE,{"description":"The person's phone number"}
-age,int,False,{"description":"The person's age"}
+age,int,False
