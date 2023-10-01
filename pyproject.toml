@@ -61,6 +61,11 @@ mkdocs = "^1.4.2"
 ###########################################################################
 
 [tool.ruff]
+select = ["ALL"]
 line-length = 150
-ignore = ["D100"]
+ignore = [
+    "D100",
+    "D203", # Ignore blank line before summary of class
+    "D213" # Ignore multiline summary second line  
+    ]
 required-version = "0.0.291"
