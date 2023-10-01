@@ -67,5 +67,6 @@ ignore = [
     "D100",
     "D203", # Ignore blank line before summary of class
     "D213", # Ignore multiline summary second line
-    "T201" # Allow print() in code.
+    "T201", # Allow print() in code.
+    "D401"  # Docstrings should be in imperative mode
     ]
