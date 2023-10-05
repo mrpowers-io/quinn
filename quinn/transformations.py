@@ -5,8 +5,7 @@ from pyspark.sql import DataFrame
 
 
 def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], DataFrame]:
-    """This is a function designed to rename the columns of a
-    `Spark DataFrame`.
+    """Ffunction designed to rename the columns of a `Spark DataFrame`.
 
     It takes a `Callable[[str], str]` object as an argument (``fun``) and returns a
     `Callable[[DataFrame], DataFrame]` object.
@@ -20,23 +19,18 @@ def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], Dat
     """
 
     def _(df: DataFrame) -> DataFrame:
-        cols = list(
-            map(
-                lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name)),
-                df.columns,
-            )
-        )
+        cols = [F.col(f"`{col_name}`").alias(fun(col_name)) for col_name in df.columns]
         return df.select(*cols)
 
     return _
 
 
 def with_some_columns_renamed(
-    fun: Callable[[str], str], change_col_name: Callable[[str], str]
+    fun: Callable[[str], str], change_col_name: Callable[[str], str],
 ) -> Callable[[DataFrame], DataFrame]:
-    """A function that takes a `Callable[[str], str]` and a `Callable[[str], str]`
-    and returns a `Callable[[DataFrame], DataFrame]`, which in turn takes a
-    `DataFrame` and returns a `DataFrame` with some of its columns renamed.
+    """Function that takes a `Callable[[str], str]` and a `Callable[[str], str]` and returns a `Callable[[DataFrame], DataFrame]`.
+
+    Which in turn takes a `DataFrame` and returns a `DataFrame` with some of its columns renamed.
 
     :param fun: A function that takes a column name as a string and returns a
     new name as a string.
@@ -49,29 +43,24 @@ def with_some_columns_renamed(
     :rtype: `Callable[[DataFrame], DataFrame]`
     """
 
-    def _(df):
-        cols = list(
-            map(
-                lambda col_name: F.col("`{0}`".format(col_name)).alias(fun(col_name))
+    def _(df: DataFrame) -> DataFrame:
+        cols = [F.col(f"`{col_name}`").alias(fun(col_name))
                 if change_col_name(col_name)
-                else F.col("`{0}`".format(col_name)),
-                df.columns,
-            )
-        )
+                else F.col(f"`{col_name}`") for col_name in df.columns]
         return df.select(*cols)
 
     return _
 
 
 def snake_case_col_names(df: DataFrame) -> DataFrame:
-    """This function takes a ``DataFrame`` instance and returns the
-    same ``DataFrame`` instance with all column names converted to snake case
+    """Function takes a ``DataFrame`` instance and returns the same ``DataFrame`` instance with all column names converted to snake case.
+
     (e.g. ``col_name_1``). It uses the ``to_snake_case`` function in conjunction with
     the ``with_columns_renamed`` function to achieve this.
     :param df: A ``DataFrame`` instance to process
     :type df: ``DataFrame``
     :return: A ``DataFrame`` instance with column names converted to snake case
-    :rtype: ``DataFrame``
+    :rtype: ``DataFrame``.
     """
     return with_columns_renamed(to_snake_case)(df)
 
@@ -88,8 +77,9 @@ def to_snake_case(s: str) -> str:
 
 
 def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
-    """This function sorts the columns of a given DataFrame based on a given sort
-    order. The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
+    """Function sorts the columns of a given DataFrame based on a given sort order.
+
+    The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
     ascending and descending order, respectively. If any other value is provided for
     the ``sort_order`` parameter, a ``ValueError`` will be raised.
 
@@ -106,9 +96,8 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
     elif sort_order == "desc":
         sorted_col_names = sorted(df.columns, reverse=True)
     else:
+        msg = f"['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'"
         raise ValueError(
-            "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
-                sort_order=sort_order
-            )
+            msg,
         )
     return df.select(*sorted_col_names)
