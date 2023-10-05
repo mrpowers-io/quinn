@@ -72,3 +72,7 @@ ignore = [
     "D401", # Docstrings should be in imperative modes
 ]
 extend-exclude = ["tests", "docs"]
+
+[tool.ruff.per-file-ignores]
+"quinn/extensions/column_ext.py" = ["FBT003", "N802"]
+"quinn/extensions/__init__.py" = ["F403"]
