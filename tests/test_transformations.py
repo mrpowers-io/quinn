@@ -1,5 +1,5 @@
 import pytest
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.types import StructType, StructField, StringType, ArrayType, IntegerType
 
 import quinn
 from tests.conftest import auto_inject_fixtures
@@ -222,3 +222,51 @@ def describe_sort_columns():
             excinfo.value.args[0]
             == "['asc', 'desc'] are the only valid sort orders and you entered a sort order of 'cats'"
         )
+
+def test_sort_struct(spark):
+    # create a schema including an array of structs
+    unsorted_fields = StructType(
+        [
+            StructField("b", IntegerType()),
+            StructField("a", ArrayType(StructType([
+                StructField("d", IntegerType()),
+                StructField("e", IntegerType()),
+                StructField("c", IntegerType()),
+            ]))),
+        ]
+    )
+
+    sorted_fields = StructType(
+        [
+            StructField("a", ArrayType(StructType([
+                StructField("d", IntegerType()),
+                StructField("e", IntegerType()),
+                StructField("c", IntegerType()),
+            ]))),
+            StructField("b", IntegerType()),
+        ]
+    )
+
+    unsorted_data = [
+        (1, [(1, 2, 3), (4, 5, 6)]),
+        (2, [(7, 8, 9), (10, 11, 12)]),
+    ]
+
+    sorted_data = [
+        ([(1, 2, 3), (4, 5, 6)], 1),
+        ([(7, 8, 9), (10, 11, 12)], 2),
+    ]
+
+    unsorted_df = spark.createDataFrame(unsorted_data, unsorted_fields)
+    expected_df = spark.createDataFrame(sorted_data, sorted_fields)
+
+    sorted_df = quinn.sort_columns(unsorted_df, 'asc')
+
+    # TODO: doesn't work b/c of nested structs
+    chispa.schema_comparer.assert_schema_equality(sorted_df, expected_df)
+
+
+# create a local spark session
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName('abc').getOrCreate()
+test_sort_struct(spark)
