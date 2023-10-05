@@ -1,6 +1,6 @@
 from typing import Callable
 
-import pyspark.sql.functions as F
+import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 
 

@@ -1,7 +1,7 @@
 import json
 
 from pyspark.sql import SparkSession
-from pyspark.sql import types as T
+from pyspark.sql import types as T  # noqa: N812
 
 
 def print_schema_as_code(dtype: T.DataType) -> str:
