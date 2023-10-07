@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 from tests.conftest import auto_inject_fixtures
 
 import chispa
+import quinn
 
 
 @auto_inject_fixtures("spark")
@@ -16,7 +17,8 @@ def test_create_df(spark):
     data = [("jose", "a"), ("li", "b"), ("sam", "c")]
     actual_df = spark.createDataFrame(data, schema)
 
-    expected_df = spark.create_df(
+    expected_df = quinn.create_df(
+        spark,
         [("jose", "a"), ("li", "b"), ("sam", "c")],
         [("name", StringType(), True), ("blah", StringType(), True)],
     )

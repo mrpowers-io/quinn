@@ -1,0 +1,3 @@
+whatever,type,nullable,metadata
+blah,string,false,{"description":"The person's name"}
+no,string
