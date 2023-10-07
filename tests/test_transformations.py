@@ -232,8 +232,12 @@ def describe_sort_columns():
         )
 
 
-def test_sort_struct_flat(spark):
-    def _get_simple_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+def _test_sort_struct_flat(spark, sort_order: str):
+    def _get_simple_test_dataframes(sort_order) -> tuple[(DataFrame, DataFrame)]:
+        col_a = 1
+        col_b = 2
+        col_c = 3
+
         unsorted_fields = StructType(
             [
                 StructField("b", IntegerType()),
@@ -241,39 +245,62 @@ def test_sort_struct_flat(spark):
                 StructField("a", IntegerType()),
             ]
         )
-        sorted_fields = StructType(
-            [
-                StructField("a", IntegerType()),
-                StructField("b", IntegerType()),
-                StructField("c", IntegerType()),
-            ]
-        )
-
-        col_a = 1
-        col_b = 2
-        col_c = 3
-
         unsorted_data = [
             (col_b, col_c, col_a),
         ]
-        sorted_data = [
-            (col_a, col_b, col_c),
-        ]
+        if sort_order == "asc":
+            sorted_fields = StructType(
+                [
+                    StructField("a", IntegerType()),
+                    StructField("b", IntegerType()),
+                    StructField("c", IntegerType()),
+                ]
+            )
+
+            sorted_data = [
+                (col_a, col_b, col_c),
+            ]
+        elif sort_order == "desc":
+            sorted_fields = StructType(
+                [
+                    StructField("c", IntegerType()),
+                    StructField("b", IntegerType()),
+                    StructField("a", IntegerType()),
+                ]
+            )
+
+            sorted_data = [
+                (col_c, col_b, col_a),
+            ]
+        else:
+            raise ValueError(
+                "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
+                    sort_order=sort_order
+                )
+            )
 
         unsorted_df = spark.createDataFrame(unsorted_data, unsorted_fields)
         expected_df = spark.createDataFrame(sorted_data, sorted_fields)
 
         return unsorted_df, expected_df
 
-    unsorted_df, expected_df = _get_simple_test_dataframes()
+    unsorted_df, expected_df = _get_simple_test_dataframes(sort_order=sort_order)
 
     unsorted_df.printSchema()
-    sorted_df = quinn.sort_columns(unsorted_df, "asc")
+    sorted_df = quinn.sort_columns(unsorted_df, sort_order)
     sorted_df.printSchema()
     expected_df.printSchema()
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=True
     )
+
+
+def test_sort_struct_flat(spark):
+    _test_sort_struct_flat(spark, "asc")
+
+
+def test_sort_struct_flat_desc(spark):
+    _test_sort_struct_flat(spark, "desc")
 
 
 def test_sort_struct_nested(spark):
