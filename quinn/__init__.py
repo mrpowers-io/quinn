@@ -1,7 +1,7 @@
-
 """quinn API."""
 
 from quinn.append_if_schema_identical import append_if_schema_identical
+from quinn.split_columns import split_col
 from quinn.dataframe_helpers import (
     column_to_list,
     create_df,

@@ -106,7 +106,7 @@ def forall(f: Callable[[Any], bool]) -> udf:
     :return: A spark UDF which accepts a list of arguments and returns True if all
     elements pass through the given boolean function, False otherwise.
     :rtype: UserDefinedFunction
-    """
+        """
 
     def temp_udf(list_: list) -> bool:
         return all(map(f, list_))
