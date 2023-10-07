@@ -394,6 +394,101 @@ def test_sort_struct_nested(spark):
     )
 
 
+def test_sort_struct_nested_desc(spark):
+    def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        unsorted_schema = StructType(
+            [
+                StructField("_id", StringType(), nullable=False),
+                StructField("first_name", StringType(), nullable=False),
+                StructField(
+                    "address",
+                    StructType(
+                        [
+                            StructField(
+                                "zip",
+                                StructType(
+                                    [
+                                        StructField(
+                                            "last4", IntegerType(), nullable=True
+                                        ),
+                                        StructField(
+                                            "first5", IntegerType(), nullable=True
+                                        ),
+                                    ]
+                                ),
+                                nullable=True,
+                            ),
+                            StructField("city", StringType(), nullable=True),
+                        ]
+                    ),
+                    nullable=True,
+                ),
+            ]
+        )
+
+        sorted_schema = StructType(
+            [
+                StructField("first_name", StringType(), nullable=False),
+                StructField(
+                    "address",
+                    StructType(
+                        [
+                            StructField(
+                                "zip",
+                                StructType(
+                                    [
+                                        StructField(
+                                            "last4", IntegerType(), nullable=True
+                                        ),
+                                        StructField(
+                                            "first5", IntegerType(), nullable=True
+                                        ),
+                                    ]
+                                ),
+                                nullable=True,
+                            ),
+                            StructField("city", StringType(), nullable=True),
+                        ]
+                    ),
+                    nullable=True,
+                ),
+                StructField("_id", StringType(), nullable=False),
+            ]
+        )
+
+        _id = "12345"
+        city = "Fake City"
+        zip_first5 = 54321
+        zip_last4 = 12345
+        first_name = "John"
+
+        unsorted_data = [
+            (_id, first_name, (((zip_last4, zip_first5)), city)),
+        ]
+        sorted_data = [
+            (
+                first_name,
+                ((zip_first5, zip_last4), city),
+                _id,
+            ),
+        ]
+
+        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_schema)
+        expected_df = spark.createDataFrame(sorted_data, sorted_schema)
+
+        return unsorted_df, expected_df
+
+    unsorted_df, expected_df = _get_test_dataframes()
+
+    unsorted_df.printSchema()
+    sorted_df = quinn.sort_columns(unsorted_df, "desc")
+    sorted_df.printSchema()
+
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=True
+    )
+
+
 # from pyspark.sql import SparkSession
 
 # spark = SparkSession.builder.appName("abc").getOrCreate()
