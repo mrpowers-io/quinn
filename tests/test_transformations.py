@@ -302,6 +302,37 @@ def test_sort_struct(spark):
 
         return unsorted_df, expected_df
 
+    def _create_simple_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        unsorted_fields = StructType(
+            [
+                StructField("b", IntegerType()),
+                StructField("c", IntegerType()),
+                StructField("a", IntegerType()),
+            ]
+        )
+        sorted_fields = StructType(
+            [
+                StructField("a", IntegerType()),
+                StructField("b", IntegerType()),
+                StructField("c", IntegerType()),
+            ]
+        )
+
+        col_a = 1
+        col_b = 2
+        col_c = 3
+
+        unsorted_data = [
+            (col_b, col_c, col_a),
+        ]
+        sorted_data = [
+            (col_a, col_b, col_c),
+        ]
+
+        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_fields)
+        expected_df = spark.createDataFrame(sorted_data, sorted_fields)
+
+        return unsorted_df, expected_df
     # TODO: doesn't work b/c of nested structs
     chispa.schema_comparer.assert_schema_equality(sorted_df, expected_df)
 
