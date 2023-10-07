@@ -224,43 +224,83 @@ def describe_sort_columns():
         )
 
 def test_sort_struct(spark):
-    # create a schema including an array of structs
-    unsorted_fields = StructType(
-        [
-            StructField("b", IntegerType()),
-            StructField("a", ArrayType(StructType([
-                StructField("d", IntegerType()),
-                StructField("e", IntegerType()),
-                StructField("c", IntegerType()),
-            ]))),
+    def _create_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        unsorted_fields = StructType(
+            [
+                StructField("b", IntegerType()),
+                StructField(
+                    "c",
+                    ArrayType(
+                        ArrayType(
+                            StructType(
+                                [
+                                    StructField("g", IntegerType()),
+                                    StructField("f", IntegerType()),
+                                ]
+                            )
+                        )
+                    ),
+                ),
+                StructField(
+                    "a",
+                    ArrayType(
+                        StructType(
+                            [
+                                StructField("d", IntegerType()),
+                                StructField("e", IntegerType()),
+                                StructField("c", IntegerType()),
+                            ]
+                        )
+                    ),
+                ),
+            ]
+        )
+        sorted_fields = StructType(
+            [
+                StructField(
+                    "a",
+                    ArrayType(
+                        StructType(
+                            [
+                                StructField("c", IntegerType()),
+                                StructField("e", IntegerType()),
+                                StructField("d", IntegerType()),
+                            ]
+                        )
+                    ),
+                ),
+                StructField("b", IntegerType()),
+                StructField(
+                    "c",
+                    ArrayType(
+                        ArrayType(
+                            StructType(
+                                [
+                                    StructField("f", IntegerType()),
+                                    StructField("g", IntegerType()),
+                                ]
+                            )
+                        )
+                    ),
+                ),
+            ]
+        )
+
+        col_a = [(2, 3, 4)]
+        col_b = 1
+        col_c = [[(5, 6)]]
+
+        unsorted_data = [
+            (col_b, col_c, col_a),
         ]
-    )
-
-    sorted_fields = StructType(
-        [
-            StructField("a", ArrayType(StructType([
-                StructField("d", IntegerType()),
-                StructField("e", IntegerType()),
-                StructField("c", IntegerType()),
-            ]))),
-            StructField("b", IntegerType()),
+        sorted_data = [
+            (col_a, col_b, col_c),
         ]
-    )
 
-    unsorted_data = [
-        (1, [(1, 2, 3), (4, 5, 6)]),
-        (2, [(7, 8, 9), (10, 11, 12)]),
-    ]
+        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_fields)
+        expected_df = spark.createDataFrame(sorted_data, sorted_fields)
 
-    sorted_data = [
-        ([(1, 2, 3), (4, 5, 6)], 1),
-        ([(7, 8, 9), (10, 11, 12)], 2),
-    ]
-
-    unsorted_df = spark.createDataFrame(unsorted_data, unsorted_fields)
-    expected_df = spark.createDataFrame(sorted_data, sorted_fields)
-
-    sorted_df = quinn.sort_columns(unsorted_df, 'asc')
+        return unsorted_df, expected_df
 
     # TODO: doesn't work b/c of nested structs
     chispa.schema_comparer.assert_schema_equality(sorted_df, expected_df)
