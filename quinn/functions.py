@@ -20,6 +20,9 @@ from pyspark.sql.types import (
       StringType,
 )
 
+from pyspark.sql import Column, DataFrame
+from typing import Dict, List
+from pathlib import Path
 
 def single_space(col: Column) -> Column:
     """Function takes a column and replaces all the multiple white spaces with a single space.
@@ -225,6 +228,161 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
 
 
 @F.udf(returnType=ArrayType(StringType()))
+def regexp_extract_all(s, regexp):
+    return None if s == None else re.findall(regexp, s)
+
+
+def sanitize_column_name(name: str, replace_char: str = "_") -> str:
+    """
+    Sanitizes column names by replacing special characters with the specified character.
+
+    :param name: The original column name.
+    :type name: str
+    :param replace_char: The character to replace special characters with, defaults to '_'.
+    :type replace_char: str, optional
+    :return: The sanitized column name.
+    :rtype: str
+    """
+    return re.sub(r"[^a-zA-Z0-9_]", replace_char, name)
+
+def _get_complex_fields(df: DataFrame) -> Dict[str, object]:
+    """
+    Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :return: A dictionary with complex field names as keys and their respective data types as values.
+    :rtype: Dict[str, object]
+    """
+    return {
+        field.name: field.dataType
+        for field in df.schema.fields
+        if isinstance(field.dataType, (ArrayType, StructType, MapType))
+    }
+
+def flatten_struct(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
+    """
+    Flattens the specified StructType column in the input DataFrame and returns a new DataFrame with the flattened columns.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :param col_name: The column name of the StructType to be flattened.
+    :type col_name: str
+    :param sep: The separator to use in the resulting flattened column names, defaults to ':'.
+    :type sep: str, optional
+    :return: The DataFrame with the flattened StructType column.
+    :rtype: List[Column]
+    """
+    struct_type = _get_complex_fields(df)[col_name]
+    expanded = [
+        F.col(f"`{col_name}`.`{k}`").alias(col_name + sep + k)
+        for k in [n.name for n in struct_type.fields]
+    ]
+    return df.select("*", *expanded).drop(F.col(f"`{col_name}`"))
+
+def explode_array(df: DataFrame, col_name: str) -> DataFrame:
+    """
+    Explodes the specified ArrayType column in the input DataFrame and returns a new DataFrame with the exploded column.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :param col_name: The column name of the ArrayType to be exploded.
+    :type col_name: str
+    :return: The DataFrame with the exploded ArrayType column.
+    :rtype: DataFrame
+    """
+    return df.select("*", F.explode_outer(F.col(f"`{col_name}`")).alias(col_name)).drop(col_name)
+
+def flatten_map(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
+    """
+    Flattens the specified MapType column in the input DataFrame and returns a new DataFrame with the flattened columns.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :param col_name: The column name of the MapType to be flattened.
+    :type col_name: str
+    :param sep: The separator to use in the resulting flattened column names, defaults to ":".
+    :type sep: str, optional
+    :return: The DataFrame with the flattened MapType column.
+    :rtype: DataFrame
+    """
+    keys_df = df.select(F.explode_outer(F.map_keys(F.col(f"`{col_name}`")))).distinct()
+    keys = [row[0] for row in keys_df.collect()]
+    key_cols = [F.col(f"`{col_name}`").getItem(k).alias(col_name + sep + k) for k in keys]
+    return df.select([F.col(f"`{col}`") for col in df.columns if col != col_name] + key_cols)
+
+def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sanitized_columns: bool = False) -> DataFrame:
+    """
+    Flattens all complex data types (StructType, ArrayType, and MapType) in the input DataFrame and returns a
+    new DataFrame with the flattened columns.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :param sep: The separator to use in the resulting flattened column names, defaults to ":".
+    :type sep: str, optional
+    :param replace_char: The character to replace special characters with in column names, defaults to "_".
+    :type replace_char: str, optional
+    :param sanitized_columns: Whether to sanitize column names, defaults to False.
+    :type sanitized_columns: bool, optional
+    :return: The DataFrame with all complex data types flattened.
+    :rtype: DataFrame
+
+    .. note:: This function assumes the input DataFrame has a consistent schema across all rows. If you have files with
+        different schemas, process each separately instead.
+
+    .. example:: Example usage:
+
+        >>> data = [
+                (
+                    1,
+                    ("Alice", 25),
+                    {"A": 100, "B": 200},
+                    ["apple", "banana"],
+                    {"key": {"nested_key": 10}},
+                    {"A#": 1000, "B@": 2000},
+                ),
+                (
+                    2,
+                    ("Bob", 30),
+                    {"A": 150, "B": 250},
+                    ["orange", "grape"],
+                    {"key": {"nested_key": 20}},
+                    {"A#": 1500, "B@": 2500},
+                ),
+            ]
+            
+        >>> df = spark.createDataFrame(data)
+        >>> flattened_df = flatten_dataframe(df)
+        >>> flattened_df.show()
+        >>> flattened_df_with_hyphen = flatten_dataframe(df, replace_char="-")
+        >>> flattened_df_with_hyphen.show()
+    """
+    complex_fields = _get_complex_fields(df)
+
+    while len(complex_fields) != 0:
+        col_name = list(complex_fields.keys())[0]
+
+        if isinstance(complex_fields[col_name], StructType):
+            df = flatten_struct(df, col_name, sep)
+
+        elif isinstance(complex_fields[col_name], ArrayType):
+            df = explode_array(df, col_name)
+
+        elif isinstance(complex_fields[col_name], MapType):
+            df = flatten_map(df, col_name, sep)
+
+        complex_fields = _get_complex_fields(df)
+
+    # Sanitize column names with the specified replace_char
+    if sanitized_columns:
+        sanitized_columns = [
+            sanitize_column_name(col_name, replace_char) for col_name in df.columns
+        ]
+        df = df.toDF(*sanitized_columns)
+
+    return df
+
+  
 def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
     """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
 
