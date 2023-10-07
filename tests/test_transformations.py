@@ -389,13 +389,12 @@ def test_sort_struct_nested(spark):
     sorted_df = quinn.sort_columns(unsorted_df, "asc")
     sorted_df.printSchema()
 
-    # TODO: work on assert_schema_equality to handle nested structs
-    assert True
-    # assert_schema_equality(sorted_df, expected_df)
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=True
+    )
 
 
-# create a local spark session
 # from pyspark.sql import SparkSession
 
 # spark = SparkSession.builder.appName("abc").getOrCreate()
-# test_sort_struct(spark)
+# test_sort_struct_nested(spark)
