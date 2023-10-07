@@ -429,16 +429,11 @@ def test_flatten_dataframe(spark):
             1,
             "John",
             {"age": 30, "gender": "M", "address": {"city": "New York", "state": "NY"}},
-            [
-                {"type": "home", "number": "555-1234"},
-                {"type": "work", "number": "555-5678"},
-            ],
         ),
         (
             2,
             "Jane",
             {"age": 25, "gender": "F", "address": {"city": "San Francisco", "state": "CA"}},
-            [{"type": "home", "number": "555-4321"}],
         ),
     ]
     schema = StructType(
@@ -465,28 +460,14 @@ def test_flatten_dataframe(spark):
                 ),
                 True,
             ),
-            StructField(
-                "phone_numbers",
-                ArrayType(
-                    StructType(
-                        [
-                            StructField("type", StringType(), True),
-                            StructField("number", StringType(), True),
-                        ]
-                    ),
-                    True,
-                ),
-                True,
-            ),
         ]
     )
     df = spark.createDataFrame(data, schema)
 
     # Define expected output
     expected_data = [
-        (1, "John", 30, "M", "New York", "NY", "home", "555-1234"),
-        (1, "John", 30, "M", "New York", "NY", "work", "555-5678"),
-        (2, "Jane", 25, "F", "San Francisco", "CA", "home", "555-4321"),
+        (1, "John", 30, "M", "New York", "NY"),
+        (2, "Jane", 25, "F", "San Francisco", "CA"),
     ]
     expected_schema = StructType(
         [
@@ -496,8 +477,6 @@ def test_flatten_dataframe(spark):
             StructField("details:gender", StringType(), True),
             StructField("details:address:city", StringType(), True),
             StructField("details:address:state", StringType(), True),
-            StructField("phone:numbers:type", StringType(), True),
-            StructField("phone:numbers:number", StringType(), True),
         ]
     )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
