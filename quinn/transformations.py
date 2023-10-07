@@ -2,6 +2,7 @@ from typing import Callable
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
+from pyspark.sql.types import ArrayType, StructField, StructType
 
 
 def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], DataFrame]:
@@ -94,21 +95,87 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
     the ``sort_order`` parameter, a ``ValueError`` will be raised.
 
     :param df: A DataFrame
-    :type df: pandas.DataFrame
+    :type df: pyspark.sql.DataFrame
     :param sort_order: The order in which to sort the columns in the DataFrame
     :type sort_order: str
     :return: A DataFrame with the columns sorted in the chosen order
-    :rtype: pandas.DataFrame
+    :rtype: pyspark.sql.DataFrame
     """
-    sorted_col_names = None
-    if sort_order == "asc":
-        sorted_col_names = sorted(df.columns)
-    elif sort_order == "desc":
-        sorted_col_names = sorted(df.columns, reverse=True)
-    else:
-        raise ValueError(
-            "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
-                sort_order=sort_order
+
+    def parse_sort_order(sort_order: str) -> bool:
+        if sort_order not in ["asc", "desc"]:
+            raise ValueError(
+                "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
+                    sort_order=sort_order
+                )
             )
+        reverse_lookup = {
+            "asc": False,
+            "desc": True,
+        }
+        return reverse_lookup[sort_order]
+
+    def sort_top_level_cols(schema, is_reversed) -> dict:
+        # sort top level columns
+        top_sorted_fields: list = sorted(
+            schema.fields, key=lambda x: x.name, reverse=is_reversed
         )
-    return df.select(*sorted_col_names)
+
+        is_nested: bool = any(
+            [
+                isinstance(i.dataType, StructType) or isinstance(i.dataType, ArrayType)
+                for i in top_sorted_fields
+            ]
+        )
+
+        output = {
+            "schema": top_sorted_fields,
+            "is_nested": is_nested,
+        }
+
+        return output
+
+    def sort_nested_cols(schema, is_reversed, baseField="") -> list:
+        # TODO: get working with ArrayType
+        # recursively check nested fields and sort them
+        # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
+        # Credits: @pault for logic
+
+        select_cols = []
+        for structField in sorted(schema, key=lambda x: x.name, reverse=is_reversed):
+            if isinstance(structField.dataType, StructType):
+                subFields = []
+                for fld in sorted(
+                    structField.jsonValue()["type"]["fields"],
+                    key=lambda x: x["name"],
+                    reverse=is_reversed,
+                ):
+                    newStruct = StructType([StructField.fromJson(fld)])
+                    newBaseField = structField.name
+                    if baseField:
+                        newBaseField = baseField + "." + newBaseField
+                    subFields.extend(
+                        sort_nested_cols(newStruct, is_reversed, baseField=newBaseField)
+                    )
+
+                select_cols.append(
+                    "struct(" + ",".join(subFields) + ") AS {}".format(structField.name)
+                )
+            else:
+                if baseField:
+                    select_cols.append(baseField + "." + structField.name)
+                else:
+                    select_cols.append(structField.name)
+        return select_cols
+
+    is_reversed: bool = parse_sort_order(sort_order)
+    top_sorted_schema_results: dict = sort_top_level_cols(df.schema, is_reversed)
+    if not top_sorted_schema_results["is_nested"]:
+        columns: list = [i.name for i in top_sorted_schema_results["schema"]]
+        return df.select(*columns)
+
+    fully_sorted_schema = sort_nested_cols(
+        top_sorted_schema_results["schema"], is_reversed
+    )
+
+    return df.selectExpr(fully_sorted_schema)
