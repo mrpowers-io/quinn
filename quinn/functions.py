@@ -18,6 +18,8 @@ from pyspark.sql.types import (
       ArrayType,
       BooleanType,
       StringType,
+      StructType,
+      MapType,
 )
 
 from pyspark.sql import Column, DataFrame
@@ -245,6 +247,7 @@ def sanitize_column_name(name: str, replace_char: str = "_") -> str:
     """
     return re.sub(r"[^a-zA-Z0-9_]", replace_char, name)
 
+
 def _get_complex_fields(df: DataFrame) -> Dict[str, object]:
     """
     Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
@@ -259,6 +262,7 @@ def _get_complex_fields(df: DataFrame) -> Dict[str, object]:
         for field in df.schema.fields
         if isinstance(field.dataType, (ArrayType, StructType, MapType))
     }
+
 
 def flatten_struct(df: DataFrame, col_name: str, sep: str = ":") -> DataFrame:
     """
@@ -383,17 +387,17 @@ def flatten_dataframe(df: DataFrame, sep: str = ":", replace_char: str = "_", sa
     return df
 
   
-def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
-    """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
-
-    It returns a list of all matches, or    `None` if `s` is `None`.
-
-    :param s: input string (`Column`)
-    :type s: str
-    :param regexp: string `re` pattern
-    :return: List of matches
-    """
-    return None if s is None else re.findall(regexp, s)
+# def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
+#     """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
+#
+#     It returns a list of all matches, or    `None` if `s` is `None`.
+#
+#     :param s: input string (`Column`)
+#     :type s: str
+#     :param regexp: string `re` pattern
+#     :return: List of matches
+#     """
+#     return None if s is None else re.findall(regexp, s)
 
 
 def business_days_between(start_date: Column, end_date: Column) -> Column:

@@ -38,6 +38,7 @@ from quinn.transformations import snake_case_col_names, sort_columns, to_snake_c
 
 # Use __all__ to let developers know what is part of the public API.
 __all__ = [
+    "split_col",
     "DataFrameMissingColumnError",
     "DataFrameMissingStructFieldError",
     "DataFrameProhibitedColumnError",
@@ -70,4 +71,5 @@ __all__ = [
     "to_snake_case",
     "sort_columns",
     "append_if_schema_identical",
+    "flatten_dataframe",
 ]

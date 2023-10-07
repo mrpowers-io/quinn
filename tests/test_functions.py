@@ -10,9 +10,11 @@ from pyspark.sql.types import (
     ArrayType,
     FloatType,
     StringType,
+    MapType,
 )
 
 import quinn
+from quinn.functions import flatten_struct, flatten_map, flatten_dataframe
 from tests.conftest import auto_inject_fixtures
 import chispa
 
@@ -503,8 +505,10 @@ def test_flatten_dataframe(spark):
     # Apply function to input data
     result_df = flatten_dataframe(df)
 
+    chispa.assert_df_equality(result_df, expected_df)
+
     # Check if result matches expected output
-    assert result_df.collect() == expected_df.collect()
+    # assert result_df.collect() == expected_df.collect()
     
 
 def test_business_days_between(spark):
