@@ -335,6 +335,88 @@ StructType([
 ])
 ```
 
+**print_schema_as_code()**
+
+```python   
+fields = [
+    StructField("simple_int", IntegerType()),
+    StructField("decimal_with_nums", DecimalType(19, 8)),
+    StructField("array", ArrayType(FloatType()))
+]
+schema = StructType(fields)
+printable_schema: str = quinn.print_schema_as_code(schema)
+```
+
+Converts a Spark `DataType` to a string of Python code that can be evaluated as code using eval(). If the `DataType` is a `StructType`, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. 
+
+For example:
+```python
+print(printable_schema)
+```
+
+```
+StructType(
+	fields=[
+		StructField("simple_int", IntegerType(), True),
+		StructField("decimal_with_nums", DecimalType(19, 8), True),
+		StructField(
+			"array",
+			ArrayType(FloatType()),
+			True,
+		),
+	]
+)
+```
+
+Once evaluated, the printable schema is a valid schema that can be used in dataframe creation, validation, etc.
+
+```python
+from chispa.schema_comparer import assert_basic_schema_equality
+
+parsed_schema = eval(printable_schema)
+assert_basic_schema_equality(parsed_schema, schema) # passes
+```
+
+
+`print_schema_as_code()` can also be used to print other `DataType` objects.
+
+ `ArrayType`
+```python
+array_type = ArrayType(FloatType())
+printable_type: str = quinn.print_schema_as_code(array_type)
+print(printable_type)
+ ```
+
+ ```
+ArrayType(FloatType())
+ ```
+
+`MapType`
+```python
+map_type = MapType(StringType(), FloatType())
+printable_type: str = quinn.print_schema_as_code(map_type)
+print(printable_type)
+ ```
+
+ ```
+MapType(
+        StringType(),
+        FloatType(),
+        True,
+)
+ ```
+
+`IntegerType`, `StringType` etc.
+```python
+integer_type = IntegerType()
+printable_type: str = quinn.print_schema_as_code(integer_type)
+print(printable_type)
+ ```
+
+ ```
+IntegerType()
+ ```
+
 ## Pyspark Core Class Extensions
 
 ```
