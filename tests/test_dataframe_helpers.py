@@ -1,8 +1,7 @@
-from pyspark.sql.types import IntegerType, StringType
-
 import quinn
 from tests.conftest import auto_inject_fixtures
 import chispa
+from pyspark.sql.types import IntegerType, StringType, StructType, StructField
 
 
 @auto_inject_fixtures("spark")
@@ -66,5 +65,20 @@ def describe_print_athena_create_table():
         out, _ = capsys.readouterr()
         assert (
             out
-            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"
+            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"  # noqa
         )
+
+
+def test_create_df(spark):
+    rows_data = [("jose", 1), ("li", 2), ("luisa", 3)]
+    col_specs = [("name", StringType()), ("age", IntegerType())]
+
+    expected_schema = StructType(
+        [
+            StructField("name", StringType(), True),
+            StructField("age", IntegerType(), True),
+        ]
+    )
+    actual = quinn.create_df(spark, rows_data, col_specs)
+    expected = spark.createDataFrame(rows_data, expected_schema)
+    chispa.assert_df_equality(actual, expected)

@@ -1,0 +1,5 @@
+name,type
+person,string
+address,string
+phoneNumber,string
+age,int

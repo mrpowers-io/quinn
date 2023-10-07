@@ -1,5 +1,6 @@
 import pytest
 from pyspark.sql.types import StructType, StructField, StringType, LongType
+import semver
 
 import quinn
 from tests.conftest import auto_inject_fixtures
@@ -35,10 +36,14 @@ def describe_validate_schema():
         )
         with pytest.raises(quinn.DataFrameMissingStructFieldError) as excinfo:
             quinn.validate_schema(source_df, required_schema)
-        assert (
-            excinfo.value.args[0]
-            == "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true),StructField(age,LongType,true)))"
-        )
+
+        current_spark_version = semver.Version.parse(spark.version)
+        spark_330 = semver.Version.parse("3.3.0")
+        if semver.Version.compare(current_spark_version, spark_330) >= 0:  # Spark 3.3+
+            expected_error_message = "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame with the following StructFields StructType([StructField('name', StringType(), True), StructField('age', LongType(), True)])" # noqa
+        else:
+            expected_error_message = "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true),StructField(age,LongType,true)))"  # noqa
+        assert excinfo.value.args[0] == expected_error_message
 
     def it_does_nothing_when_the_schema_matches(spark):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
@@ -71,7 +76,7 @@ def describe_validate_absence_of_columns():
             quinn.validate_absence_of_columns(source_df, ["age", "cool"])
         assert (
             excinfo.value.args[0]
-            == "The ['age'] columns are not allowed to be included in the DataFrame with the following columns ['name', 'age']"
+            == "The ['age'] columns are not allowed to be included in the DataFrame with the following columns ['name', 'age']"  # noqa
         )
 
     def it_does_nothing_when_no_unallowed_columns_are_present(spark):

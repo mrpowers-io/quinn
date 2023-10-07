@@ -1,21 +1,29 @@
 import pytest
 
-import re
-
 import pyspark.sql.functions as F
-from pyspark.sql.types import *
+from pyspark.sql.types import (
+    StructField,
+    StructType,
+    BooleanType,
+    DateType,
+    IntegerType,
+    ArrayType,
+    FloatType,
+    StringType,
+)
 
 import quinn
-from quinn.extensions import *
 from tests.conftest import auto_inject_fixtures
 import chispa
 
 import datetime
+import uuid
 
 
 @auto_inject_fixtures("spark")
 def test_single_space(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [
             ("  I like     fish  ", "I like fish"),
             ("    zombies", "zombies"),
@@ -32,7 +40,8 @@ def test_single_space(spark):
 
 
 def test_remove_all_whitespace(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [
             ("  I like     fish  ", "Ilikefish"),
             ("    zombies", "zombies"),
@@ -51,7 +60,8 @@ def test_remove_all_whitespace(spark):
 
 
 def test_remove_non_word_characters(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [
             ("I?like!fish>", "Ilikefish"),
             ("%%%zombies", "zombies"),
@@ -70,7 +80,8 @@ def test_remove_non_word_characters(spark):
 
 
 def test_anti_trim(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [
             ("  I like     fish  ", "  Ilikefish  "),
             ("    zombies", "    zombies"),
@@ -127,7 +138,8 @@ def test_forall(spark):
 
 
 def test_multi_equals(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [
             ("cat", "cat", True),
             ("cat", "dog", False),
@@ -149,7 +161,8 @@ def test_multi_equals(spark):
 
 def describe_week_start_date():
     def it_works_with_start_date_of_monday(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 # converts a Thursday to the Monday before
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 30)),
@@ -167,7 +180,8 @@ def describe_week_start_date():
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
     def it_defaults_to_sunday_start_date(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 # converts a Tuesday to the Sunday before
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
@@ -185,7 +199,8 @@ def describe_week_start_date():
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
     def it_errors_out_if_with_invalid_week_start_date(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
             ],
@@ -203,7 +218,8 @@ def describe_week_start_date():
 
 def describe_week_end_date():
     def it_works_with_end_date_of_sunday(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 # converts a Thursday to the Sunday after
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2020, 1, 5)),
@@ -221,7 +237,8 @@ def describe_week_end_date():
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
     def it_defaults_to_saturday_week_end(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 # converts a Tuesday to the Saturday after
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2020, 1, 4)),
@@ -239,7 +256,8 @@ def describe_week_end_date():
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
     def it_errors_out_if_with_invalid_week_end_date(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 (datetime.datetime(2020, 1, 2), datetime.datetime(2019, 12, 29)),
             ],
@@ -257,7 +275,8 @@ def describe_week_end_date():
 
 def describe_approx_equal():
     def it_works_with_floating_values(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 (1.1, 1.05, True),
                 (1.1, 11.6, False),
@@ -278,7 +297,8 @@ def describe_approx_equal():
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
     def it_works_with_integer_values(spark):
-        df = spark.create_df(
+        df = quinn.create_df(
+            spark,
             [
                 (12, 14, True),
                 (20, 26, False),
@@ -299,23 +319,19 @@ def describe_approx_equal():
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
 
-def test_array_choice(spark):
-    df = spark.create_df(
-        [(["a", "b", "c"],), (["a", "b", "c", "d"],), (["x"],), ([None],)],
-        [("letters", ArrayType(StringType(), True), True)],
-    )
-    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters")))
-    # actual_df.show()
-    # chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
-
-    # df = spark.createDataFrame([('a',), ('b',), ('c',)], ['letter'])
-    # df.show()
-    # cols = list(map(lambda c: F.lit(c), ['Retail', 'SME', 'Cor']))
-    # df.withColumn('business_vertical', quinn.array_choice(F.array(cols))).show()
+# TODO: Figure out how to make this test deterministic locally & on CI
+# def test_array_choice(spark):
+#     df = quinn.create_df(spark,
+#         [(["a", "b", "c"], "c"), (["a", "b", "c", "d"], "a"), (["x"], "x"), ([None], None)],
+#         [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
+#     )
+#     actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+#     chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
 def test_regexp_extract_all(spark):
-    df = spark.create_df(
+    df = quinn.create_df(
+        spark,
         [("200 - 300 PA.", ["200", "300"]), ("400 PA.", ["400"]), (None, None)],
         [
             ("str", StringType(), True),
@@ -326,3 +342,238 @@ def test_regexp_extract_all(spark):
         "all_numbers", quinn.regexp_extract_all(F.col("str"), F.lit(r"(\d+)"))
     )
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
+
+
+def test_flatten_struct(spark):
+    data = [
+        (1, ("name1", "address1", 20)),
+        (2, ("name2", "address2", 30)),
+        (3, ("name3", "address3", 40)),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField(
+                "details",
+                StructType(
+                    [
+                        StructField("name", StringType(), True),
+                        StructField("address", StringType(), True),
+                        StructField("age", IntegerType(), True),
+                    ]
+                ),
+                True,
+            ),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+    complex_fields = {"details": StructType([StructField("name", StringType(), True), StructField("address", StringType(), True), StructField("age", IntegerType(), True)])}
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details:name", StringType(), True),
+            StructField("details:address", StringType(), True),
+            StructField("details:age", IntegerType(), True),
+        ]
+    )
+    expected_data = [
+        (1, "name1", "address1", 20),
+        (2, "name2", "address2", 30),
+        (3, "name3", "address3", 40),
+    ]
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+
+    flattened_df = flatten_struct(df, "details")
+    assert flattened_df.schema == expected_schema
+    assert flattened_df.collect() == expected_df.collect()
+
+
+def test_flatten_map(spark):
+    data = [
+        (1, {"name": "Alice", "age": 25}),
+        (2, {"name": "Bob", "age": 30}),
+        (3, {"name": "Charlie", "age": 35}),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details", MapType(StringType(), StringType()), True),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details:name", StringType(), True),
+            StructField("details:age", StringType(), True),
+        ]
+    )
+    expected_data = [
+        (1, "Alice", "25"),
+        (2, "Bob", "30"),
+        (3, "Charlie", "35"),
+    ]
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+
+    flattened_df = flatten_map(df, "details")
+    assert flattened_df.schema == expected_schema
+    assert flattened_df.collect() == expected_df.collect()
+    
+    
+def test_flatten_dataframe(spark):
+    # Define input data
+    data = [
+        (
+            1,
+            "John",
+            {"age": 30, "gender": "M", "address": {"city": "New York", "state": "NY"}},
+            [
+                {"type": "home", "number": "555-1234"},
+                {"type": "work", "number": "555-5678"},
+            ],
+        ),
+        (
+            2,
+            "Jane",
+            {"age": 25, "gender": "F", "address": {"city": "San Francisco", "state": "CA"}},
+            [{"type": "home", "number": "555-4321"}],
+        ),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("name", StringType(), True),
+            StructField(
+                "details",
+                StructType(
+                    [
+                        StructField("age", IntegerType(), True),
+                        StructField("gender", StringType(), True),
+                        StructField(
+                            "address",
+                            StructType(
+                                [
+                                    StructField("city", StringType(), True),
+                                    StructField("state", StringType(), True),
+                                ]
+                            ),
+                            True,
+                        ),
+                    ]
+                ),
+                True,
+            ),
+            StructField(
+                "phone_numbers",
+                ArrayType(
+                    StructType(
+                        [
+                            StructField("type", StringType(), True),
+                            StructField("number", StringType(), True),
+                        ]
+                    ),
+                    True,
+                ),
+                True,
+            ),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+
+    # Define expected output
+    expected_data = [
+        (1, "John", 30, "M", "New York", "NY", "home", "555-1234"),
+        (1, "John", 30, "M", "New York", "NY", "work", "555-5678"),
+        (2, "Jane", 25, "F", "San Francisco", "CA", "home", "555-4321"),
+    ]
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("name", StringType(), True),
+            StructField("details:age", IntegerType(), True),
+            StructField("details:gender", StringType(), True),
+            StructField("details:address:city", StringType(), True),
+            StructField("details:address:state", StringType(), True),
+            StructField("phone:numbers:type", StringType(), True),
+            StructField("phone:numbers:number", StringType(), True),
+        ]
+    )
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+
+    # Apply function to input data
+    result_df = flatten_dataframe(df)
+
+    # Check if result matches expected output
+    assert result_df.collect() == expected_df.collect()
+    
+
+def test_business_days_between(spark):
+    df = quinn.create_df(
+        spark,
+        [
+            (datetime.datetime(2020, 12, 23), datetime.datetime(2021, 1, 2), 7),
+            (datetime.datetime(2020, 12, 23), datetime.datetime(2021, 1, 5), 9),
+            (datetime.datetime(2020, 12, 23), datetime.datetime(2019, 1, 5), 512),
+            (datetime.datetime(2020, 12, 23), datetime.datetime(2020, 12, 23), 0),
+            (datetime.datetime(2020, 12, 23), None, None),
+            (None, None, None),
+        ],
+        [
+            ("start_date", DateType(), True),
+            ("end_date", DateType(), True),
+            ("expected", IntegerType(), True),
+        ],
+    )
+    actual_df = df.withColumn(
+        "business_days_between",
+        quinn.business_days_between(F.col("start_date"), F.col("end_date")),
+    )
+    chispa.assert_column_equality(actual_df, "business_days_between", "expected")
+
+
+def describe_uuid5():
+    def test_no_extra_string(spark):
+        df = quinn.create_df(
+            spark,
+            [
+                # Manually calculated with Namespace: animals.com, no extra string argument.
+                ("cat", "c04e5a9e-8088-5d64-8b81-26e74ede56f8"),
+                ("dog", "08d3c582-5d77-5bb0-8eeb-b415942c67cd"),
+                ("pig", "58baf419-4019-5f7f-bbf1-54af269c57df"),
+            ],
+            [
+                ("s1", StringType(), True),
+                ("expected", StringType(), True),
+            ],
+        )
+        actual_df = df.withColumn(
+            "uuid5_of_s1",
+            quinn.uuid5(
+                F.col("s1"), namespace=uuid.uuid5(uuid.NAMESPACE_DNS, "animals.com")
+            ),
+        )
+        chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
+
+    def test_with_extra_string(spark):
+        df = quinn.create_df(
+            spark,
+            [
+                # Manually calculated with Namespace: animals.com, "domesticated" as extra string.
+                ("cat", "d433fd86-8cc9-50b0-a53e-a285f6873c18"),
+                ("dog", "af2dbcba-7a71-574c-92a6-f501b43c6266"),
+                ("pig", "c06bb8b8-1889-5018-adc1-4d73e943b985"),
+            ],
+            [
+                ("s1", StringType(), True),
+                ("expected", StringType(), True),
+            ],
+        )
+        actual_df = df.withColumn(
+            "uuid5_of_s1",
+            quinn.uuid5(
+                F.col("s1"),
+                namespace=uuid.uuid5(uuid.NAMESPACE_DNS, "animals.com"),
+                extra_string="domesticated",
+            ),
+        )
+        chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
