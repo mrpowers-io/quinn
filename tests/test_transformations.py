@@ -489,7 +489,134 @@ def test_sort_struct_nested_desc(spark):
     )
 
 
+def test_sort_struct_nested_with_arraytypes(spark):
+    def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        unsorted_schema = StructType(
+            [
+                StructField(
+                    "address",
+                    StructType(
+                        [
+                            StructField(
+                                "zip",
+                                StructType(
+                                    [
+                                        StructField(
+                                            "first5", IntegerType(), nullable=True
+                                        ),
+                                        StructField(
+                                            "last4", IntegerType(), nullable=True
+                                        ),
+                                    ]
+                                ),
+                                nullable=False,
+                            ),
+                            StructField("city", StringType(), nullable=True),
+                        ]
+                    ),
+                    nullable=False,
+                ),
+                StructField(
+                    "phone_numbers",
+                    ArrayType(
+                        StructType(
+                            [
+                                StructField("type", StringType(), nullable=True),
+                                StructField("number", StringType(), nullable=True),
+                            ]
+                        )
+                    ),
+                    nullable=True,
+                ),
+                StructField("_id", StringType(), nullable=True),
+                StructField("first_name", StringType(), nullable=True),
+            ]
+        )
+
+        sorted_schema = StructType(
+            [
+                StructField("_id", StringType(), nullable=True),
+                StructField(
+                    "address",
+                    StructType(
+                        [
+                            StructField("city", StringType(), nullable=True),
+                            StructField(
+                                "zip",
+                                StructType(
+                                    [
+                                        StructField(
+                                            "first5", IntegerType(), nullable=True
+                                        ),
+                                        StructField(
+                                            "last4", IntegerType(), nullable=True
+                                        ),
+                                    ]
+                                ),
+                                nullable=False,
+                            ),
+                        ]
+                    ),
+                    nullable=False,
+                ),
+                StructField("first_name", StringType(), nullable=True),
+                StructField(
+                    "phone_numbers",
+                    ArrayType(
+                        StructType(
+                            [
+                                StructField("number", StringType(), nullable=True),
+                                StructField("type", StringType(), nullable=True),
+                            ]
+                        )
+                    ),
+                    nullable=True,
+                ),
+            ]
+        )
+
+        _id = "12345"
+        city = "Fake City"
+        zip_first5 = 54321
+        zip_last4 = 12345
+        first_name = "John"
+        phone_type = "home"
+        phone_number = "555-555-5555"
+
+        unsorted_data = [
+            (
+                (((zip_last4, zip_first5)), city),
+                [(phone_type, phone_number)],
+                _id,
+                first_name,
+            ),
+        ]
+        sorted_data = [
+            (
+                _id,
+                (city, ((zip_last4, zip_first5))),
+                first_name,
+                [(phone_type, phone_number)],
+            ),
+        ]
+
+        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_schema)
+        expected_df = spark.createDataFrame(sorted_data, sorted_schema)
+
+        return unsorted_df, expected_df
+
+    unsorted_df, expected_df = _get_test_dataframes()
+
+    unsorted_df.printSchema()
+    sorted_df = quinn.sort_columns(unsorted_df, "asc")
+    sorted_df.printSchema()
+
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=True
+    )
+
+
 # from pyspark.sql import SparkSession
 
 # spark = SparkSession.builder.appName("abc").getOrCreate()
-# test_sort_struct_nested(spark)
+# test_sort_struct_nested_with_arraytypes(spark)

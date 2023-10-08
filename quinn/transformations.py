@@ -143,7 +143,41 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
 
         select_cols = []
         for structField in sorted(schema, key=lambda x: x.name, reverse=is_reversed):
-            if isinstance(structField.dataType, StructType):
+            field_type = structField.dataType
+            if isinstance(field_type, ArrayType):
+                array_elements = []
+                array_parent = structField.jsonValue()["type"]["elementType"]
+
+                base_str = f"transform({structField.name}"
+                suffix_str = f") AS {structField.name}"
+                if array_parent["type"] == "struct":
+                    array_parent = array_parent["fields"]
+
+                    base_str = f"{base_str}, x -> struct("
+                    suffix_str = f"){suffix_str}"
+
+                sorted_fields: list = sorted(
+                    array_parent,
+                    key=lambda x: x["name"],
+                    reverse=is_reversed,
+                )
+                for fld in sorted_fields:
+                    print(fld)
+                    newStruct = StructType([StructField.fromJson(fld)])
+                    newBaseField = structField.name
+                    if baseField:
+                        newBaseField = baseField + "." + newBaseField
+                    array_elements.extend(
+                        sort_nested_cols(newStruct, is_reversed, baseField=newBaseField)
+                    )
+
+                element_names = [i.split(".")[-1] for i in array_elements]
+                array_elements_formatted = [f"x.{i} as {i}" for i in element_names]
+                select_cols.append(
+                    base_str + ", ".join(array_elements_formatted) + suffix_str
+                )
+
+            elif isinstance(field_type, StructType):
                 subFields = []
                 for fld in sorted(
                     structField.jsonValue()["type"]["fields"],
