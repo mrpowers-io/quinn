@@ -68,7 +68,7 @@ def split_col(  # noqa: PLR0913
 
             # If the length of split_value is same as new_col_names, check if any of the split values is None or empty string
             elif any(  # noqa: RET506
-                x is None or x.strip() == "" for x in split_value[: len(new_col_names)]
+                x is None or x.strip() == "" for x in split_value[: len(new_col_names)]  # noqa: PLC1901
             ):
                 msg = "Null or empty values are not accepted for columns in strict mode"
                 raise ValueError(
@@ -93,7 +93,7 @@ def split_col(  # noqa: PLR0913
     if mode == "strict":
         # Create an array of select expressions to create new columns from the split values
         select_exprs = [
-            when(split_col_expr.getItem(i) != "", split_col_expr.getItem(i)).alias(
+            when(split_col_expr.getItem(i) != "", split_col_expr.getItem(i)).alias(  # noqa: PLC1901
                 new_col_names[i],
             )
             for i in range(len(new_col_names))

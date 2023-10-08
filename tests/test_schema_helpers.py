@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyspark.sql.types import (
     StructType,
     IntegerType,
@@ -12,7 +14,7 @@ from pyspark.sql.types import (
 )
 import pyspark.sql.dataframe
 
-from quinn.schema_helpers import print_schema_as_code, schema_from_csv
+from quinn.schema_helpers import print_schema_as_code, schema_from_csv, complex_fields
 
 from chispa.schema_comparer import assert_basic_schema_equality
 import pytest
@@ -74,3 +76,33 @@ def test_schema_from_csv_equality_for_bad_csv(spark):
             excinfo.value.args[0]
             == "CSV must contain columns in this order: ['name', 'type', 'nullable', 'metadata']"
     )
+
+
+def test_complex_fields(spark):
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField(
+                "details",
+                StructType(
+                    [
+                        StructField("name", StringType(), True),
+                        StructField("address", StringType(), True),
+                        StructField("age", IntegerType(), True),
+                    ]
+                ),
+                True,
+            ),
+        ]
+    )
+    expected = {
+        "details":
+        StructType(
+            [
+                StructField("name", StringType(), True),
+                StructField("address", StringType(), True),
+                StructField("age", IntegerType(), True),
+            ]
+        )
+    }
+    assert complex_fields(schema) == expected

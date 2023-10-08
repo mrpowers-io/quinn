@@ -1,9 +1,10 @@
 import pytest
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, MapType
 
 import quinn
 from tests.conftest import auto_inject_fixtures
 import chispa
+from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
 
 
 @auto_inject_fixtures("spark")
@@ -222,3 +223,134 @@ def describe_sort_columns():
             excinfo.value.args[0]
             == "['asc', 'desc'] are the only valid sort orders and you entered a sort order of 'cats'"
         )
+
+
+def test_flatten_struct(spark):
+    data = [
+        (1, ("name1", "address1", 20)),
+        (2, ("name2", "address2", 30)),
+        (3, ("name3", "address3", 40)),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField(
+                "details",
+                StructType(
+                    [
+                        StructField("name", StringType(), True),
+                        StructField("address", StringType(), True),
+                        StructField("age", IntegerType(), True),
+                    ]
+                ),
+                True,
+            ),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+    flattened_df = flatten_struct(df, "details")
+    expected_data = [
+        (1, "name1", "address1", 20),
+        (2, "name2", "address2", 30),
+        (3, "name3", "address3", 40),
+    ]
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details:name", StringType(), True),
+            StructField("details:address", StringType(), True),
+            StructField("details:age", IntegerType(), True),
+        ]
+    )
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+    chispa.assert_df_equality(flattened_df, expected_df)
+
+
+def test_flatten_map(spark):
+    data = [
+        (1, {"name": "Alice", "age": 25}),
+        (2, {"name": "Bob", "age": 30}),
+        (3, {"name": "Charlie", "age": 35}),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details", MapType(StringType(), StringType()), True),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+    flattened_df = flatten_map(df, "details")
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("details:name", StringType(), True),
+            StructField("details:age", StringType(), True),
+        ]
+    )
+    expected_data = [
+        (1, "Alice", "25"),
+        (2, "Bob", "30"),
+        (3, "Charlie", "35"),
+    ]
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+    chispa.assert_df_equality(flattened_df, expected_df)
+
+
+def test_flatten_dataframe(spark):
+    # Define input data
+    data = [
+        (
+            1,
+            "John",
+            {"age": 30, "gender": "M", "address": {"city": "New York", "state": "NY"}},
+        ),
+        (
+            2,
+            "Jane",
+            {"age": 25, "gender": "F", "address": {"city": "San Francisco", "state": "CA"}},
+        ),
+    ]
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("name", StringType(), True),
+            StructField(
+                "details",
+                StructType(
+                    [
+                        StructField("age", IntegerType(), True),
+                        StructField("gender", StringType(), True),
+                        StructField(
+                            "address",
+                            StructType(
+                                [
+                                    StructField("city", StringType(), True),
+                                    StructField("state", StringType(), True),
+                                ]
+                            ),
+                            True,
+                        ),
+                    ]
+                ),
+                True,
+            ),
+        ]
+    )
+    df = spark.createDataFrame(data, schema)
+    expected_data = [
+        (1, "John", 30, "M", "New York", "NY"),
+        (2, "Jane", 25, "F", "San Francisco", "CA"),
+    ]
+    expected_schema = StructType(
+        [
+            StructField("id", IntegerType(), True),
+            StructField("name", StringType(), True),
+            StructField("details:age", IntegerType(), True),
+            StructField("details:gender", StringType(), True),
+            StructField("details:address:city", StringType(), True),
+            StructField("details:address:state", StringType(), True),
+        ]
+    )
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+    result_df = flatten_dataframe(df)
+    chispa.assert_df_equality(result_df, expected_df)

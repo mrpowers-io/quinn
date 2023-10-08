@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import json
 
 from pyspark.sql import SparkSession
 from pyspark.sql import types as T  # noqa: N812
+from typing import Union
 
 
 def print_schema_as_code(dtype: T.DataType) -> str:
@@ -40,8 +43,9 @@ def print_schema_as_code(dtype: T.DataType) -> str:
     elif isinstance(dtype, T.DecimalType):
         res.append(f"DecimalType({dtype.precision}, {dtype.scale})")
 
-    else:  # noqa: PLR5501
-        if str(dtype).endswith("()"):  # PySpark 3.3+
+    else:
+        # PySpark 3.3+
+        if str(dtype).endswith("()"):  # noqa: PLR5501
             res.append(str(dtype))
         else:
             res.append(f"{dtype}()")
@@ -149,3 +153,19 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
         fields.append(field)
 
     return T.StructType(fields=fields)
+
+
+def complex_fields(schema: T.StructType) -> dict[str, object]:
+    """Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :return: A dictionary with complex field names as keys and their respective data types as values.
+    :rtype: Dict[str, object]
+    """
+    return {
+        field.name: field.dataType
+        for field in schema.fields
+        if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
+    }
+
