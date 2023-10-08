@@ -135,71 +135,91 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
 
         return output
 
-    def sort_nested_cols(schema, is_reversed, baseField="") -> list:
+    def sort_nested_cols(schema, is_reversed, base_field="") -> list:
         # TODO: get working with ArrayType
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
         # Credits: @pault for logic
 
-        select_cols = []
-        for structField in sorted(schema, key=lambda x: x.name, reverse=is_reversed):
-            field_type = structField.dataType
-            if isinstance(field_type, ArrayType):
-                array_elements = []
-                array_parent = structField.jsonValue()["type"]["elementType"]
+        def parse_fields(
+            fields_to_sort: list, parent_struct, is_reversed: bool
+        ) -> list:
+            sorted_fields: list = sorted(
+                fields_to_sort,
+                key=lambda x: x["name"],
+                reverse=is_reversed,
+            )
 
-                base_str = f"transform({structField.name}"
-                suffix_str = f") AS {structField.name}"
-                if array_parent["type"] == "struct":
-                    array_parent = array_parent["fields"]
+            results = []
+            for field in sorted_fields:
+                new_struct = StructType([StructField.fromJson(field)])
+                new_base_field = parent_struct.name
+                if base_field:
+                    new_base_field = base_field + "." + new_base_field
 
-                    base_str = f"{base_str}, x -> struct("
-                    suffix_str = f"){suffix_str}"
-
-                sorted_fields: list = sorted(
-                    array_parent,
-                    key=lambda x: x["name"],
-                    reverse=is_reversed,
+                results.extend(
+                    sort_nested_cols(new_struct, is_reversed, base_field=new_base_field)
                 )
-                for fld in sorted_fields:
-                    print(fld)
-                    newStruct = StructType([StructField.fromJson(fld)])
-                    newBaseField = structField.name
-                    if baseField:
-                        newBaseField = baseField + "." + newBaseField
-                    array_elements.extend(
-                        sort_nested_cols(newStruct, is_reversed, baseField=newBaseField)
-                    )
+            return results
 
-                element_names = [i.split(".")[-1] for i in array_elements]
+        def handle_array_type(parent_struct: StructField, is_reversed: bool) -> str:
+            def format_array_selection(
+                elements: list, base_str: str, suffix_str: str
+            ) -> str:
+                element_names = [i.split(".")[-1] for i in elements]
                 array_elements_formatted = [f"x.{i} as {i}" for i in element_names]
-                select_cols.append(
-                    base_str + ", ".join(array_elements_formatted) + suffix_str
+
+                output = (
+                    f"{base_str} {', '.join(array_elements_formatted)} {suffix_str}"
                 )
+                return output
+
+            array_parent = parent_struct.jsonValue()["type"]["elementType"]
+
+            base_str = f"transform({parent_struct.name}"
+            suffix_str = f") AS {parent_struct.name}"
+
+            # if struct in array, create mapping to struct
+            # TODO: prob doesn't work with additional levels of nesting
+            if array_parent["type"] == "struct":
+                array_parent = array_parent["fields"]
+
+                base_str = f"{base_str}, x -> struct("
+                suffix_str = f"){suffix_str}"
+
+            array_elements = parse_fields(array_parent, parent_struct, is_reversed)
+            formatted_array_selection = format_array_selection(
+                array_elements, base_str, suffix_str
+            )
+            return formatted_array_selection
+
+        def handle_struct_type(parent_struct: StructField, is_reversed: bool) -> str:
+            def format_struct_selection(elements: list, struct_name: str) -> str:
+                output: str = f"struct( {', '.join(elements)} ) AS {struct_name}"
+                return output
+
+            field_list = parent_struct.jsonValue()["type"]["fields"]
+            sub_fields = parse_fields(field_list, parent_struct, is_reversed)
+            formatted_sub_fields = format_struct_selection(
+                sub_fields, parent_struct.name
+            )
+            return formatted_sub_fields
+
+        select_cols = []
+        for parent_struct in sorted(schema, key=lambda x: x.name, reverse=is_reversed):
+            field_type = parent_struct.dataType
+            if isinstance(field_type, ArrayType):
+                result = handle_array_type(parent_struct, is_reversed)
 
             elif isinstance(field_type, StructType):
-                subFields = []
-                for fld in sorted(
-                    structField.jsonValue()["type"]["fields"],
-                    key=lambda x: x["name"],
-                    reverse=is_reversed,
-                ):
-                    newStruct = StructType([StructField.fromJson(fld)])
-                    newBaseField = structField.name
-                    if baseField:
-                        newBaseField = baseField + "." + newBaseField
-                    subFields.extend(
-                        sort_nested_cols(newStruct, is_reversed, baseField=newBaseField)
-                    )
-
-                select_cols.append(
-                    "struct(" + ",".join(subFields) + ") AS {}".format(structField.name)
-                )
+                result = handle_struct_type(parent_struct, is_reversed)
             else:
-                if baseField:
-                    select_cols.append(baseField + "." + structField.name)
+                if base_field:
+                    result = f"{base_field}.{parent_struct.name}"
                 else:
-                    select_cols.append(structField.name)
+                    result = parent_struct.name
+            select_cols.append(result)
+
         return select_cols
 
     is_reversed: bool = parse_sort_order(sort_order)
