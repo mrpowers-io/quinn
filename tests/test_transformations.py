@@ -303,91 +303,86 @@ def test_sort_struct_flat_desc(spark):
     _test_sort_struct_flat(spark, "desc")
 
 
+def _get_test_dataframes_schemas() -> dict:
+    elements = {
+        "_id": (StructField("_id", StringType(), nullable=False)),
+        "first_name": (StructField("first_name", StringType(), nullable=False)),
+        "city": (StructField("city", StringType(), nullable=False)),
+        "last4": (StructField("last4", IntegerType(), nullable=True)),
+        "first5": (StructField("first5", IntegerType(), nullable=True)),
+        "type": (StructField("type", StringType(), nullable=True)),
+        "number": (StructField("number", StringType(), nullable=True)),
+    }
+
+    return elements
+
+
+def _get_test_dataframes_data() -> tuple[(str, str, int, int, str)]:
+    _id = "12345"
+    city = "Fake City"
+    zip_first5 = 54321
+    zip_last4 = 12345
+    first_name = "John"
+
+    return _id, city, zip_first5, zip_last4, first_name
+
+
+def _get_unsorted_nested_struct_fields(elements: dict):
+    unsorted_fields = [
+        elements["_id"],
+        elements["first_name"],
+        StructField(
+            "address",
+            StructType(
+                [
+                    StructField(
+                        "zip",
+                        StructType([elements["last4"], elements["first5"]]),
+                        nullable=True,
+                    ),
+                    elements["city"],
+                ]
+            ),
+            nullable=True,
+        ),
+    ]
+    return unsorted_fields
+
+
 def test_sort_struct_nested(spark):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
-        unsorted_schema = StructType(
-            [
-                StructField("_id", StringType(), nullable=False),
-                StructField("first_name", StringType(), nullable=False),
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=True,
-                            ),
-                            StructField("city", StringType(), nullable=True),
-                        ]
-                    ),
-                    nullable=True,
+        elements = _get_test_dataframes_schemas()
+        unsorted_fields = _get_unsorted_nested_struct_fields(elements)
+        sorted_fields = [
+            elements["_id"],
+            StructField(
+                "address",
+                StructType(
+                    [
+                        elements["city"],
+                        StructField(
+                            "zip",
+                            StructType([elements["first5"], elements["last4"]]),
+                            nullable=True,
+                        ),
+                    ]
                 ),
-            ]
-        )
-
-        sorted_schema = StructType(
-            [
-                StructField("_id", StringType(), nullable=False),
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField("city", StringType(), nullable=True),
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=True,
-                            ),
-                        ]
-                    ),
-                    nullable=True,
-                ),
-                StructField("first_name", StringType(), nullable=False),
-            ]
-        )
-
-        _id = "12345"
-        city = "Fake City"
-        zip_first5 = 54321
-        zip_last4 = 12345
-        first_name = "John"
-
-        unsorted_data = [
-            (_id, first_name, (((zip_last4, zip_first5)), city)),
-        ]
-        sorted_data = [
-            (_id, ((city, (zip_first5, zip_last4))), first_name),
+                nullable=True,
+            ),
+            elements["first_name"],
         ]
 
-        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_schema)
-        expected_df = spark.createDataFrame(sorted_data, sorted_schema)
+        _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
+        unsorted_data = [(_id, first_name, (((zip_last4, zip_first5)), city))]
+        sorted_data = [(_id, ((city, (zip_first5, zip_last4))), first_name)]
+
+        unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
+        expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
 
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-
-    unsorted_df.printSchema()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
-    sorted_df.printSchema()
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=True
@@ -396,190 +391,113 @@ def test_sort_struct_nested(spark):
 
 def test_sort_struct_nested_desc(spark):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
-        unsorted_schema = StructType(
-            [
-                StructField("_id", StringType(), nullable=False),
-                StructField("first_name", StringType(), nullable=False),
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=True,
-                            ),
-                            StructField("city", StringType(), nullable=True),
-                        ]
-                    ),
-                    nullable=True,
+        elements = _get_test_dataframes_schemas()
+        unsorted_fields = _get_unsorted_nested_struct_fields(elements)
+
+        sorted_fields = [
+            elements["first_name"],
+            StructField(
+                "address",
+                StructType(
+                    [
+                        StructField(
+                            "zip",
+                            StructType([elements["last4"], elements["first5"]]),
+                            nullable=True,
+                        ),
+                        elements["city"],
+                    ]
                 ),
-            ]
-        )
-
-        sorted_schema = StructType(
-            [
-                StructField("first_name", StringType(), nullable=False),
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=True,
-                            ),
-                            StructField("city", StringType(), nullable=True),
-                        ]
-                    ),
-                    nullable=True,
-                ),
-                StructField("_id", StringType(), nullable=False),
-            ]
-        )
-
-        _id = "12345"
-        city = "Fake City"
-        zip_first5 = 54321
-        zip_last4 = 12345
-        first_name = "John"
-
-        unsorted_data = [
-            (_id, first_name, (((zip_last4, zip_first5)), city)),
+                nullable=True,
+            ),
+            elements["_id"],
         ]
+
+        _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
+
+        unsorted_data = [(_id, first_name, (((zip_last4, zip_first5)), city))]
         sorted_data = [
             (
                 first_name,
                 ((zip_first5, zip_last4), city),
                 _id,
-            ),
+            )
         ]
 
-        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_schema)
-        expected_df = spark.createDataFrame(sorted_data, sorted_schema)
+        unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
+        expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
 
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-
-    unsorted_df.printSchema()
     sorted_df = quinn.sort_columns(unsorted_df, "desc")
-    sorted_df.printSchema()
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=True
     )
 
 
+def _get_unsorted_nested_array_fields(elements: dict) -> list:
+    unsorted_fields = [
+        StructField(
+            "address",
+            StructType(
+                [
+                    StructField(
+                        "zip",
+                        StructType(
+                            [
+                                elements["first5"],
+                                elements["last4"],
+                            ]
+                        ),
+                        nullable=False,
+                    ),
+                ]
+            ),
+            elements["city"],
+        ),
+        StructField(
+            "phone_numbers",
+            ArrayType(StructType([elements["type"], elements["number"]])),
+            nullable=True,
+        ),
+        elements["_id"],
+        elements["first_name"],
+    ]
+    return unsorted_fields
+
+
 def test_sort_struct_nested_with_arraytypes(spark):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
-        unsorted_schema = StructType(
-            [
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=False,
-                            ),
-                            StructField("city", StringType(), nullable=True),
-                        ]
-                    ),
-                    nullable=False,
-                ),
-                StructField(
-                    "phone_numbers",
-                    ArrayType(
-                        StructType(
-                            [
-                                StructField("type", StringType(), nullable=True),
-                                StructField("number", StringType(), nullable=True),
-                            ]
-                        )
-                    ),
-                    nullable=True,
-                ),
-                StructField("_id", StringType(), nullable=True),
-                StructField("first_name", StringType(), nullable=True),
-            ]
-        )
+        elements = _get_test_dataframes_schemas()
+        unsorted_fields = _get_unsorted_nested_array_fields(elements)
 
-        sorted_schema = StructType(
-            [
-                StructField("_id", StringType(), nullable=True),
-                StructField(
-                    "address",
-                    StructType(
-                        [
-                            StructField("city", StringType(), nullable=True),
-                            StructField(
-                                "zip",
-                                StructType(
-                                    [
-                                        StructField(
-                                            "first5", IntegerType(), nullable=True
-                                        ),
-                                        StructField(
-                                            "last4", IntegerType(), nullable=True
-                                        ),
-                                    ]
-                                ),
-                                nullable=False,
-                            ),
-                        ]
-                    ),
-                    nullable=False,
+        sorted_fields = [
+            elements["_id"],
+            StructField(
+                "address",
+                StructType(
+                    [
+                        elements["city"],
+                        StructField(
+                            "zip",
+                            StructType([elements["first5"], elements["last4"]]),
+                            nullable=False,
+                        ),
+                    ]
                 ),
-                StructField("first_name", StringType(), nullable=True),
-                StructField(
-                    "phone_numbers",
-                    ArrayType(
-                        StructType(
-                            [
-                                StructField("number", StringType(), nullable=True),
-                                StructField("type", StringType(), nullable=True),
-                            ]
-                        )
-                    ),
-                    nullable=True,
-                ),
-            ]
-        )
+                nullable=False,
+            ),
+            elements["first_name"],
+            StructField(
+                "phone_numbers",
+                ArrayType(StructType([elements["type"], elements["number"]])),
+                nullable=True,
+            ),
+        ]
 
-        _id = "12345"
-        city = "Fake City"
-        zip_first5 = 54321
-        zip_last4 = 12345
-        first_name = "John"
+        _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
         phone_type = "home"
         phone_number = "555-555-5555"
 
@@ -600,16 +518,13 @@ def test_sort_struct_nested_with_arraytypes(spark):
             ),
         ]
 
-        unsorted_df = spark.createDataFrame(unsorted_data, unsorted_schema)
-        expected_df = spark.createDataFrame(sorted_data, sorted_schema)
+        unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
+        expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
 
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-
-    unsorted_df.printSchema()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
-    sorted_df.printSchema()
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=True
