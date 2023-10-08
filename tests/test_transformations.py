@@ -384,9 +384,7 @@ def test_sort_struct_nested(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
 
-    chispa.schema_comparer.assert_schema_equality(
-        sorted_df.schema, expected_df.schema, ignore_nullable=True
-    )
+    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
 
 
 def test_sort_struct_nested_desc(spark):
@@ -432,9 +430,7 @@ def test_sort_struct_nested_desc(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "desc")
 
-    chispa.schema_comparer.assert_schema_equality(
-        sorted_df.schema, expected_df.schema, ignore_nullable=True
-    )
+    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
 
 
 def _get_unsorted_nested_array_fields(elements: dict) -> list:
@@ -456,6 +452,7 @@ def _get_unsorted_nested_array_fields(elements: dict) -> list:
                     elements["city"],
                 ]
             ),
+            nullable=False,
         ),
         StructField(
             "phone_numbers",
@@ -526,12 +523,74 @@ def test_sort_struct_nested_with_arraytypes(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
 
-    chispa.schema_comparer.assert_schema_equality(
-        sorted_df.schema, expected_df.schema, ignore_nullable=True
-    )
+    expected_df.printSchema()
+    sorted_df.printSchema()
+
+    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
 
 
-# from pyspark.sql import SparkSession
+def test_sort_struct_nested_with_arraytypes_desc(spark):
+    def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        elements = _get_test_dataframes_schemas()
+        unsorted_fields = _get_unsorted_nested_array_fields(elements)
 
-# spark = SparkSession.builder.appName("abc").getOrCreate()
-# test_sort_struct_nested_with_arraytypes(spark)
+        sorted_fields = [
+            StructField(
+                "phone_numbers",
+                ArrayType(StructType([elements["number"], elements["type"]])),
+                nullable=True,
+            ),
+            elements["first_name"],
+            StructField(
+                "address",
+                StructType(
+                    [
+                        elements["city"],
+                        StructField(
+                            "zip",
+                            StructType([elements["first5"], elements["last4"]]),
+                            nullable=False,
+                        ),
+                    ]
+                ),
+                nullable=False,
+            ),
+            elements["_id"],
+        ]
+
+        _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
+        phone_type = "home"
+        phone_number = "555-555-5555"
+
+        unsorted_data = [
+            (
+                ((zip_last4, zip_first5), city),
+                [(phone_type, phone_number)],
+                _id,
+                first_name,
+            ),
+        ]
+        sorted_data = [
+            (
+                [(phone_type, phone_number)],
+                first_name,
+                (city, (zip_last4, zip_first5)),
+                _id,
+            ),
+        ]
+
+        unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
+        expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
+
+        return unsorted_df, expected_df
+
+    unsorted_df, expected_df = _get_test_dataframes()
+    sorted_df = quinn.sort_columns(unsorted_df, "desc", sort_nested_structs=True)
+
+    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
+
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("abc").getOrCreate()
+test_sort_struct_nested_with_arraytypes(spark)
