@@ -52,9 +52,7 @@ def print_schema_as_code(dtype: T.DataType) -> str:
 def _repr_column(column: T.StructField) -> str:
     res = []
 
-    if (
-        isinstance(column.dataType, (T.ArrayType, T.MapType, T.StructType))
-    ):
+    if isinstance(column.dataType, (T.ArrayType, T.MapType, T.StructType)):
         res.append(f'StructField(\n\t"{column.name}",')
         for line in print_schema_as_code(column.dataType).split("\n"):
             res.append("\n\t")
@@ -85,6 +83,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
     :return: A StructType object representing the schema configuration
     :rtype: pyspark.sql.types.StructType
     """
+
     def _validate_json(metadata: str) -> dict:
         if metadata is None:
             return {}

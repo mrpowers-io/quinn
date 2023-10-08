@@ -26,7 +26,8 @@ def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], Dat
 
 
 def with_some_columns_renamed(
-    fun: Callable[[str], str], change_col_name: Callable[[str], str],
+    fun: Callable[[str], str],
+    change_col_name: Callable[[str], str],
 ) -> Callable[[DataFrame], DataFrame]:
     """Function that takes a `Callable[[str], str]` and a `Callable[[str], str]` and returns a `Callable[[DataFrame], DataFrame]`.
 
@@ -44,9 +45,12 @@ def with_some_columns_renamed(
     """
 
     def _(df: DataFrame) -> DataFrame:
-        cols = [F.col(f"`{col_name}`").alias(fun(col_name))
-                if change_col_name(col_name)
-                else F.col(f"`{col_name}`") for col_name in df.columns]
+        cols = [
+            F.col(f"`{col_name}`").alias(fun(col_name))
+            if change_col_name(col_name)
+            else F.col(f"`{col_name}`")
+            for col_name in df.columns
+        ]
         return df.select(*cols)
 
     return _

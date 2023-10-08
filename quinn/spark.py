@@ -27,7 +27,11 @@ class SparkProvider:
     ) -> None:
         """Initialize SparkSession."""
         self.spark = self.set_up_spark(
-            app_name, self.master, conf, extra_dependencies, extra_files,
+            app_name,
+            self.master,
+            conf,
+            extra_dependencies,
+            extra_files,
         )
 
     @property

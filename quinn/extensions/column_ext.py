@@ -67,15 +67,29 @@ def isNullOrBlank(self: Column) -> Column:
 
 
 def isNotIn(self: Column, _list: list[Any]) -> Column:
+    """To see if a value is not in a list of values.
+
+    :param self: Column object
+    :_list: list[Any]
+    :rtype: Column
+    """
     return ~(self.isin(_list))
 
 
 def nullBetween(self: Column, lower: Column, upper: Column) -> Column:
+    """To see if a value is between two values in a null friendly way.
+
+    :param self: Column object
+    :lower: Column
+    :upper: Column
+    :rtype: Column
+    """
     return when(lower.isNull() & upper.isNull(), False).otherwise(
         when(self.isNull(), False).otherwise(
             when(lower.isNull() & upper.isNotNull() & (self <= upper), True).otherwise(
                 when(
-                    lower.isNotNull() & upper.isNull() & (self >= lower), True,
+                    lower.isNotNull() & upper.isNull() & (self >= lower),
+                    True,
                 ).otherwise(self.between(lower, upper)),
             ),
         ),
