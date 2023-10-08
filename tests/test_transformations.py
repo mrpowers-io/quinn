@@ -447,15 +447,15 @@ def _get_unsorted_nested_array_fields(elements: dict) -> list:
                         "zip",
                         StructType(
                             [
-                                elements["first5"],
                                 elements["last4"],
+                                elements["first5"],
                             ]
                         ),
                         nullable=False,
                     ),
+                    elements["city"],
                 ]
             ),
-            elements["city"],
         ),
         StructField(
             "phone_numbers",
@@ -492,7 +492,7 @@ def test_sort_struct_nested_with_arraytypes(spark):
             elements["first_name"],
             StructField(
                 "phone_numbers",
-                ArrayType(StructType([elements["type"], elements["number"]])),
+                ArrayType(StructType([elements["number"], elements["type"]])),
                 nullable=True,
             ),
         ]
@@ -503,7 +503,7 @@ def test_sort_struct_nested_with_arraytypes(spark):
 
         unsorted_data = [
             (
-                (((zip_last4, zip_first5)), city),
+                ((zip_last4, zip_first5), city),
                 [(phone_type, phone_number)],
                 _id,
                 first_name,
@@ -512,7 +512,7 @@ def test_sort_struct_nested_with_arraytypes(spark):
         sorted_data = [
             (
                 _id,
-                (city, ((zip_last4, zip_first5))),
+                (city, (zip_last4, zip_first5)),
                 first_name,
                 [(phone_type, phone_number)],
             ),
