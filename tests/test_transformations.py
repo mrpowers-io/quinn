@@ -543,7 +543,7 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
         sorted_fields = [
             StructField(
                 "phone_numbers",
-                ArrayType(StructType([elements["number"], elements["type"]])),
+                ArrayType(StructType([elements["type"], elements["number"]])),
                 nullable=True,
             ),
             elements["first_name"],
@@ -551,12 +551,12 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
                 "address",
                 StructType(
                     [
-                        elements["city"],
                         StructField(
                             "zip",
-                            StructType([elements["first5"], elements["last4"]]),
+                            StructType([elements["last4"], elements["first5"]]),
                             nullable=False,
                         ),
+                        elements["city"],
                     ]
                 ),
                 nullable=False,
@@ -580,7 +580,7 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
             (
                 [(phone_type, phone_number)],
                 first_name,
-                (city, (zip_last4, zip_first5)),
+                ((zip_last4, zip_first5), city),
                 _id,
             ),
         ]
@@ -629,3 +629,9 @@ def test_sort_struct_nested_with_arraytypes_nullable(spark):
 
 def test_sort_struct_nested_with_arraytypes_nullable_desc(spark):
     _test_sort_struct_nested_with_arraytypes_desc(spark, False)
+
+
+# from pyspark.sql import SparkSession
+
+# spark = SparkSession.builder.getOrCreate()
+# test_sort_struct_nested_with_arraytypes_desc(spark)
