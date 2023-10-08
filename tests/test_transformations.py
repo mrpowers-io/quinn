@@ -349,7 +349,7 @@ def _get_unsorted_nested_struct_fields(elements: dict):
     return unsorted_fields
 
 
-def test_sort_struct_nested(spark):
+def _test_sort_struct_nested(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
         unsorted_fields = _get_unsorted_nested_struct_fields(elements)
@@ -384,10 +384,12 @@ def test_sort_struct_nested(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
 
-    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
+    )
 
 
-def test_sort_struct_nested_desc(spark):
+def _test_sort_struct_nested_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
         unsorted_fields = _get_unsorted_nested_struct_fields(elements)
@@ -430,7 +432,9 @@ def test_sort_struct_nested_desc(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "desc")
 
-    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
+    )
 
 
 def _get_unsorted_nested_array_fields(elements: dict) -> list:
@@ -465,7 +469,7 @@ def _get_unsorted_nested_array_fields(elements: dict) -> list:
     return unsorted_fields
 
 
-def test_sort_struct_nested_with_arraytypes(spark):
+def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
         unsorted_fields = _get_unsorted_nested_array_fields(elements)
@@ -526,10 +530,12 @@ def test_sort_struct_nested_with_arraytypes(spark):
     expected_df.printSchema()
     sorted_df.printSchema()
 
-    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable
+    )
 
 
-def test_sort_struct_nested_with_arraytypes_desc(spark):
+def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
         unsorted_fields = _get_unsorted_nested_array_fields(elements)
@@ -587,10 +593,39 @@ def test_sort_struct_nested_with_arraytypes_desc(spark):
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "desc", sort_nested_structs=True)
 
-    chispa.schema_comparer.assert_schema_equality(sorted_df.schema, expected_df.schema)
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
+    )
 
 
-from pyspark.sql import SparkSession
+def test_sort_struct_nested(spark):
+    _test_sort_struct_nested(spark, True)
 
-spark = SparkSession.builder.appName("abc").getOrCreate()
-test_sort_struct_nested_with_arraytypes(spark)
+
+def test_sort_struct_nested_desc(spark):
+    _test_sort_struct_nested_desc(spark, True)
+
+
+def test_sort_struct_nested_with_arraytypes(spark):
+    _test_sort_struct_nested_with_arraytypes(spark, True)
+
+
+def test_sort_struct_nested_with_arraytypes_desc(spark):
+    _test_sort_struct_nested_with_arraytypes_desc(spark, True)
+
+
+# broken nullable tests below ============================
+def test_sort_struct_nested_nullable(spark):
+    _test_sort_struct_nested(spark, False)
+
+
+def test_sort_struct_nested_nullable_desc(spark):
+    _test_sort_struct_nested_desc(spark, False)
+
+
+def test_sort_struct_nested_with_arraytypes_nullable(spark):
+    _test_sort_struct_nested_with_arraytypes(spark, False)
+
+
+def test_sort_struct_nested_with_arraytypes_nullable_desc(spark):
+    _test_sort_struct_nested_with_arraytypes_desc(spark, False)
