@@ -88,7 +88,9 @@ def to_snake_case(s: str) -> str:
     return s.lower().replace(" ", "_")
 
 
-def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
+def sort_columns(
+    df: DataFrame, sort_order: str, sort_nested_structs: bool = False
+) -> DataFrame:
     """This function sorts the columns of a given DataFrame based on a given sort
     order. The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
     ascending and descending order, respectively. If any other value is provided for
@@ -98,6 +100,8 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
     :type df: pyspark.sql.DataFrame
     :param sort_order: The order in which to sort the columns in the DataFrame
     :type sort_order: str
+    :param sort_nested_structs: Whether to sort nested structs or not. Defaults to false.
+    :type sort_nested_structs: bool
     :return: A DataFrame with the columns sorted in the chosen order
     :rtype: pyspark.sql.DataFrame
     """
@@ -224,7 +228,12 @@ def sort_columns(df: DataFrame, sort_order: str) -> DataFrame:
 
     is_reversed: bool = parse_sort_order(sort_order)
     top_sorted_schema_results: dict = sort_top_level_cols(df.schema, is_reversed)
-    if not top_sorted_schema_results["is_nested"]:
+
+    skip_nested_sorting = (
+        not top_sorted_schema_results["is_nested"] or not sort_nested_structs
+    )
+
+    if skip_nested_sorting:
         columns: list = [i.name for i in top_sorted_schema_results["schema"]]
         return df.select(*columns)
 
