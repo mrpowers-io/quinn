@@ -285,11 +285,8 @@ def _test_sort_struct_flat(spark, sort_order: str):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_simple_test_dataframes(sort_order=sort_order)
-
-    unsorted_df.printSchema()
     sorted_df = quinn.sort_columns(unsorted_df, sort_order)
-    sorted_df.printSchema()
-    expected_df.printSchema()
+
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=True
     )
@@ -373,8 +370,17 @@ def _test_sort_struct_nested(spark, ignore_nullable: bool):
         ]
 
         _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
-        unsorted_data = [(_id, first_name, (((zip_last4, zip_first5)), city))]
-        sorted_data = [(_id, ((city, (zip_first5, zip_last4))), first_name)]
+        unsorted_data = [
+            (_id, first_name, (((zip_last4, zip_first5)), city)),
+            (_id, first_name, (((None, zip_first5)), city)),
+            (_id, first_name, (None)),
+        ]
+
+        sorted_data = [
+            (_id, ((city, (zip_first5, zip_last4))), first_name),
+            (_id, ((city, (zip_first5, None))), first_name),
+            (_id, (None), first_name),
+        ]
 
         unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
         expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
@@ -509,6 +515,8 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
                 _id,
                 first_name,
             ),
+            (((zip_last4, zip_first5), city), [(phone_type, None)], _id, first_name),
+            (((None, None), city), None, _id, first_name),
         ]
         sorted_data = [
             (
@@ -517,8 +525,9 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
                 first_name,
                 [(phone_type, phone_number)],
             ),
+            (_id, (city, (zip_last4, zip_first5)), first_name, [(phone_type, None)]),
+            (_id, (city, (None, None)), first_name, None),
         ]
-
         unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
         expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
 
@@ -526,9 +535,6 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
 
     unsorted_df, expected_df = _get_test_dataframes()
     sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
-
-    expected_df.printSchema()
-    sorted_df.printSchema()
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable
@@ -614,7 +620,6 @@ def test_sort_struct_nested_with_arraytypes_desc(spark):
     _test_sort_struct_nested_with_arraytypes_desc(spark, True)
 
 
-# broken nullable tests below ============================
 def test_sort_struct_nested_nullable(spark):
     _test_sort_struct_nested(spark, False)
 
@@ -629,9 +634,3 @@ def test_sort_struct_nested_with_arraytypes_nullable(spark):
 
 def test_sort_struct_nested_with_arraytypes_nullable_desc(spark):
     _test_sort_struct_nested_with_arraytypes_desc(spark, False)
-
-
-# from pyspark.sql import SparkSession
-
-# spark = SparkSession.builder.getOrCreate()
-# test_sort_struct_nested_with_arraytypes_desc(spark)
