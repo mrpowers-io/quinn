@@ -139,7 +139,7 @@ def sort_columns(
 
         return output
 
-    def sort_nested_cols(schema, is_reversed, base_field="") -> list:
+    def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]:
         # TODO: get working with ArrayType
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
@@ -226,13 +226,53 @@ def sort_columns(
 
         return select_cols
 
+    def get_original_nullability(field: StructField, result_dict: dict) -> None:
+        def assign_nullability(field: StructField, result_dict: dict) -> dict:
+            try:
+                result_dict[field.name] = field.nullable
+            except AttributeError:
+                result_dict[field.name] = True
+
+            return result_dict
+
+        result_dict = assign_nullability(field, result_dict)
+        if not isinstance(field.dataType, StructType) and not isinstance(
+            field.dataType, ArrayType
+        ):
+            return
+
+        if isinstance(field.dataType, ArrayType):
+            result_dict[f"{field.name}_element"] = field.dataType.containsNull
+            children = field.dataType.elementType.fields
+        else:
+            children = field.dataType.fields
+        for i in children:
+            get_original_nullability(i, result_dict)
+
+    def fix_nullability(field: StructField, result_dict: dict) -> None:
+        field.nullable = result_dict[field.name]
+        if not isinstance(field.dataType, StructType) and not isinstance(
+            field.dataType, ArrayType
+        ):
+            return
+
+        if isinstance(field.dataType, ArrayType):
+            # save the containsNull property of the ArrayType
+            field.dataType.containsNull = result_dict[f"{field.name}_element"]
+            children = field.dataType.elementType.fields
+        else:
+            children = field.dataType.fields
+
+        for i in children:
+            fix_nullability(i, result_dict)
+
     is_reversed: bool = parse_sort_order(sort_order)
     top_sorted_schema_results: dict = sort_top_level_cols(df.schema, is_reversed)
-
     skip_nested_sorting = (
         not top_sorted_schema_results["is_nested"] or not sort_nested_structs
     )
 
+    # fast exit if no nested structs or if user doesn't want to sort them
     if skip_nested_sorting:
         columns: list = [i.name for i in top_sorted_schema_results["schema"]]
         return df.select(*columns)
@@ -241,4 +281,13 @@ def sort_columns(
         top_sorted_schema_results["schema"], is_reversed
     )
 
-    return df.selectExpr(fully_sorted_schema)
+    output = df.selectExpr(fully_sorted_schema)
+    result_dict = {}
+    for field in df.schema:
+        get_original_nullability(field, result_dict)
+
+    for field in output.schema:
+        fix_nullability(field, result_dict)
+
+    final_df = output.sparkSession.createDataFrame(output.rdd, output.schema)
+    return final_df
