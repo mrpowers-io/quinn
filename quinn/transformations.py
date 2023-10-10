@@ -89,7 +89,7 @@ def to_snake_case(s: str) -> str:
 
 
 def sort_columns(
-    df: DataFrame, sort_order: str, sort_nested_structs: bool = False
+    df: DataFrame, sort_order: str, sort_nested: bool = False
 ) -> DataFrame:
     """This function sorts the columns of a given DataFrame based on a given sort
     order. The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
@@ -268,9 +268,7 @@ def sort_columns(
 
     is_reversed: bool = parse_sort_order(sort_order)
     top_sorted_schema_results: dict = sort_top_level_cols(df.schema, is_reversed)
-    skip_nested_sorting = (
-        not top_sorted_schema_results["is_nested"] or not sort_nested_structs
-    )
+    skip_nested_sorting = not top_sorted_schema_results["is_nested"] or not sort_nested
 
     # fast exit if no nested structs or if user doesn't want to sort them
     if skip_nested_sorting:
