@@ -388,7 +388,7 @@ def _test_sort_struct_nested(spark, ignore_nullable: bool):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
+    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
@@ -534,7 +534,7 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested_structs=True)
+    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable
@@ -597,7 +597,7 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-    sorted_df = quinn.sort_columns(unsorted_df, "desc", sort_nested_structs=True)
+    sorted_df = quinn.sort_columns(unsorted_df, "desc", sort_nested=True)
 
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
