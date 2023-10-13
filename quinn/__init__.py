@@ -78,4 +78,7 @@ __all__ = [
     "sort_columns",
     "append_if_schema_identical",
     "flatten_dataframe",
+    "validate_returned_schema",
+    "ensure_columns_present",
+    "ensure_columns_absent",
 ]

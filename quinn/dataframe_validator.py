@@ -86,3 +86,45 @@ def validate_absence_of_columns(df: DataFrame, prohibited_col_names: list[str]) 
     error_message = f"The {extra_col_names} columns are not allowed to be included in the DataFrame with the following columns {all_col_names}"
     if extra_col_names:
         raise DataFrameProhibitedColumnError(error_message)
+
+
+def validate_returned_schema(required_schema: StructType, ignore_nullable: bool = False):
+    def inner_decorator(func):
+        def wrapper(*args, **kwargs):
+            # Call the function that returns a DataFrame
+            result_df = func(*args, **kwargs)
+            
+            # Validate the schema of the DataFrame
+            validate_schema(result_df, required_schema, ignore_nullable)
+            
+            return result_df
+        return wrapper
+    return inner_decorator
+
+
+def ensure_columns_present(required_col_names: list[str]):
+    def inner_decorator(func):
+        def wrapper(*args, **kwargs):
+            # Call the function that returns a DataFrame
+            result_df = func(*args, **kwargs)
+            
+            # Validate the presence of columns in the DataFrame
+            validate_presence_of_columns(result_df, required_col_names)
+            
+            return result_df
+        return wrapper
+    return inner_decorator
+
+
+def ensure_columns_absent(prohibited_col_names: list[str]):
+    def inner_decorator(func):
+        def wrapper(*args, **kwargs):
+            # Call the function that returns a DataFrame
+            result_df = func(*args, **kwargs)
+            
+            # Validate the absence of prohibited columns in the DataFrame
+            validate_absence_of_columns(result_df, prohibited_col_names)
+            
+            return result_df
+        return wrapper
+    return inner_decorator
