@@ -119,25 +119,10 @@ def sort_columns(
         }
         return reverse_lookup[sort_order]
 
-    def sort_top_level_cols(schema, is_reversed) -> dict:
+    def sort_top_level_cols(df, is_reversed) -> DataFrame:
         # sort top level columns
-        top_sorted_fields: list = sorted(
-            schema.fields, key=lambda x: x.name, reverse=is_reversed
-        )
-
-        is_nested: bool = any(
-            [
-                isinstance(i.dataType, StructType) or isinstance(i.dataType, ArrayType)
-                for i in top_sorted_fields
-            ]
-        )
-
-        output = {
-            "schema": top_sorted_fields,
-            "is_nested": is_nested,
-        }
-
-        return output
+        sorted_col_names = sorted(df.columns, reverse=is_reversed)
+        return df.select(*sorted_col_names)
 
     def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]:
         # TODO: get working with ArrayType
@@ -267,16 +252,22 @@ def sort_columns(
             fix_nullability(i, result_dict)
 
     is_reversed: bool = parse_sort_order(sort_order)
-    top_sorted_schema_results: dict = sort_top_level_cols(df.schema, is_reversed)
-    skip_nested_sorting = not top_sorted_schema_results["is_nested"] or not sort_nested
+    top_level_sorted_df = sort_top_level_cols(df, is_reversed)
+    if not sort_nested:
+        return top_level_sorted_df
 
-    # fast exit if no nested structs or if user doesn't want to sort them
-    if skip_nested_sorting:
-        columns: list = [i.name for i in top_sorted_schema_results["schema"]]
-        return df.select(*columns)
+    is_nested: bool = any(
+        [
+            isinstance(i.dataType, StructType) or isinstance(i.dataType, ArrayType)
+            for i in top_level_sorted_df.schema
+        ]
+    )
+
+    if not is_nested:
+        return top_level_sorted_df
 
     fully_sorted_schema = sort_nested_cols(
-        top_sorted_schema_results["schema"], is_reversed
+        top_level_sorted_df.schema, is_reversed
     )
 
     output = df.selectExpr(fully_sorted_schema)
