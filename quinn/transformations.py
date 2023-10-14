@@ -100,8 +100,8 @@ def sort_columns(
     :type df: pyspark.sql.DataFrame
     :param sort_order: The order in which to sort the columns in the DataFrame
     :type sort_order: str
-    :param sort_nested_structs: Whether to sort nested structs or not. Defaults to false.
-    :type sort_nested_structs: bool
+    :param sort_nested: Whether to sort nested structs or not. Defaults to false.
+    :type sort_nested: bool
     :return: A DataFrame with the columns sorted in the chosen order
     :rtype: pyspark.sql.DataFrame
     """
@@ -125,7 +125,6 @@ def sort_columns(
         return df.select(*sorted_col_names)
 
     def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]:
-        # TODO: get working with ArrayType
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
         # Credits: @pault for logic
@@ -169,7 +168,6 @@ def sort_columns(
             suffix_str = f") AS {parent_struct.name}"
 
             # if struct in array, create mapping to struct
-            # TODO: prob doesn't work with additional levels of nesting
             if array_parent["type"] == "struct":
                 array_parent = array_parent["fields"]
 
