@@ -29,6 +29,10 @@ jobs:
             python-version: "3.11"
           - pyspark-version: "3.2.4"
             python-version: "3.12"
+          - pyspark-version: "3.3.2"
+            python-version: "3.11"
+          - pyspark-version: "3.3.2"
+            python-version: "3.12"
 
     steps:
       - uses: actions/checkout@v1
