@@ -35,12 +35,18 @@ runs:
       run: poetry config virtualenvs.in-project true
       shell: bash
 
+    - name: Format dependency groups
+      id: format-dep-groups
+      run: |
+        DEP_GROUPS="${{ inputs.optional-dependency-groups }}"
+        echo "FORMATTED_DEP_GROUPS=${DEP_GROUPS//,}" >> $GITHUB_ENV
+
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ replace(inputs.optional-dependency-groups, ',', '') }}-${{ hashFiles('poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ env.FORMATTED_DEP_GROUPS }}-${{ hashFiles('poetry.lock') }}
 
     - name: Install dependencies
       run: |
