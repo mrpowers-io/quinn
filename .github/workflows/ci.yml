@@ -15,16 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pyspark-version: 3.0.3
-            pip-packages: "pyspark==3.0.3"
-          - pyspark-version: 3.1.3
-            pip-packages: "pyspark==3.1.3"
-          - pyspark-version: 3.2.4
-            pip-packages: "pyspark==3.2.4"
-          - pyspark-version: 3.3.2
-            pip-packages: "pyspark==3.3.2"
-          - pyspark-version: 3.4.0
-            pip-packages: "pyspark==3.4.0"
+          pyspark-version: ["3.0.3","3.1.3","3.2.4","3.3.2","3.4.0"]
           python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -35,8 +26,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: '8'  # Supported by Spark 2.x & 3.x
+          distribution: "zulu"
+          java-version: "8"  # Supported by Spark 2.x & 3.x
 
       - name: Set up the environment
         uses: ./.github/actions/setup-poetry-env
@@ -45,9 +36,7 @@ jobs:
           optional-dependency-groups: "development,testing"
 
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
-        env:
-          PIP_PACKAGES: ${{ matrix.pip-packages }}
-        run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
+        run: poetry run pip install pyspark==${{ matrix.pyspark-version }}  # Using pip shouldn"t mess up poetry cache
 
       - name: Run tests for Python ${{ matrix.python-version }} and PySpark ${{ matrix.pyspark-version }}
         run: make test
