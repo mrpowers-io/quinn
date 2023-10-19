@@ -22,7 +22,6 @@ runs:
 
     - name: Install Poetry
       env:
-        # renovate: datasource=pypi depName=poetry
         POETRY_VERSION: "1.6.1"
       run: curl -sSL https://install.python-poetry.org | python - -y
       shell: bash
@@ -40,6 +39,7 @@ runs:
       run: |
         DEP_GROUPS="${{ inputs.optional-dependency-groups }}"
         echo "FORMATTED_DEP_GROUPS=${DEP_GROUPS//,}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Load cached venv
       id: cached-poetry-dependencies
