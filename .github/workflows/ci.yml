@@ -69,4 +69,4 @@ jobs:
           optional-dependency-groups: "docs"
 
       - name: Check if documentation can be built
-        run: poetry run mkdocs build -s
+        run: poetry run mkdocs build
