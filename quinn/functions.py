@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Callable
     from numbers import Number
+    from typing import Callable
 
     from pyspark.sql import Column
     from pyspark.sql.functions import udf

@@ -4,7 +4,6 @@ import json
 
 from pyspark.sql import SparkSession
 from pyspark.sql import types as T  # noqa: N812
-from typing import Union
 
 
 def print_schema_as_code(dtype: T.DataType) -> str:
@@ -43,9 +42,9 @@ def print_schema_as_code(dtype: T.DataType) -> str:
     elif isinstance(dtype, T.DecimalType):
         res.append(f"DecimalType({dtype.precision}, {dtype.scale})")
 
-    else:
+    else: # noqa: PLR5501
         # PySpark 3.3+
-        if str(dtype).endswith("()"):  # noqa: PLR5501
+        if str(dtype).endswith("()"):
             res.append(str(dtype))
         else:
             res.append(f"{dtype}()")
