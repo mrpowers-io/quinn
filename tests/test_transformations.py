@@ -604,6 +604,99 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
     )
 
 
+def _test_sort_struct_nested_in_arraytypes(spark, ignore_nullable: bool):
+    def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
+        elements = _get_test_dataframes_schemas()
+        unsorted_fields = _get_unsorted_nested_array_fields(elements)
+
+        # extensions = StructType(
+        #     [
+        #         StructField("extension_code", StringType(), nullable=True),
+        #         StructField(
+        #             "extension_numbers",
+        #             StructType(
+        #                 [
+        #                     StructField("extension_number_one", IntegerType()),
+        #                     StructField("extension_number_two", IntegerType()),
+        #                 ]
+        #             ),
+        #         ),
+        #     ]
+        # )
+
+        sorted_fields = [
+            StructField(
+                "phone_numbers",
+                ArrayType(StructType([elements["type"], elements["number"]])),
+            ),
+            StructField(
+                "extensions",
+                ArrayType(
+                    StructType(
+                        [
+                            StructField("extension_number_one", IntegerType()),
+                            StructField("extension_number_two", IntegerType()),
+                        ]
+                    ),
+                    StructField("extension_code", StringType(), nullable=True),
+                ),
+            ),
+            elements["first_name"],
+            StructField(
+                "address",
+                StructType(
+                    [
+                        StructField(
+                            "zip",
+                            StructType([elements["last4"], elements["first5"]]),
+                            nullable=False,
+                        ),
+                        elements["city"],
+                    ]
+                ),
+                nullable=False,
+            ),
+            elements["_id"],
+        ]
+
+        _id, city, zip_first5, zip_last4, first_name = _get_test_dataframes_data()
+        phone_type = "home"
+        phone_number = "555-555-5555"
+        extension_code = "test"
+        extension_number_one = 1
+        extension_number_two = 2
+
+        unsorted_data = [
+            (
+                ((zip_last4, zip_first5), city),
+                [(phone_type, phone_number)],
+                _id,
+                first_name,
+            ),
+        ]
+        sorted_data = [
+            (
+                [(phone_type, phone_number)],
+                [(extension_number_one, extension_number_two), extension_code],
+                first_name,
+                ((zip_last4, zip_first5), city),
+                _id,
+            ),
+        ]
+
+        expected_df = spark.createDataFrame(sorted_data, StructType(sorted_fields))
+        unsorted_df = spark.createDataFrame(unsorted_data, StructType(unsorted_fields))
+
+        return unsorted_df, expected_df
+
+    unsorted_df, expected_df = _get_test_dataframes()
+    sorted_df = quinn.sort_columns(unsorted_df, "desc", sort_nested=True)
+
+    chispa.schema_comparer.assert_schema_equality(
+        sorted_df.schema, expected_df.schema, ignore_nullable=ignore_nullable
+    )
+
+
 def test_sort_struct_nested(spark):
     _test_sort_struct_nested(spark, True)
 
@@ -634,3 +727,9 @@ def test_sort_struct_nested_with_arraytypes_nullable(spark):
 
 def test_sort_struct_nested_with_arraytypes_nullable_desc(spark):
     _test_sort_struct_nested_with_arraytypes_desc(spark, False)
+
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+_test_sort_struct_nested_with_arraytypes(spark, False)
