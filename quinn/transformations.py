@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Callable
 
 import pyspark.sql.functions as F
@@ -106,24 +107,6 @@ def sort_columns(
     :rtype: pyspark.sql.DataFrame
     """
 
-    def parse_sort_order(sort_order: str) -> bool:
-        if sort_order not in ["asc", "desc"]:
-            raise ValueError(
-                "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
-                    sort_order=sort_order
-                )
-            )
-        reverse_lookup = {
-            "asc": False,
-            "desc": True,
-        }
-        return reverse_lookup[sort_order]
-
-    def sort_top_level_cols(df, is_reversed) -> DataFrame:
-        # sort top level columns
-        sorted_col_names = sorted(df.columns, reverse=is_reversed)
-        return df.select(*sorted_col_names)
-
     def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]:
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
@@ -150,56 +133,36 @@ def sort_columns(
                 )
             return results
 
-        def handle_array_type(parent_struct: StructField, is_reversed: bool) -> str:
-            def format_array_selection(
-                elements: list, base_str: str, suffix_str: str
-            ) -> str:
-                element_names = [i.split(".")[-1] for i in elements]
-                array_elements_formatted = [f"x.{i} as {i}" for i in element_names]
-
-                output = (
-                    f"{base_str} {', '.join(array_elements_formatted)} {suffix_str}"
-                )
-                return output
-
-            array_parent = parent_struct.jsonValue()["type"]["elementType"]
-
-            base_str = f"transform({parent_struct.name}"
-            suffix_str = f") AS {parent_struct.name}"
-
-            # if struct in array, create mapping to struct
-            if array_parent["type"] == "struct":
-                array_parent = array_parent["fields"]
-
-                base_str = f"{base_str}, x -> struct("
-                suffix_str = f"){suffix_str}"
-
-            array_elements = parse_fields(array_parent, parent_struct, is_reversed)
-            formatted_array_selection = format_array_selection(
-                array_elements, base_str, suffix_str
-            )
-            return formatted_array_selection
-
-        def handle_struct_type(parent_struct: StructField, is_reversed: bool) -> str:
-            def format_struct_selection(elements: list, struct_name: str) -> str:
-                output: str = f"struct( {', '.join(elements)} ) AS {struct_name}"
-                return output
-
-            field_list = parent_struct.jsonValue()["type"]["fields"]
-            sub_fields = parse_fields(field_list, parent_struct, is_reversed)
-            formatted_sub_fields = format_struct_selection(
-                sub_fields, parent_struct.name
-            )
-            return formatted_sub_fields
-
         select_cols = []
         for parent_struct in sorted(schema, key=lambda x: x.name, reverse=is_reversed):
             field_type = parent_struct.dataType
             if isinstance(field_type, ArrayType):
-                result = handle_array_type(parent_struct, is_reversed)
+                array_parent = parent_struct.jsonValue()["type"]["elementType"]
+                base_str = f"transform({parent_struct.name}"
+                suffix_str = f") AS {parent_struct.name}"
+
+                # if struct in array, create mapping to struct
+                if array_parent["type"] == "struct":
+                    array_parent = array_parent["fields"]
+                    base_str = f"{base_str}, x -> struct("
+                    suffix_str = f"){suffix_str}"
+
+                array_elements = parse_fields(array_parent, parent_struct, is_reversed)
+                element_names = [i.split(".")[-1] for i in array_elements]
+                array_elements_formatted = [f"x.{i} as {i}" for i in element_names]
+
+                # create a string representation of the sorted array
+                # ex: transform(phone_numbers, x -> struct(x.number as number, x.type as type)) AS phone_numbers
+                result = f"{base_str}{', '.join(array_elements_formatted)}{suffix_str}"
 
             elif isinstance(field_type, StructType):
-                result = handle_struct_type(parent_struct, is_reversed)
+                field_list = parent_struct.jsonValue()["type"]["fields"]
+                sub_fields = parse_fields(field_list, parent_struct, is_reversed)
+
+                # create a string representation of the sorted struct
+                # ex: struct(address.zip.first5, address.zip.last4) AS zip
+                result = f"struct({', '.join(sub_fields)}) AS {parent_struct.name}"
+
             else:
                 if base_field:
                     result = f"{base_field}.{parent_struct.name}"
@@ -210,15 +173,11 @@ def sort_columns(
         return select_cols
 
     def get_original_nullability(field: StructField, result_dict: dict) -> None:
-        def assign_nullability(field: StructField, result_dict: dict) -> dict:
-            try:
-                result_dict[field.name] = field.nullable
-            except AttributeError:
-                result_dict[field.name] = True
+        if hasattr(field, "nullable"):
+            result_dict[field.name] = field.nullable
+        else:
+            result_dict[field.name] = True
 
-            return result_dict
-
-        result_dict = assign_nullability(field, result_dict)
         if not isinstance(field.dataType, StructType) and not isinstance(
             field.dataType, ArrayType
         ):
@@ -249,8 +208,19 @@ def sort_columns(
         for i in children:
             fix_nullability(i, result_dict)
 
-    is_reversed: bool = parse_sort_order(sort_order)
-    top_level_sorted_df = sort_top_level_cols(df, is_reversed)
+    if sort_order not in ["asc", "desc"]:
+        raise ValueError(
+            "['asc', 'desc'] are the only valid sort orders and you entered a sort order of '{sort_order}'".format(
+                sort_order=sort_order
+            )
+        )
+    reverse_lookup = {
+        "asc": False,
+        "desc": True,
+    }
+
+    is_reversed: bool = reverse_lookup[sort_order]
+    top_level_sorted_df = df.select(*sorted(df.columns, reverse=is_reversed))
     if not sort_nested:
         return top_level_sorted_df
 
@@ -264,10 +234,7 @@ def sort_columns(
     if not is_nested:
         return top_level_sorted_df
 
-    fully_sorted_schema = sort_nested_cols(
-        top_level_sorted_df.schema, is_reversed
-    )
-
+    fully_sorted_schema = sort_nested_cols(top_level_sorted_df.schema, is_reversed)
     output = df.selectExpr(fully_sorted_schema)
     result_dict = {}
     for field in df.schema:
