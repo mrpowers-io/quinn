@@ -230,10 +230,10 @@ Converts all the column names in a DataFrame to snake_case. It's annoying to wri
 **sort_columns()**
 
 ```python
-quinn.sort_columns(source_df, "asc")
+quinn.sort_columns(df=source_df, sort_order="asc", sort_nested=True)
 ```
 
-Sorts the DataFrame columns in alphabetical order. Wide DataFrames are easier to navigate when they're sorted alphabetically.
+Sorts the DataFrame columns in alphabetical order, including nested columns if sort_nested is set to True. Wide DataFrames are easier to navigate when they're sorted alphabetically.
 
 ### DataFrame Helpers
 
