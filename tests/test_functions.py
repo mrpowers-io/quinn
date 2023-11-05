@@ -10,6 +10,7 @@ from pyspark.sql.types import (
     ArrayType,
     FloatType,
     StringType,
+    MapType,
 )
 
 import quinn

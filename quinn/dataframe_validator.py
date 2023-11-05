@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from pyspark.sql.types import StructType
 
 
-
 class DataFrameMissingColumnError(ValueError):
     """Raise this when there's a DataFrame column error."""
 
@@ -40,7 +39,9 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str]) -
 
 
 def validate_schema(
-    df: DataFrame, required_schema: StructType, ignore_nullable: bool = False,  # noqa: FBT001,FBT002
+    df: DataFrame,
+    required_schema: StructType,
+    ignore_nullable: bool = False,  # noqa: FBT001,FBT002
 ) -> None:
     """Function that validate if a given DataFrame has a given StructType as its schema.
 

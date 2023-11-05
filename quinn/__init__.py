@@ -1,4 +1,3 @@
-
 """quinn API."""
 
 from quinn.append_if_schema_identical import append_if_schema_identical
@@ -34,10 +33,18 @@ from quinn.functions import (
     week_start_date,
 )
 from quinn.schema_helpers import print_schema_as_code
-from quinn.transformations import snake_case_col_names, sort_columns, to_snake_case, with_columns_renamed, with_some_columns_renamed
+from quinn.split_columns import split_col
+from quinn.transformations import (
+    snake_case_col_names,
+    sort_columns,
+    to_snake_case,
+    with_columns_renamed,
+    with_some_columns_renamed,
+)
 
 # Use __all__ to let developers know what is part of the public API.
 __all__ = [
+    "split_col",
     "DataFrameMissingColumnError",
     "DataFrameMissingStructFieldError",
     "DataFrameProhibitedColumnError",
@@ -70,4 +77,5 @@ __all__ = [
     "to_snake_case",
     "sort_columns",
     "append_if_schema_identical",
+    "flatten_dataframe",
 ]

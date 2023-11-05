@@ -3,21 +3,22 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-      from numbers import Number
+    from collections.abc import Callable
+    from numbers import Number
 
-      from pyspark.sql import Column
-      from pyspark.sql.functions import udf
+    from pyspark.sql import Column
+    from pyspark.sql.functions import udf
 
 
 import re
 import uuid
-from typing import Any, Callable
+from typing import Any
 
-import pyspark.sql.functions as F
+import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql.types import (
-      ArrayType,
-      BooleanType,
-      StringType,
+    ArrayType,
+    BooleanType,
+    StringType,
 )
 
 
@@ -121,7 +122,7 @@ def multi_equals(value: Any) -> udf:  # noqa: ANN401
     """
 
     def temp_udf(*cols) -> bool:  # noqa: ANN002
-        return all(map(lambda col: col == value, cols)) # noqa: C417
+        return all(map(lambda col: col == value, cols))  # noqa: C417
 
     return F.udf(temp_udf, BooleanType())
 
@@ -186,14 +187,17 @@ def week_end_date(col: Column, week_end_day: str = "Sat") -> Column:
         "Sat": 7,
     }
     return F.when(
-        F.dayofweek(col).eqNullSafe(F.lit(day_of_week_mapping[week_end_day])), col,
+        F.dayofweek(col).eqNullSafe(F.lit(day_of_week_mapping[week_end_day])),
+        col,
     ).otherwise(F.next_day(col, week_end_day))
 
 
 def _raise_if_invalid_day(day: str) -> None:
     valid_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     if day not in valid_days:
-        message = "The day you entered '{}' is not valid.  Here are the valid days: [{}]".format(day, ",".join(valid_days))
+        message = "The day you entered '{}' is not valid.  Here are the valid days: [{}]".format(
+            day, ",".join(valid_days),
+        )
         raise ValueError(message)
 
 
@@ -225,7 +229,7 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
 
 
 @F.udf(returnType=ArrayType(StringType()))
-def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
+def regexp_extract_all(s: Column, regexp: Column) -> Column:
     """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
 
     It returns a list of all matches, or    `None` if `s` is `None`.
@@ -233,12 +237,12 @@ def regexp_extract_all(s: str, regexp: str) -> list[re.Match] | None:
     :param s: input string (`Column`)
     :type s: str
     :param regexp: string `re` pattern
-    :return: List of matches
+    :rtype: Column
     """
     return None if s is None else re.findall(regexp, s)
 
 
-def business_days_between(start_date: Column, end_date: Column) -> Column:
+def business_days_between(start_date: Column, end_date: Column) -> Column:  # noqa: ARG001
     """Function takes two Spark `Columns` and returns a `Column` with the number of business days between the start and the end date.
 
     :param start_date: The column with the start dates
@@ -257,7 +261,9 @@ def business_days_between(start_date: Column, end_date: Column) -> Column:
 
 
 def uuid5(
-    col: Column, namespace: uuid.UUID = uuid.NAMESPACE_DNS, extra_string: str = "",
+    col: Column,
+    namespace: uuid.UUID = uuid.NAMESPACE_DNS,
+    extra_string: str = "",
 ) -> Column:
     """Function generates UUIDv5 from ``col`` and ``namespace``, optionally prepending an extra string to ``col``.
 
@@ -281,7 +287,8 @@ def uuid5(
     variant_part = F.conv(variant_part, 16, 2)
     variant_part = F.lpad(variant_part, 16, "0")
     variant_part = F.concat(
-        F.lit("10"), F.substring(variant_part, 3, 16),
+        F.lit("10"),
+        F.substring(variant_part, 3, 16),
     )  # RFC 4122 variant.
     variant_part = F.lower(F.conv(variant_part, 2, 16))
     return F.concat_ws(

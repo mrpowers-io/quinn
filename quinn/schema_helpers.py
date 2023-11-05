@@ -1,5 +1,11 @@
-from pyspark.sql import types as T
+from __future__ import annotations
+
 import json
+
+from pyspark.sql import SparkSession
+from pyspark.sql import types as T  # noqa: N812
+from typing import Union
+
 
 def print_schema_as_code(dtype: T.DataType) -> str:
     """Represent DataType (including StructType) as valid Python code.
@@ -38,7 +44,8 @@ def print_schema_as_code(dtype: T.DataType) -> str:
         res.append(f"DecimalType({dtype.precision}, {dtype.scale})")
 
     else:
-        if str(dtype).endswith("()"):  # PySpark 3.3+
+        # PySpark 3.3+
+        if str(dtype).endswith("()"):  # noqa: PLR5501
             res.append(str(dtype))
         else:
             res.append(f"{dtype}()")
@@ -49,11 +56,7 @@ def print_schema_as_code(dtype: T.DataType) -> str:
 def _repr_column(column: T.StructField) -> str:
     res = []
 
-    if (
-        isinstance(column.dataType, T.StructType)
-        or isinstance(column.dataType, T.ArrayType)
-        or isinstance(column.dataType, T.MapType)
-    ):
+    if isinstance(column.dataType, (T.ArrayType, T.MapType, T.StructType)):
         res.append(f'StructField(\n\t"{column.name}",')
         for line in print_schema_as_code(column.dataType).split("\n"):
             res.append("\n\t")
@@ -64,13 +67,13 @@ def _repr_column(column: T.StructField) -> str:
 
     else:
         res.append(
-            f'StructField("{column.name}", {print_schema_as_code(column.dataType)}, {column.nullable})'
+            f'StructField("{column.name}", {print_schema_as_code(column.dataType)}, {column.nullable})',
         )
 
     return "".join(res)
 
 
-def schema_from_csv(spark, file_path) -> T.StructType:
+def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noqa: C901
     """Return a StructType from a CSV file containing schema configuration.
 
     :param spark: The SparkSession object
@@ -84,6 +87,7 @@ def schema_from_csv(spark, file_path) -> T.StructType:
     :return: A StructType object representing the schema configuration
     :rtype: pyspark.sql.types.StructType
     """
+
     def _validate_json(metadata: str) -> dict:
         if metadata is None:
             return {}
@@ -91,58 +95,77 @@ def schema_from_csv(spark, file_path) -> T.StructType:
         try:
             metadata_dict = json.loads(metadata)
 
-        except json.JSONDecodeError:
-            raise ValueError(f'Invalid JSON: {metadata}')
+        except json.JSONDecodeError as exc:
+            msg = f"Invalid JSON: {metadata}"
+            raise ValueError(msg) from exc
 
         return metadata_dict
 
     def _lookup_type(type_str: str) -> T.DataType:
         type_lookup = {
-            'string': T.StringType(),
-            'int': T.IntegerType(),
-            'float': T.FloatType(),
-            'double': T.DoubleType(),
-            'boolean': T.BooleanType(),
-            'bool': T.BooleanType(),
-            'timestamp': T.TimestampType(),
-            'date': T.DateType(),
-            'binary': T.BinaryType(),
+            "string": T.StringType(),
+            "int": T.IntegerType(),
+            "float": T.FloatType(),
+            "double": T.DoubleType(),
+            "boolean": T.BooleanType(),
+            "bool": T.BooleanType(),
+            "timestamp": T.TimestampType(),
+            "date": T.DateType(),
+            "binary": T.BinaryType(),
         }
 
         if type_str not in type_lookup:
-            raise ValueError(f'Invalid type: {type_str}. Expecting one of: {type_lookup.keys()}')
+            msg = f"Invalid type: {type_str}. Expecting one of: {type_lookup.keys()}"
+            raise ValueError(msg)
 
         return type_lookup[type_str]
 
     def _convert_nullable(null_str: str) -> bool:
         if null_str is None:
             return True
-        
-        parsed_val = null_str.lower()
-        if parsed_val not in ['true', 'false']:
-            raise ValueError(f'Invalid nullable value: {null_str}. Expecting True or False.')
 
-        return parsed_val == 'true'
+        parsed_val = null_str.lower()
+        if parsed_val not in ["true", "false"]:
+            msg = f"Invalid nullable value: {null_str}. Expecting True or False."
+            raise ValueError(msg)
+
+        return parsed_val == "true"
 
     schema_df = spark.read.csv(file_path, header=True)
-    possible_columns = ['name', 'type', 'nullable', 'metadata']
+    possible_columns = ["name", "type", "nullable", "metadata"]
     num_cols = len(schema_df.columns)
     expected_columns = possible_columns[0:num_cols]
 
     # ensure that csv contains the expected columns: name, type, nullable, description
     if schema_df.columns != expected_columns:
-        raise ValueError(f'CSV must contain columns in this order: {expected_columns}')
+        msg = f"CSV must contain columns in this order: {expected_columns}"
+        raise ValueError(msg)
 
     # create a StructType per field
     fields = []
     for row in schema_df.collect():
         field = T.StructField(
-            name=row['name'],
-            dataType=_lookup_type(row['type']),
-            nullable=_convert_nullable(row['nullable']) if 'nullable' in row else True,
-            metadata=_validate_json(row['metadata'] if 'metadata' in row else None)
+            name=row["name"],
+            dataType=_lookup_type(row["type"]),
+            nullable=_convert_nullable(row["nullable"]) if "nullable" in row else True,
+            metadata=_validate_json(row["metadata"] if "metadata" in row else None),
         )
         fields.append(field)
 
-    schema = T.StructType(fields=fields)
-    return schema
+    return T.StructType(fields=fields)
+
+
+def complex_fields(schema: T.StructType) -> dict[str, object]:
+    """Returns a dictionary of complex field names and their data types from the input DataFrame's schema.
+
+    :param df: The input PySpark DataFrame.
+    :type df: DataFrame
+    :return: A dictionary with complex field names as keys and their respective data types as values.
+    :rtype: Dict[str, object]
+    """
+    return {
+        field.name: field.dataType
+        for field in schema.fields
+        if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
+    }
+

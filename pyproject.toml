@@ -47,6 +47,7 @@ pytest-describe = "^2"
 
 [tool.poetry.group.linting.dependencies]
 ruff = "^0.0.291"
+typing-extensions = {version = "^4.8.0", python = ">=3.8,<4.0"}
 
 [tool.poetry.group.docs.dependencies]
 mkdocstrings-python = "^0.8.3"
@@ -68,7 +69,10 @@ ignore = [
     "D203", # Ignore blank line before summary of class
     "D213", # Ignore multiline summary second line
     "T201", # Allow print() in code.
-    "D401", # Docstrings should be in imperative mode
-    "N812", # Allow import pyspark.sql.functions as F(lower case 'functions' as non-lower case F)
-
+    "D401", # Docstrings should be in imperative modes
 ]
+extend-exclude = ["tests", "docs"]
+
+[tool.ruff.per-file-ignores]
+"quinn/extensions/column_ext.py" = ["FBT003", "N802"]
+"quinn/extensions/__init__.py" = ["F403"]

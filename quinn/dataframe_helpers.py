@@ -23,7 +23,9 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
 
 
 def two_columns_to_dictionary(
-    df: DataFrame, key_col_name: str, value_col_name: str,
+    df: DataFrame,
+    key_col_name: str,
+    value_col_name: str,
 ) -> dict[str, Any]:
     """Collect two columns as dictionary when first column is key and second is value.
 
@@ -48,11 +50,13 @@ def to_list_of_dictionaries(df: DataFrame) -> list[dict[str, Any]]:
     :return: A list of dictionaries representing the rows in the DataFrame.
     :rtype: List[Dict[str, Any]]
     """
-    return list(map(lambda r: r.asDict(), df.collect())) # noqa: C417
+    return list(map(lambda r: r.asDict(), df.collect()))  # noqa: C417
 
 
 def print_athena_create_table(
-    df: DataFrame, athena_table_name: str, s3location: str,
+    df: DataFrame,
+    athena_table_name: str,
+    s3location: str,
 ) -> None:
     """Generate the Athena create table statement for a given DataFrame.
 
@@ -110,5 +114,5 @@ def create_df(spark: SparkSession, rows_data, col_specs) -> DataFrame:  # noqa: 
     :return: a new DataFrame
     :rtype: DataFrame
     """
-    struct_fields = list(map(lambda x: StructField(*x), col_specs)) # noqa: C417
+    struct_fields = list(map(lambda x: StructField(*x), col_specs))  # noqa: C417
     return spark.createDataFrame(data=rows_data, schema=StructType(struct_fields))
