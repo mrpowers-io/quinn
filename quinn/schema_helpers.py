@@ -42,12 +42,11 @@ def print_schema_as_code(dtype: T.DataType) -> str:
     elif isinstance(dtype, T.DecimalType):
         res.append(f"DecimalType({dtype.precision}, {dtype.scale})")
 
-    else:
+    elif str(dtype).endswith("()"):
         # PySpark 3.3+
-        if str(dtype).endswith("()"):  # noqa: PLR5501
-            res.append(str(dtype))
-        else:
-            res.append(f"{dtype}()")
+        res.append(str(dtype))
+    else:
+        res.append(f"{dtype}()")
 
     return "".join(res)
 

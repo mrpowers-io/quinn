@@ -63,7 +63,7 @@ def isNullOrBlank(self: Column) -> Column:
     blank characters, or ``False`` otherwise.
     :rtype: Column
     """
-    return (self.isNull()) | (trim(self) == "")  # noqa: PLC1901
+    return (self.isNull()) | (trim(self) == "")
 
 
 def isNotIn(self: Column, _list: list[Any]) -> Column:
