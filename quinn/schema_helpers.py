@@ -4,7 +4,6 @@ import json
 
 from pyspark.sql import SparkSession
 from pyspark.sql import types as T  # noqa: N812
-from typing import Union
 
 
 def print_schema_as_code(dtype: T.DataType) -> str:
@@ -56,7 +55,7 @@ def print_schema_as_code(dtype: T.DataType) -> str:
 def _repr_column(column: T.StructField) -> str:
     res = []
 
-    if isinstance(column.dataType, (T.ArrayType, T.MapType, T.StructType)):
+    if isinstance(column.dataType, (T.ArrayType | T.MapType | T.StructType)):
         res.append(f'StructField(\n\t"{column.name}",')
         for line in print_schema_as_code(column.dataType).split("\n"):
             res.append("\n\t")
@@ -166,6 +165,6 @@ def complex_fields(schema: T.StructType) -> dict[str, object]:
     return {
         field.name: field.dataType
         for field in schema.fields
-        if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
+        if isinstance(field.dataType, (T.ArrayType | T.StructType | T.MapType))
     }
 

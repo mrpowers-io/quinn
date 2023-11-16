@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 import re
-import pyspark.sql.functions as F  # noqa: N812
 from collections.abc import Callable
+
 from pyspark.sql import DataFrame
+from pyspark.sql import functions as F  # noqa: N812
 from pyspark.sql.types import ArrayType, MapType, StructField, StructType
+
 from quinn.schema_helpers import complex_fields
 
 
@@ -83,8 +86,8 @@ def to_snake_case(s: str) -> str:
     return s.lower().replace(" ", "_")
 
 
-def sort_columns(
-    df: DataFrame, sort_order: str, sort_nested: bool = False
+def sort_columns( # noqa: C901,PLR0915
+        df: DataFrame, sort_order: str, sort_nested: bool = False,
 ) -> DataFrame:
     """This function sorts the columns of a given DataFrame based on a given sort
     order. The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
@@ -101,13 +104,13 @@ def sort_columns(
     :rtype: pyspark.sql.DataFrame
     """
 
-    def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]:
+    def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]: # noqa: ANN001
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
         # Credits: @pault for logic
 
         def parse_fields(
-            fields_to_sort: list, parent_struct, is_reversed: bool
+            fields_to_sort: list, parent_struct, is_reversed: bool, # noqa: ANN001
         ) -> list:
             sorted_fields: list = sorted(
                 fields_to_sort,
@@ -123,7 +126,7 @@ def sort_columns(
                     new_base_field = base_field + "." + new_base_field
 
                 results.extend(
-                    sort_nested_cols(new_struct, is_reversed, base_field=new_base_field)
+                    sort_nested_cols(new_struct, is_reversed, base_field=new_base_field),
                 )
             return results
 
@@ -157,11 +160,10 @@ def sort_columns(
                 # ex: struct(address.zip.first5, address.zip.last4) AS zip
                 result = f"struct({', '.join(sub_fields)}) AS {parent_struct.name}"
 
+            elif base_field:
+                result = f"{base_field}.{parent_struct.name}"
             else:
-                if base_field:
-                    result = f"{base_field}.{parent_struct.name}"
-                else:
-                    result = parent_struct.name
+                result = parent_struct.name
             select_cols.append(result)
 
         return select_cols
@@ -173,7 +175,7 @@ def sort_columns(
             result_dict[field.name] = True
 
         if not isinstance(field.dataType, StructType) and not isinstance(
-            field.dataType, ArrayType
+            field.dataType, ArrayType,
         ):
             return
 
@@ -188,7 +190,7 @@ def sort_columns(
     def fix_nullability(field: StructField, result_dict: dict) -> None:
         field.nullable = result_dict[field.name]
         if not isinstance(field.dataType, StructType) and not isinstance(
-            field.dataType, ArrayType
+            field.dataType, ArrayType,
         ):
             return
 
@@ -218,10 +220,8 @@ def sort_columns(
         return top_level_sorted_df
 
     is_nested: bool = any(
-        [
-            isinstance(i.dataType, StructType) or isinstance(i.dataType, ArrayType)
+        isinstance(i.dataType, StructType | ArrayType)
             for i in top_level_sorted_df.schema
-        ]
     )
 
     if not is_nested:
@@ -236,9 +236,7 @@ def sort_columns(
     for field in output.schema:
         fix_nullability(field, result_dict)
 
-    final_df = output.sparkSession.createDataFrame(output.rdd, output.schema)
-    return final_df
-    return df.select(*sorted_col_names)
+    return output.sparkSession.createDataFrame(output.rdd, output.schema)
 
 
 def flatten_struct(df: DataFrame, col_name: str, separator: str = ":") -> DataFrame:
@@ -287,7 +285,7 @@ def flatten_dataframe(
     df: DataFrame,
     separator: str = ":",
     replace_char: str = "_",
-    sanitized_columns: bool = False,  # noqa: FBT001, FBT002
+    sanitized_columns: bool = False,
 ) -> DataFrame:
     """Flattens the complex columns in the DataFrame.
 
@@ -356,7 +354,7 @@ def flatten_dataframe(
         :rtype: DataFrame
         """
         return df.select(
-            "*", F.explode_outer(F.col(f"`{col_name}`")).alias(col_name)
+            "*", F.explode_outer(F.col(f"`{col_name}`")).alias(col_name),
         ).drop(
             col_name,
         )
