@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pyspark.sql.functions import length, split, trim, udf, when
 from pyspark.sql.types import IntegerType
@@ -15,7 +15,7 @@ def split_col(  # noqa: PLR0913
     delimiter: str,
     new_col_names: list[str],
     mode: str = "permissive",
-    default: str | None = None,
+    default: Optional[str] = None,
 ) -> DataFrame:
     """Splits the given column based on the delimiter and creates new columns with the split values.
 
