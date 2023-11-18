@@ -220,7 +220,7 @@ def sort_columns( # noqa: C901,PLR0915
         return top_level_sorted_df
 
     is_nested: bool = any(
-        isinstance(i.dataType, StructType | ArrayType)
+        isinstance(i.dataType, (StructType, ArrayType))
             for i in top_level_sorted_df.schema
     )
 
