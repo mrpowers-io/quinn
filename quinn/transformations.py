@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F  # noqa: N812
 from pyspark.sql.types import ArrayType, MapType, StructField, StructType
 
@@ -236,7 +236,12 @@ def sort_columns( # noqa: C901,PLR0915
     for field in output.schema:
         fix_nullability(field, result_dict)
 
-    return output.sparkSession.createDataFrame(output.rdd, output.schema)
+    spark = SparkSession.getActiveSession()
+
+    if spark is None:
+        spark = SparkSession.builder.getOrCreate()
+
+    return spark.sparkSession.createDataFrame(output.rdd, output.schema)
 
 
 def flatten_struct(df: DataFrame, col_name: str, separator: str = ":") -> DataFrame:
