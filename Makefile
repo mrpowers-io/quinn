@@ -1,8 +1,8 @@
 # COMMON CLI COMMANDS FOR DEVELOPMENT 
 
-.PHONY: install_pytest
+.PHONY: install_test
 install_pure:
-	@poetry install --with=testing
+	@poetry install --with=development,testing
 
 .PHONY: install_deps
 install_deps:
