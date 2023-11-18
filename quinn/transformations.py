@@ -241,7 +241,7 @@ def sort_columns( # noqa: C901,PLR0915
     if spark is None:
         spark = SparkSession.builder.getOrCreate()
 
-    return spark.sparkSession.createDataFrame(output.rdd, output.schema)
+    return spark.createDataFrame(output.rdd, output.schema)
 
 
 def flatten_struct(df: DataFrame, col_name: str, separator: str = ":") -> DataFrame:
