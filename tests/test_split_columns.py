@@ -3,8 +3,6 @@ from tests.conftest import auto_inject_fixtures
 import chispa
 import pytest
 
-from pyspark.errors.exceptions.captured import PythonException
-
 
 @auto_inject_fixtures("spark")
 def test_split_columns(spark):
@@ -52,5 +50,5 @@ def test_split_columns_strict(spark):
         delimiter="XX",
         new_col_names=["student_first_name", "student_middle_name", "student_last_name"],
         mode="strict", default="hi")
-    with pytest.raises(PythonException):
+    with pytest.raises(Exception): # there is no way to make it work for all the versions
         df2.show()

@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F  # noqa: N812
 from pyspark.sql.types import ArrayType, MapType, StructField, StructType
 
@@ -220,7 +220,7 @@ def sort_columns( # noqa: C901,PLR0915
         return top_level_sorted_df
 
     is_nested: bool = any(
-        isinstance(i.dataType, StructType | ArrayType)
+        isinstance(i.dataType, (StructType, ArrayType))
             for i in top_level_sorted_df.schema
     )
 
@@ -236,7 +236,13 @@ def sort_columns( # noqa: C901,PLR0915
     for field in output.schema:
         fix_nullability(field, result_dict)
 
-    return output.sparkSession.createDataFrame(output.rdd, output.schema)
+    if not hasattr(SparkSession, "getActiveSession"): # spark 2.4
+        spark = SparkSession.builder.getOrCreate()
+    else:
+        spark = SparkSession.getActiveSession()
+        spark = spark if spark is not None else SparkSession.builder.getOrCreate()
+
+    return spark.createDataFrame(output.rdd, output.schema)
 
 
 def flatten_struct(df: DataFrame, col_name: str, separator: str = ":") -> DataFrame:
