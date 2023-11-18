@@ -236,10 +236,11 @@ def sort_columns( # noqa: C901,PLR0915
     for field in output.schema:
         fix_nullability(field, result_dict)
 
-    spark = SparkSession.getActiveSession()
-
-    if spark is None:
+    if not hasattr(SparkSession, "getActiveSession"): # spark 2.4
         spark = SparkSession.builder.getOrCreate()
+    else:
+        spark = SparkSession.getActiveSession()
+        spark = spark if spark is not None else SparkSession.builder.getOrCreate()
 
     return spark.createDataFrame(output.rdd, output.schema)
 
