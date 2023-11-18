@@ -75,7 +75,7 @@ jobs:
 
       - name: Install dependencies
         run: make install_test
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Change PySpark to version ${{ matrix.pyspark-version }}
         env:
