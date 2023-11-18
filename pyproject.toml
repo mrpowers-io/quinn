@@ -66,10 +66,17 @@ select = ["ALL"]
 line-length = 150
 ignore = [
     "D100",
-    "D203", # Ignore blank line before summary of class
-    "D213", # Ignore multiline summary second line
-    "T201", # Allow print() in code.
-    "D401", # Docstrings should be in imperative modes
+    "D203",    # Ignore blank line before summary of class
+    "D213",    # Ignore multiline summary second line
+    "T201",    # Allow print() in code.
+    "D401",    # Docstrings should be in imperative modes
+    "D404",    # Boring thing about how to write docsrings
+    "FBT001",  # Boolean positional arg is OK
+    "FBT002",  # Boolean default arg value is OK
+    "D205",    # It is broken
+    "TCH003",  # I have no idea what is it about
+    "PLC1901", # Strange thing
+    "UP007",   # Not supported in py3.6
 ]
 extend-exclude = ["tests", "docs"]
 

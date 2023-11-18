@@ -41,7 +41,7 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str]) -
 def validate_schema(
     df: DataFrame,
     required_schema: StructType,
-    ignore_nullable: bool = False,  # noqa: FBT001,FBT002
+    ignore_nullable: bool = False,
 ) -> None:
     """Function that validate if a given DataFrame has a given StructType as its schema.
 
