@@ -7,8 +7,10 @@ from pyspark.sql.types import StructField, StructType
 
 
 def create_df(
-    spark: SparkSession, rows_data, col_specs: list[tuple]
-) -> DataFrame:  # noqa: ANN001
+    spark: SparkSession,
+    rows_data: list[tuple],
+    col_specs: list[tuple],
+) -> DataFrame:
     """Creates a new DataFrame from the given data and column specs.
 
     The returned DataFrame is created using the StructType and StructField classes provided by PySpark.

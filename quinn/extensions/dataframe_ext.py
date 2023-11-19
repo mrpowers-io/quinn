@@ -1,7 +1,7 @@
 import warnings
 
-from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
+from pyspark.sql.dataframe import DataFrame
 
 
 def _ext_function(spark: SparkSession, f: object) -> object:
