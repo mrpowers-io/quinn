@@ -47,7 +47,6 @@ pytest-describe = "^2"
 
 [tool.poetry.group.linting.dependencies]
 ruff = "^0.0.291"
-typing-extensions = {version = "^4", python = ">=3.6,<4.0"}
 
 [tool.poetry.group.docs.dependencies]
 mkdocstrings-python = "^0.8.3"

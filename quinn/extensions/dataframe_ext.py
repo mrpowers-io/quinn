@@ -1,16 +1,16 @@
 import warnings
 
 from pyspark.sql.dataframe import DataFrame
-from typing_extensions import Self
+from pyspark.sql import SparkSession
 
 
-def _ext_function(self: Self, f: object) -> object:
+def _ext_function(spark: SparkSession, f: object) -> object:
     warnings.warn(
         "Extensions may be removed in the future versions of quinn. Please use explicit functions instead",
         category=DeprecationWarning,
         stacklevel=2,
     )
-    return f(self)
+    return f(spark)
 
 
 DataFrame.transform = getattr(DataFrame, "transform", _ext_function)
