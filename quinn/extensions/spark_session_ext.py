@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructField, StructType
 
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
-
-def create_df(self: Self, rows_data, col_specs: list[tuple]) -> DataFrame:  # noqa: ANN001
+def create_df(
+    spark: SparkSession,
+    rows_data: list[tuple],
+    col_specs: list[tuple],
+) -> DataFrame:
     """Creates a new DataFrame from the given data and column specs.
 
     The returned DataFrame is created using the StructType and StructField classes provided by PySpark.
@@ -29,7 +29,7 @@ def create_df(self: Self, rows_data, col_specs: list[tuple]) -> DataFrame:  # no
     )
 
     struct_fields = [StructField(*x) for x in col_specs]
-    return self.createDataFrame(data=rows_data, schema=StructType(struct_fields))
+    return spark.createDataFrame(data=rows_data, schema=StructType(struct_fields))
 
 
 SparkSession.create_df = create_df
