@@ -1,4 +1,6 @@
 """Math routines for PySpark."""
+from __future__ import annotations
+
 from typing import Optional, Union
 
 from pyspark.sql import Column
