@@ -86,8 +86,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
     :rtype: pyspark.sql.types.StructType
     """
 
-    def _validate_json(metadata: str = None) -> dict:
-       
+    def _validate_json(metadata: str) -> dict:
         if metadata is None:
             return {}
 
@@ -100,8 +99,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
 
         return metadata_dict
 
-    def _lookup_type(type_str: str ) -> T.DataType:
-        
+    def _lookup_type(type_str: str) -> T.DataType:
         type_lookup = {
             "string": T.StringType(),
             "int": T.IntegerType(),
