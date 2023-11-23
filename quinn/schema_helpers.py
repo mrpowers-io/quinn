@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from typing import Optional
+
 from pyspark.sql import SparkSession
 from pyspark.sql import types as T  # noqa: N812
 
