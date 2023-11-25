@@ -33,4 +33,11 @@ site
 .dir_locals.el
 
 # Jupyter notebooks
+*.ipynb
 .ipynb_checkpoints
+
+# Benchmarking
+*.json
+*.crc
+*.parquet
+_SUCCESS
