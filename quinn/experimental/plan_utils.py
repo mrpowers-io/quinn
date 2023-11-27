@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 import re
 import warnings
@@ -183,7 +185,7 @@ def _node2column(node: str) -> str:
         return match_.groups()[0]
 
     # This part should be unreachable! If reached may cause problems.
-    # TODO: check this part # noqa: TD002, TD003
+    # TODO: check this part # noqa: TD002, TD003, FIX002
     return ""
 
 
@@ -216,7 +218,7 @@ def _get_graph(lines: list[str], node: str):  # noqa: ANN202, PLR0915, PLR0912, 
     edges = []
     node_attrs = {}
 
-    # TODO: Add asserts to avoid stack-overflow with endless recursion. # noqa: TD002, TD003
+    # TODO: Add asserts to avoid stack-overflow with endless recursion. # noqa: TD002, TD003, FIX002
     for i, l in enumerate(lines):  # noqa: E741
         """Iteration over lines of logical plan."""
 
@@ -230,7 +232,7 @@ def _get_graph(lines: list[str], node: str):  # noqa: ANN202, PLR0915, PLR0912, 
         prev_h = None if not nodes else nodes[-1]
 
         if node not in l:
-            # TODO: revisit this part! # noqa: TD002, TD003
+            # TODO: revisit this part! # noqa: TD002, TD003, FIX002
             continue
         if f"AS {node}" in l:
             """It is a hard case, when a node is an alias to some expression."""
@@ -267,10 +269,10 @@ def _get_graph(lines: list[str], node: str):  # noqa: ANN202, PLR0915, PLR0912, 
                     # Add connection between top subnode and node
                     edges.append([sub_nodes[0], h])
                 return (nodes, edges, node_attrs)
-        else:
+        else:  # noqa: PLR5501
             # Continue of the simple alias or expr case
             # In the future that may be more cases, that is the reason of nested if instead of elif
-            if "Relation" in l:  # noqa: PLR5501
+            if "Relation" in l:
                 nodes.append(h)
                 if prev_h:
                     edges.append([h, prev_h])
@@ -287,7 +289,7 @@ def _get_graph(lines: list[str], node: str):  # noqa: ANN202, PLR0915, PLR0912, 
                     node_attrs[h] = f"Relation to: {_node2column(node)}"
 
             elif "Join" in l:
-                # TODO: this part is unreachable for now because if the line does not # noqa: TD002, TD003
+                # TODO: this part is unreachable for now because if the line does not # noqa: TD002, TD003, FIX002
                 # contain node we are skipping it.
                 # It is a big question, should we parse join or not.
                 nodes.append(h)
