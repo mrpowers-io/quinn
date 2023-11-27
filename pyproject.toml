@@ -77,6 +77,8 @@ ignore = [
     "PLC1901", # Strange thing
     "UP007",   # Not supported in py3.6
     "UP038",   # Not supported in all py versions
+    "UP037",   # No way
+    "TCH002",  # I have no idea what is it about
 ]
 extend-exclude = ["tests", "docs"]
 
