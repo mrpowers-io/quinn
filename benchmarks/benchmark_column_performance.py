@@ -3,7 +3,7 @@ import json
 
 
 def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
-    min_run_time_seconds = 2
+    min_run_time_seconds = 10
     runtime_multiplier = 5
     n = 1
     t = timeit.repeat(stmt, setup, repeat=n, number=1)
@@ -19,7 +19,13 @@ def get_result(test_name: str, dataset: dict, expr: str) -> None:
     setup = f"""import timeit
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-spark = SparkSession.builder.getOrCreate()
+builder = (
+    SparkSession.builder.appName("MyApp")
+    .config("spark.executor.memory", "10G")
+    .config("spark.driver.memory", "25G")
+    .config("spark.sql.shuffle.partitions", "2")
+)
+spark = builder.getOrCreate()  
 {dataset['name']} = spark.read.parquet('benchmarks/data/mvv_{dataset['name']}')
 """
     stmt = f"""{dataset['name']}.{expr}"""
