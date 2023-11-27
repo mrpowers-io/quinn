@@ -1,41 +1,39 @@
 import timeit
 import json
 
-# import pyspark.sql.functions as F
-# from pyspark.sql import DataFrame, SparkSession
 
-
-def auto_timeit(stmt: str = "pass", setup: str = "pass") -> float:
-    min_run_time = 0.2
-    runtime_multiplier = 10
+def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
+    min_run_time_seconds = 2
+    runtime_multiplier = 5
     n = 1
-    t = timeit.timeit(stmt, setup, number=n)
+    t = timeit.repeat(stmt, setup, repeat=n, number=1)
 
-    while t < min_run_time:
+    while sum(t) < min_run_time_seconds:
         n *= runtime_multiplier
-        t = timeit.timeit(stmt, setup, number=n)
+        t = timeit.repeat(stmt, setup, repeat=n, number=1)
 
-    return t / n  # normalise to time-per-run
+    return t
 
 
-def get_result(test_name: str, dataset: str, expr: str) -> None:
+def get_result(test_name: str, dataset: dict, expr: str) -> None:
     setup = f"""import timeit
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 spark = SparkSession.builder.getOrCreate()
-{dataset} = spark.read.parquet('benchmarks/data/mvv_{dataset}')
+{dataset['name']} = spark.read.parquet('benchmarks/data/mvv_{dataset['name']}')
 """
-    stmt = f"""{dataset}.{expr}"""
+    stmt = f"""{dataset['name']}.{expr}"""
     result = auto_timeit(stmt, setup)
 
     summary = {
         "test_name": test_name,
-        "dataset": dataset,
-        "avg_runtime_seconds": result,
+        "dataset": dataset["name"],
+        "dataset_size": dataset["size"],
+        "runtimes": result,
     }
 
-    with open(f"benchmarks/results/{test_name}_{dataset}.json", "w") as f:
-        json.dump(summary, f)
+    with open(f"benchmarks/results/{test_name}_{dataset['name']}.json", "w") as f:
+        json.dump(summary, f, indent=4)
 
 
 config = {
@@ -44,18 +42,18 @@ config = {
     },
 }
 
-DATASETS = [
-    ("xsmall", 1_000),
-    ("small", 100_000),
-    # ("medium", 10_000_000),
-    # ("large", 100_000_000),
-]
 
+DATASETS = {
+    "xsmall": {"name": "xsmall", "size": 1_000},
+    "small": {"name": "small", "size": 100_000},
+    "medium": {"name": "medium", "size": 10_000_000},
+    "large": {"name": "large", "size": 100_000_000},
+}
 
-for dataset in DATASETS:
-    dataset_name, dataset_size = dataset
-    print(f"Dataset: {dataset_name} ({dataset_size})")
+for dataset_name in DATASETS:
+    dataset = DATASETS[dataset_name]
+    print(f"Dataset: {dataset['name']} ({dataset['size']})")
 
     for test_name, test_config in config.items():
         print(f"Test: {test_name}======================")
-        get_result(test_name=test_name, dataset=dataset_name, expr=test_config["expr"])
+        get_result(test_name=test_name, dataset=dataset, expr=test_config["expr"])
