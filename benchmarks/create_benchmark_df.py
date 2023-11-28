@@ -1,13 +1,13 @@
 import random
 
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
+from pyspark.sql import functions as F  # noqa: N812
 from pyspark.sql.dataframe import DataFrame
 
 
 def generate_df(spark: SparkSession, n: int) -> DataFrame:
-    # TODO: make this more performant
-    count_vals = [(random.randint(1, 10),) for _ in range(n)]
+    """Generate a dataframe with a monotonically increasing id column and a random count column."""
+    count_vals = [(random.randint(1, 10),) for _ in range(n)]  # noqa: S311
     output: DataFrame = (
         spark.createDataFrame(count_vals, schema=["count"])
         .withColumn("mvv", F.monotonically_increasing_id())
@@ -17,6 +17,7 @@ def generate_df(spark: SparkSession, n: int) -> DataFrame:
 
 
 def save_benchmark_df(spark: SparkSession, n: int, data_label: str) -> None:
+    """Save a benchmark dataframe to disk."""
     print(f"Generating benchmark df for n={n}")
     benchmark_df = generate_df(spark, n)
     benchmark_df.write.mode("overwrite").parquet(f"benchmarks/data/mvv_{data_label}")
