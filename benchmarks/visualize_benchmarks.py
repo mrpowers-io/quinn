@@ -1,7 +1,7 @@
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
+import pyspark.sql.functions as F  # noqa: N812
+from pyspark.sql import SparkSession
 
 spark = (
     SparkSession.builder.appName("MyApp")
@@ -14,7 +14,10 @@ spark = (
 result_df = (
     spark.read.json("benchmarks/results/*.json", multiLine=True)
     .select(
-        "test_name", "dataset", "dataset_size", F.explode("runtimes").alias("runtime")
+        "test_name",
+        "dataset",
+        "dataset_size",
+        F.explode("runtimes").alias("runtime"),
     )
     .withColumnRenamed("dataset", "dataset_name")
     .withColumn(
@@ -34,7 +37,8 @@ result_df = (
 )
 
 result_df["dataset_name"] = pd.Categorical(
-    result_df["dataset_name"], ["xsmall", "small", "medium", "large"]
+    result_df["dataset_name"],
+    ["xsmall", "small", "medium", "large"],
 )
 
 
@@ -45,7 +49,6 @@ fig = px.box(
     color="test_name",
     facet_col="dataset_name",
     points="all",
-    # TODO: capture this info in the benchmark
     title="Benchmark Results<br><sup>Spark 3.5, Python 3.12, M1 Macbook Pro 32GB RAM</sup></br>",
     labels={"runtime": "Runtime (seconds)"},
     category_orders={"dataset_name": ["xsmall", "small", "medium", "large"]},

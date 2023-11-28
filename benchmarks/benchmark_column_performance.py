@@ -1,8 +1,12 @@
-import timeit
+from __future__ import annotations
+
 import json
+import timeit
+from pathlib import Path
 
 
 def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
+    """Automatically determine the number of runs to perform to get a minimum."""
     min_run_time_seconds = 2
     runtime_multiplier = 10
     n = 1
@@ -16,6 +20,7 @@ def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
 
 
 def get_result(test_name: str, dataset: dict, expr: str) -> None:
+    """Run a test and save the results to a file."""
     setup = f"""import timeit
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
@@ -25,7 +30,7 @@ builder = (
     .config("spark.driver.memory", "25G")
     .config("spark.sql.shuffle.partitions", "2")
 )
-spark = builder.getOrCreate()  
+spark = builder.getOrCreate()
 {dataset['name']} = spark.read.parquet('benchmarks/data/mvv_{dataset['name']}')
 """
     stmt = expr.replace("df", dataset["name"])
@@ -38,7 +43,7 @@ spark = builder.getOrCreate()
         "runtimes": result,
     }
 
-    with open(f"benchmarks/results/{test_name}_{dataset['name']}.json", "w") as f:
+    with Path.open(f"benchmarks/results/{test_name}_{dataset['name']}.json", "w") as f:
         json.dump(summary, f, indent=4)
 
 
