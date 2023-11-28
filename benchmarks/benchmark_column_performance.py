@@ -3,7 +3,7 @@ import json
 
 
 def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
-    min_run_time_seconds = 1
+    min_run_time_seconds = 2
     runtime_multiplier = 10
     n = 1
     t = timeit.repeat(stmt, setup, repeat=n, number=1)
@@ -58,10 +58,9 @@ DATASETS = {
     "large": {"name": "large", "size": 100_000_000},
 }
 
-for dataset_name in DATASETS:
-    dataset = DATASETS[dataset_name]
-    print(f"Dataset: {dataset['name']} ({dataset['size']})")
-
-    for test_name, test_config in config.items():
-        print(f"Test: {test_name}======================")
+for test_name, test_config in config.items():
+    print(f"======================{test_name}======================")
+    for dataset_name in DATASETS:
+        dataset = DATASETS[dataset_name]
+        print(f"TESTING DATASET {dataset['name']} [n={dataset['size']:,}]")
         get_result(test_name=test_name, dataset=dataset, expr=test_config["expr"])
