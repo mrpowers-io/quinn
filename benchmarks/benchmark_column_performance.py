@@ -3,8 +3,8 @@ import json
 
 
 def auto_timeit(stmt: str = "pass", setup: str = "pass") -> list[float]:
-    min_run_time_seconds = 10
-    runtime_multiplier = 5
+    min_run_time_seconds = 1
+    runtime_multiplier = 10
     n = 1
     t = timeit.repeat(stmt, setup, repeat=n, number=1)
 
@@ -28,7 +28,7 @@ builder = (
 spark = builder.getOrCreate()  
 {dataset['name']} = spark.read.parquet('benchmarks/data/mvv_{dataset['name']}')
 """
-    stmt = f"""{dataset['name']}.{expr}"""
+    stmt = expr.replace("df", dataset["name"])
     result = auto_timeit(stmt, setup)
 
     summary = {
@@ -43,9 +43,11 @@ spark = builder.getOrCreate()
 
 
 config = {
-    "flatmap": {
-        "expr": "select('mvv').rdd.flatMap(lambda x: x).collect()",
-    },
+    "flatmap": {"expr": "df.select('mvv').rdd.flatMap(lambda x: x).collect()"},
+    "toPandas": {"expr": "list(df.select('mvv').toPandas()['mvv'])"},
+    "map": {"expr": "df.select('mvv').rdd.map(lambda row : row[0]).collect()"},
+    "collectlist": {"expr": "[row[0] for row in df.select('mvv').collect()]"},
+    "localIterator": {"expr": "[r[0] for r in df.select('mvv').toLocalIterator()]"},
 }
 
 
