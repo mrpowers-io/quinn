@@ -59,7 +59,8 @@ spark = builder.getOrCreate()
         "runtimes": result,
     }
 
-    with Path.open(f"benchmarks/results/{test_name}_{dataset['name']}.json", "w") as f:
+    result_path = f"results/{test_name}_{dataset['name']}.json"
+    with Path(__file__).parent.joinpath(result_path).open(mode="w") as f:
         json.dump(summary, f, indent=4)
 
 
