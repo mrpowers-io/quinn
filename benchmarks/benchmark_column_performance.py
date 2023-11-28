@@ -45,6 +45,7 @@ builder = (
     .config("spark.executor.memory", "10G")
     .config("spark.driver.memory", "25G")
     .config("spark.sql.shuffle.partitions", "2")
+    .config("spark.sql.execution.arrow.pyspark.enabled", "true")
 )
 spark = builder.getOrCreate()
 {dataset['name']} = spark.read.parquet('benchmarks/data/mvv_{dataset['name']}')
@@ -64,8 +65,8 @@ spark = builder.getOrCreate()
 
 
 config = {
-    "flatmap": {"expr": "df.select('mvv').rdd.flatMap(lambda x: x).collect()"},
     "toPandas": {"expr": "list(df.select('mvv').toPandas()['mvv'])"},
+    "flatmap": {"expr": "df.select('mvv').rdd.flatMap(lambda x: x).collect()"},
     "map": {"expr": "df.select('mvv').rdd.map(lambda row : row[0]).collect()"},
     "collectlist": {"expr": "[row[0] for row in df.select('mvv').collect()]"},
     "localIterator": {"expr": "[r[0] for r in df.select('mvv').toLocalIterator()]"},
