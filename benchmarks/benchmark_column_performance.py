@@ -24,9 +24,8 @@ def auto_timeit(
         expected_runs_needed = min_runs
 
     expected_runtime = t[0] * expected_runs_needed
-    print(
-        f"Running {stmt} {expected_runs_needed} times. Expected runtime: {expected_runtime:.2f} seconds..."
-    )
+    print(f"Running {stmt} {expected_runs_needed} times.")
+    print(f"Expected runtime: {expected_runtime:.2f} seconds...")
     return timeit.repeat(stmt, setup, repeat=expected_runs_needed, number=1)
 
 
