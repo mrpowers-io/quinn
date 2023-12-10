@@ -33,5 +33,4 @@ site
 .dir_locals.el
 
 # Jupyter notebooks
-*.ipynb
 .ipynb_checkpoints
