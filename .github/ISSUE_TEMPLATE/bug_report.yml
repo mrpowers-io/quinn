@@ -1,7 +1,7 @@
 name: Bug Report
 description: Report incorrect behavior in the quinn library
 title: "BUG: "
-labels: [Bug, Needs Triage]
+labels: [Bug]
 
 body:
   - type: checkboxes
@@ -28,6 +28,7 @@ body:
         provide a minimal, copy-pastable example.
       placeholder: >
         import quinn
+
 
         quinn.validate_presence_of_columns(source_df, ["name", "age", "fun"])
 
