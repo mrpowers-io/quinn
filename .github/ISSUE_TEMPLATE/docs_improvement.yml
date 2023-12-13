@@ -10,7 +10,7 @@ body:
       options:
         - label: >
             I have checked that the issue still exists on the latest versions of the docs
-            on `main` [here](https://github.com/MrPowers/quinn)
+            on `main` [here](https://mrpowers.github.io/quinn/)
           required: true
   - type: textarea
     id: location
