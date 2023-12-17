@@ -25,6 +25,7 @@ nav:
   - API Docs: reference/SUMMARY.md
   - Examples:
       - "notebooks/schema_as_code.ipynb"
+      - "notebooks/spark_plan_utils.ipynb"
 
 markdown_extensions:
     - markdown_include.include:
