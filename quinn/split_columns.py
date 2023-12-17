@@ -109,7 +109,7 @@ def split_col(  # noqa: PLR0913
     elif mode == "permissive":
         # Create an array of select expressions to create new columns from the split values
         # Use the default value if a split value is missing or empty
-        select_exprs = select_exprs = [
+        select_exprs = select_exprs = [ # noqa: PLW0127
             when(length(split_col_expr.getItem(i)) > 0, split_col_expr.getItem(i))
             .otherwise(default)
             .alias(new_col_names[i])

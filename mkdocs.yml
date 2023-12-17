@@ -18,10 +18,13 @@ plugins:
             docstring_options:
               show_if_no_docstring: true
             show_source: true
+  - mkdocs-jupyter
 
 nav:
   - Quin: index.md
   - API Docs: reference/SUMMARY.md
+  - Examples:
+      - "notebooks/schema_as_code.ipynb"
 
 markdown_extensions:
     - markdown_include.include:
