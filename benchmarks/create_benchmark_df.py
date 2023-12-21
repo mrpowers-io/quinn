@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import random
+from typing import Optional
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F  # noqa: N812
@@ -16,10 +19,19 @@ def generate_df(spark: SparkSession, n: int) -> DataFrame:
     return output
 
 
-def save_benchmark_df(spark: SparkSession, n: int, data_label: str) -> None:
+def save_benchmark_df(
+    spark: SparkSession,
+    n: int,
+    data_label: str,
+    repartition_n: Optional[int] = None,
+) -> None:
     """Save a benchmark dataframe to disk."""
     print(f"Generating benchmark df for n={n}")
     benchmark_df = generate_df(spark, n)
+
+    if repartition_n is not None:
+        benchmark_df = benchmark_df.repartition(repartition_n)
+
     benchmark_df.write.mode("overwrite").parquet(f"benchmarks/data/mvv_{data_label}")
 
 
@@ -31,13 +43,13 @@ if __name__ == "__main__":
 
     builder = (
         SparkSession.builder.appName("MyApp")
-        .config("spark.executor.memory", "10G")
+        .config("spark.executor.memory", "20G")
         .config("spark.driver.memory", "25G")
         .config("spark.sql.shuffle.partitions", "2")
     )
 
     spark = builder.getOrCreate()
-    save_benchmark_df(spark, xsmall_n, "xsmall")
-    save_benchmark_df(spark, small_n, "small")
-    save_benchmark_df(spark, medium_n, "medium")
-    save_benchmark_df(spark, large_n, "large")
+    save_benchmark_df(spark, xsmall_n, "xsmall", 1)
+    save_benchmark_df(spark, small_n, "small", 1)
+    save_benchmark_df(spark, medium_n, "medium", 1)
+    save_benchmark_df(spark, large_n, "large", 4)
