@@ -36,7 +36,6 @@ site
 .ipynb_checkpoints
 
 # Benchmarking
-*.json
 *.crc
 *.parquet
 _SUCCESS
