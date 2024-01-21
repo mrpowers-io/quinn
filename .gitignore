@@ -34,3 +34,8 @@ site
 
 # Jupyter notebooks
 .ipynb_checkpoints
+
+# Benchmarking
+*.crc
+*.parquet
+_SUCCESS
