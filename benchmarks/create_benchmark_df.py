@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import random
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F  # noqa: N812
-from pyspark.sql.dataframe import DataFrame
+
+if TYPE_CHECKING:
+    from pyspark.sql.dataframe import DataFrame
 
 
 def generate_df(spark: SparkSession, n: int) -> DataFrame:
