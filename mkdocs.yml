@@ -1,7 +1,7 @@
 site_name: Quinn
 
 theme:
-  name: "readthedocs"
+  name: material
 
 plugins:
   - search
@@ -21,11 +21,11 @@ plugins:
   - mkdocs-jupyter
 
 nav:
-  - Quin: index.md
+  - Home: index.md
   - API Docs: reference/SUMMARY.md
   - Examples:
       - "notebooks/schema_as_code.ipynb"
 
 markdown_extensions:
     - markdown_include.include:
-        base_path: .
+        base_path: docs

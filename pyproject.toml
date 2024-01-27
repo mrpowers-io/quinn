@@ -57,6 +57,7 @@ markdown-include = "^0.8.1"
 mkdocs = "^1"
 jupyterlab = "*"
 mkdocs-jupyter = "*"
+mkdocs-material = "*"
 
 ###########################################################################
 #                         LINTING CONFIGURATION 
