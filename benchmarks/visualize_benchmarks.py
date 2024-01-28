@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime as dt
 from pathlib import Path
-import pytz
 
 import pandas as pd
 import plotly.express as px
 import pyspark.sql.functions as F  # noqa: N812
+import pytz
 from pyspark.sql import SparkSession
 
 
@@ -95,7 +95,9 @@ def save_boxplot(df: pd.DataFrame, benchmark_date: str) -> None:
     fig.update_layout(legend_title_text="")
 
     fig.write_image(
-        "benchmarks/images/column_to_list_boxplot.svg", width=1000, height=700
+        "benchmarks/images/column_to_list_boxplot.svg",
+        width=1000,
+        height=700,
     )
 
 
@@ -133,7 +135,9 @@ def save_line_plot(df: pd.DataFrame, benchmark_date: str) -> None:
     fig.update_layout(legend_title_text="")
 
     fig.write_image(
-        "benchmarks/images/column_to_list_line_plot.svg", width=900, height=450
+        "benchmarks/images/column_to_list_line_plot.svg",
+        width=900,
+        height=450,
     )
 
 
@@ -149,7 +153,7 @@ def get_benchmark_date(benchmark_path: str) -> str:
 
 if __name__ == "__main__":
     spark = (
-        SparkSession.builder.appName("MyApp")
+        SparkSession.builder.appName("MyApp")  # type: ignore
         .config("spark.executor.memory", "10G")
         .config("spark.driver.memory", "25G")
         .config("spark.sql.shuffle.partitions", "2")
