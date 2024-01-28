@@ -61,7 +61,7 @@ mkdocs-material = "*"
 pymdown-extensions = "*"
 mkdocs-macros-plugin = "*"
 mkdocs-material-extensions = "*"
-
+markdown-exec = "*"
 ###########################################################################
 #                         LINTING CONFIGURATION 
 ###########################################################################

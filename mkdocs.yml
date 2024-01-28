@@ -1,7 +1,32 @@
 site_name: Quinn
+site_url: "https://mrpowers.github.io/quinn/"
+repo_url: "https://github.com/MrPowers/quinn"
+repo_name: "MrPowers/quinn"
 
 theme:
   name: material
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  features:
+    - navigation.tracking
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.footer
+    - navigation.indexes
+    - navigation.expand
+    - content.tabs.link
+    - content.code.copy
+    - content.code.select
 
 plugins:
   - search
@@ -19,6 +44,7 @@ plugins:
               show_if_no_docstring: true
             show_source: true
   - mkdocs-jupyter
+  - markdown-exec
 
 nav:
   - Home: index.md

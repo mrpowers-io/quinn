@@ -1099,6 +1099,23 @@ docs = ["mdx-gh-links (>=0.2)", "mkdocs (>=1.0)", "mkdocs-nature (>=0.4)"]
 testing = ["coverage", "pyyaml"]
 
 [[package]]
+name = "markdown-exec"
+version = "1.6.0"
+description = "Utilities to execute code blocks in Markdown files."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "markdown_exec-1.6.0-py3-none-any.whl", hash = "sha256:7dc22dda1e94815d72529caf6ec7a44a164d68e204894a48d4d0702425517504"},
+    {file = "markdown_exec-1.6.0.tar.gz", hash = "sha256:a52a84dda65c841f1a6a605d219cef9503b0a38fef8cd6c1f19b41a02d0e8d9d"},
+]
+
+[package.dependencies]
+pymdown-extensions = ">=9"
+
+[package.extras]
+ansi = ["pygments-ansi-color"]
+
+[[package]]
 name = "markdown-include"
 version = "0.8.1"
 description = "A Python-Markdown extension which provides an 'include' function"
@@ -2832,7 +2849,7 @@ files = [
 ]
 
 [[package]]
-name = "ypy-websocket"
+name = "ypy-websocket" conflict
 version = "0.8.4"
 description = "WebSocket connector for Ypy"
 optional = false
