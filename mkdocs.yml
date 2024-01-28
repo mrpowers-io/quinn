@@ -1,4 +1,7 @@
 site_name: Quinn
+site_url: "https://mrpowers.github.io/quinn/"
+repo_url: "https://github.com/MrPowers/quinn"
+repo_name: "MrPowers/quinn"
 
 theme:
   name: material
