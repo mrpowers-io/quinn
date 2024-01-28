@@ -48,10 +48,20 @@ plugins:
 
 nav:
   - Home: index.md
-  - API Docs: reference/SUMMARY.md
+  - Usage: usage.md
+  - API Reference: reference/SUMMARY.md
   - Examples:
-      - "notebooks/schema_as_code.ipynb"
+    - "examples/index.md"
+    - "notebooks/schema_as_code.ipynb"
+  - Learn more: 
+    - learn_more/index.md
+    - learn_more/column_to_list.md
+
 
 markdown_extensions:
     - markdown_include.include:
         base_path: docs
+    - attr_list
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
