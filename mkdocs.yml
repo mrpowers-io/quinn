@@ -19,6 +19,7 @@ plugins:
               show_if_no_docstring: true
             show_source: true
   - mkdocs-jupyter
+  - markdown-exec
 
 nav:
   - Home: index.md
