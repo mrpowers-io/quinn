@@ -44,6 +44,8 @@ semver = "^3"
 pytest = "^7"
 chispa = "0.9.4"
 pytest-describe = "^2"
+pyspark = ">2"
+semver = "^3"
 
 [tool.poetry.group.linting.dependencies]
 ruff = "^0.0.291"
