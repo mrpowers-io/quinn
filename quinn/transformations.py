@@ -86,8 +86,10 @@ def to_snake_case(s: str) -> str:
     return s.lower().replace(" ", "_")
 
 
-def sort_columns( # noqa: C901,PLR0915
-        df: DataFrame, sort_order: str, sort_nested: bool = False,
+def sort_columns(  # noqa: C901,PLR0915
+    df: DataFrame,
+    sort_order: str,
+    sort_nested: bool = False,
 ) -> DataFrame:
     """This function sorts the columns of a given DataFrame based on a given sort
     order. The ``sort_order`` parameter can either be ``asc`` or ``desc``, which correspond to
@@ -104,13 +106,17 @@ def sort_columns( # noqa: C901,PLR0915
     :rtype: pyspark.sql.DataFrame
     """
 
-    def sort_nested_cols(schema, is_reversed, base_field="") -> list[str]: # noqa: ANN001
+    def sort_nested_cols(
+        schema: StructType, is_reversed: bool, base_field: str="",
+    ) -> list[str]:
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
         # Credits: @pault for logic
 
         def parse_fields(
-            fields_to_sort: list, parent_struct, is_reversed: bool, # noqa: ANN001
+            fields_to_sort: list,
+            parent_struct: StructType,
+            is_reversed: bool,
         ) -> list:
             sorted_fields: list = sorted(
                 fields_to_sort,
@@ -126,7 +132,9 @@ def sort_columns( # noqa: C901,PLR0915
                     new_base_field = base_field + "." + new_base_field
 
                 results.extend(
-                    sort_nested_cols(new_struct, is_reversed, base_field=new_base_field),
+                    sort_nested_cols(
+                        new_struct, is_reversed, base_field=new_base_field,
+                    ),
                 )
             return results
 
@@ -175,7 +183,8 @@ def sort_columns( # noqa: C901,PLR0915
             result_dict[field.name] = True
 
         if not isinstance(field.dataType, StructType) and not isinstance(
-            field.dataType, ArrayType,
+            field.dataType,
+            ArrayType,
         ):
             return
 
@@ -190,7 +199,8 @@ def sort_columns( # noqa: C901,PLR0915
     def fix_nullability(field: StructField, result_dict: dict) -> None:
         field.nullable = result_dict[field.name]
         if not isinstance(field.dataType, StructType) and not isinstance(
-            field.dataType, ArrayType,
+            field.dataType,
+            ArrayType,
         ):
             return
 
@@ -221,7 +231,7 @@ def sort_columns( # noqa: C901,PLR0915
 
     is_nested: bool = any(
         isinstance(i.dataType, (StructType, ArrayType))
-            for i in top_level_sorted_df.schema
+        for i in top_level_sorted_df.schema
     )
 
     if not is_nested:
@@ -236,7 +246,7 @@ def sort_columns( # noqa: C901,PLR0915
     for field in output.schema:
         fix_nullability(field, result_dict)
 
-    if not hasattr(SparkSession, "getActiveSession"): # spark 2.4
+    if not hasattr(SparkSession, "getActiveSession"):  # spark 2.4
         spark = SparkSession.builder.getOrCreate()
     else:
         spark = SparkSession.getActiveSession()
@@ -360,7 +370,8 @@ def flatten_dataframe(
         :rtype: DataFrame
         """
         return df.select(
-            "*", F.explode_outer(F.col(f"`{col_name}`")).alias(col_name),
+            "*",
+            F.explode_outer(F.col(f"`{col_name}`")).alias(col_name),
         ).drop(
             col_name,
         )

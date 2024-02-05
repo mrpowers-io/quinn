@@ -46,34 +46,45 @@ def test_print_schema_as_code():
 
 
 def test_schema_from_csv_good_schema1():
-    expected_schema = StructType([
-        StructField("person", StringType(), False, {"description": "The person's name"}),
-        StructField("address", StringType(), True),
-        StructField("phoneNumber", StringType(), True, {"description": "The person's phone number"}),
-        StructField("age", IntegerType(), False),
-    ])
-    path = 'tests/test_files/good_schema1.csv'
+    expected_schema = StructType(
+        [
+            StructField(
+                "person", StringType(), False, {"description": "The person's name"}
+            ),
+            StructField("address", StringType(), True),
+            StructField(
+                "phoneNumber",
+                StringType(),
+                True,
+                {"description": "The person's phone number"},
+            ),
+            StructField("age", IntegerType(), False),
+        ]
+    )
+    path = "tests/test_files/good_schema1.csv"
     assert_basic_schema_equality(expected_schema, schema_from_csv(spark, path))
 
 
 def test_schema_from_csv_good_schema2():
-    expected_schema = StructType([
-        StructField("person", StringType(), True),
-        StructField("address", StringType(), True),
-        StructField("phoneNumber", StringType(), True),
-        StructField("age", IntegerType(), True),
-    ])
-    path = 'tests/test_files/good_schema2.csv'
+    expected_schema = StructType(
+        [
+            StructField("person", StringType(), True),
+            StructField("address", StringType(), True),
+            StructField("phoneNumber", StringType(), True),
+            StructField("age", IntegerType(), True),
+        ]
+    )
+    path = "tests/test_files/good_schema2.csv"
     assert_basic_schema_equality(expected_schema, schema_from_csv(spark, path))
 
 
 def test_schema_from_csv_equality_for_bad_csv():
-    path = 'tests/test_files/bad_schema.csv'
+    path = "tests/test_files/bad_schema.csv"
     with pytest.raises(ValueError) as excinfo:
         schema_from_csv(spark, path)
     assert (
-            excinfo.value.args[0]
-            == "CSV must contain columns in this order: ['name', 'type', 'nullable', 'metadata']"
+        excinfo.value.args[0]
+        == "CSV must contain columns in this order: ['name', 'type', 'nullable', 'metadata']"
     )
 
 
@@ -95,8 +106,7 @@ def test_complex_fields():
         ]
     )
     expected = {
-        "details":
-        StructType(
+        "details": StructType(
             [
                 StructField("name", StringType(), True),
                 StructField("address", StringType(), True),

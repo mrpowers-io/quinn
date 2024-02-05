@@ -4,7 +4,14 @@ import pytest
 import chispa
 import quinn
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, MapType
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    StringType,
+    IntegerType,
+    ArrayType,
+    MapType,
+)
 from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
 from .spark import spark
 
@@ -224,6 +231,7 @@ def describe_sort_columns():
             excinfo.value.args[0]
             == "['asc', 'desc'] are the only valid sort orders and you entered a sort order of 'cats'"
         )
+
 
 def _test_sort_struct_flat(spark, sort_order: str):
     def _get_simple_test_dataframes(sort_order) -> tuple[(DataFrame, DataFrame)]:
@@ -721,6 +729,7 @@ def test_sort_struct_nested_with_arraytypes_nullable():
 def test_sort_struct_nested_with_arraytypes_nullable_desc():
     _test_sort_struct_nested_with_arraytypes_desc(spark, False)
 
+
 def test_flatten_struct():
     data = [
         (1, ("name1", "address1", 20)),
@@ -803,7 +812,11 @@ def test_flatten_dataframe():
         (
             2,
             "Jane",
-            {"age": 25, "gender": "F", "address": {"city": "San Francisco", "state": "CA"}},
+            {
+                "age": 25,
+                "gender": "F",
+                "address": {"city": "San Francisco", "state": "CA"},
+            },
         ),
     ]
     schema = StructType(

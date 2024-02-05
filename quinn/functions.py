@@ -196,7 +196,8 @@ def _raise_if_invalid_day(day: str) -> None:
     valid_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     if day not in valid_days:
         message = "The day you entered '{}' is not valid.  Here are the valid days: [{}]".format(
-            day, ",".join(valid_days),
+            day,
+            ",".join(valid_days),
         )
         raise ValueError(message)
 
@@ -242,7 +243,9 @@ def regexp_extract_all(s: Column, regexp: Column) -> Column:
     return None if s is None else re.findall(regexp, s)
 
 
-def business_days_between(start_date: Column, end_date: Column) -> Column:  # noqa: ARG001
+def business_days_between(
+    start_date: Column, end_date: Column, # noqa: ARG001
+) -> Column:
     """Function takes two Spark `Columns` and returns a `Column` with the number of business days between the start and the end date.
 
     :param start_date: The column with the start dates

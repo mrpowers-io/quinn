@@ -39,7 +39,7 @@ def describe_validate_schema():
         current_spark_version = semver.Version.parse(spark.version)
         spark_330 = semver.Version.parse("3.3.0")
         if semver.Version.compare(current_spark_version, spark_330) >= 0:  # Spark 3.3+
-            expected_error_message = "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame with the following StructFields StructType([StructField('name', StringType(), True), StructField('age', LongType(), True)])" # noqa
+            expected_error_message = "The [StructField('city', StringType(), True)] StructFields are not included in the DataFrame with the following StructFields StructType([StructField('name', StringType(), True), StructField('age', LongType(), True)])"  # noqa
         else:
             expected_error_message = "The [StructField(city,StringType,true)] StructFields are not included in the DataFrame with the following StructFields StructType(List(StructField(name,StringType,true),StructField(age,LongType,true)))"  # noqa
         assert excinfo.value.args[0] == expected_error_message
