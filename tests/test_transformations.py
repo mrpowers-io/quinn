@@ -6,10 +6,11 @@ import quinn
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, MapType
 from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from .spark import *
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def describe_with_columns_renamed():
     def it_renames_spaces_to_underscores(spark):
         def spaces_to_underscores(s):

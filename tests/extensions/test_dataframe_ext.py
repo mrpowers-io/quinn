@@ -3,7 +3,8 @@ from functools import partial
 import chispa
 from pyspark.sql.functions import col
 
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from ..spark import *
 
 from .dataframe_transformations import (
     with_greeting,
@@ -13,7 +14,7 @@ from .dataframe_transformations import (
 )
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_verbose_code_without_transform(spark):
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])

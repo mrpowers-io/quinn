@@ -14,14 +14,15 @@ from pyspark.sql.types import (
 )
 
 import quinn
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from .spark import *
 import chispa
 
 import datetime
 import uuid
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_single_space(spark):
     df = quinn.create_df(
         spark,

@@ -1,10 +1,11 @@
 import quinn
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from .spark import *
 import chispa
 import pytest
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_split_columns(spark):
     data = [("chrisXXmoe", 2025, "bio"),
             ("davidXXbb", 2026, "physics"),

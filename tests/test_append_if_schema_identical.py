@@ -1,11 +1,12 @@
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 import quinn
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from .spark import *
 from chispa.schema_comparer import assert_basic_schema_equality
 from quinn.append_if_schema_identical import SchemaMismatchError
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_append_if_schema_identical(spark):
     source_data = [(1, "cape town", "Alice"), (2, "delhi", "Bob")]
     target_data = [(3, "Charlie", "New York"), (4, "Dave", "Los Angeles")]

@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
     builder = (
         SparkSession.builder.appName("MyApp")
+        .remote("sc://localhost")
         .config("spark.executor.memory", "20G")
         .config("spark.driver.memory", "25G")
         .config("spark.sql.shuffle.partitions", "2")

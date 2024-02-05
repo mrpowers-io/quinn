@@ -3,10 +3,11 @@ from pyspark.sql.types import StructType, StructField, StringType, LongType
 import semver
 
 import quinn
-from tests.conftest import auto_inject_fixtures
+from .spark import *
+# from tests.conftest import auto_inject_fixtures
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def describe_validate_presence_of_columns():
     def it_raises_if_a_required_column_is_missing(spark):
         data = [("jose", 1), ("li", 2), ("luisa", 3)]

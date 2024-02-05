@@ -46,29 +46,26 @@ class SparkProvider:
         extra_dependencies: list[str] | None = None,
         extra_files: list[str] | None = None,
     ) -> SparkSession:
-        conf = conf if conf else SparkConf()
+        # conf = conf if conf else SparkConf()
 
-        if extra_dependencies:
-            spark_dependencies = ",".join(extra_dependencies)
-            conf.set("spark.jars.packages", spark_dependencies)
+        # if extra_dependencies:
+        #     spark_dependencies = ",".join(extra_dependencies)
+        #     conf.set("spark.jars.packages", spark_dependencies)
 
         spark = (
-            SparkSession.builder.appName(app_name)
-            .master(master)
-            .config(conf=conf)
-            .getOrCreate()
+            SparkSession.builder.remote("sc://localhost").appName(app_name).getOrCreate()
         )
 
-        extra_files = extra_files if extra_files else []
-        for extra_file in extra_files:
-            spark.sparkContext.addPyFile(extra_file)
+        # extra_files = extra_files if extra_files else []
+        # for extra_file in extra_files:
+        #     spark.sparkContext.addPyFile(extra_file)
 
-        quiet_py4j()
+        # quiet_py4j()
         return spark
 
-    @staticmethod
-    def tear_down_spark(spark: SparkSession) -> None:  # noqa: D102
-        spark.stop()
-        # To avoid Akka rebinding to the same port, since it doesn't unbind
-        # immediately on shutdown
-        spark._jvm.System.clearProperty("spark.driver.port")  # noqa: SLF001
+    # @staticmethod
+    # def tear_down_spark(spark: SparkSession) -> None:  # noqa: D102
+    #     spark.stop()
+    #     # To avoid Akka rebinding to the same port, since it doesn't unbind
+    #     # immediately on shutdown
+    #     spark._jvm.System.clearProperty("spark.driver.port")  # noqa: SLF001

@@ -1,12 +1,13 @@
 from pyspark.sql.types import StructType, StructField, StringType
 
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from ..spark import *
 
 import chispa
 import quinn
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_create_df(spark):
     schema = StructType(
         [

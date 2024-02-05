@@ -19,10 +19,11 @@ from quinn.schema_helpers import print_schema_as_code, schema_from_csv, complex_
 from chispa.schema_comparer import assert_basic_schema_equality
 import pytest
 
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from .spark import *
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_print_schema_as_code(spark):
     fields = []
     fields.append(StructField("simple_int", IntegerType()))

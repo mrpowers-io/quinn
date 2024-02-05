@@ -3,11 +3,12 @@ from pyspark.sql.types import StringType, BooleanType, IntegerType
 import quinn
 import chispa
 
-from tests.conftest import auto_inject_fixtures
+# from tests.conftest import auto_inject_fixtures
+from ..spark import *
 from quinn.extensions import *  # noqa
 
 
-@auto_inject_fixtures("spark")
+# @auto_inject_fixtures("spark")
 def test_is_falsy(spark):
     source_df = quinn.create_df(
         spark,
