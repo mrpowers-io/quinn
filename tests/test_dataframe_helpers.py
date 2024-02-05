@@ -1,12 +1,11 @@
 import quinn
-from tests.conftest import auto_inject_fixtures
+from .spark import spark
 import chispa
 from pyspark.sql.types import IntegerType, StringType, StructType, StructField
 
 
-@auto_inject_fixtures("spark")
 def describe_column_to_list():
-    def it_returns_a_list(spark):
+    def it_returns_a_list():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         actual = quinn.column_to_list(source_df, "name")
@@ -14,7 +13,7 @@ def describe_column_to_list():
 
 
 def describe_two_columns_to_dictionary():
-    def it_returns_a_dictionary(spark):
+    def it_returns_a_dictionary():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         actual = quinn.two_columns_to_dictionary(source_df, "name", "age")
@@ -22,7 +21,7 @@ def describe_two_columns_to_dictionary():
 
 
 def describe_to_list_of_dictionaries():
-    def returns_a_list_of_dicts(spark):
+    def returns_a_list_of_dicts():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         actual = quinn.to_list_of_dictionaries(source_df)
@@ -35,7 +34,7 @@ def describe_to_list_of_dictionaries():
 
 
 def describe_show_output_to_df():
-    def it_converts_a_show_string_to_a_dataframe(spark):
+    def it_converts_a_show_string_to_a_dataframe():
         s = """+----+---+-----------+------+
 |name|age|     stuff1|stuff2|
 +----+---+-----------+------+
@@ -56,7 +55,7 @@ def describe_show_output_to_df():
 
 
 def describe_print_athena_create_table():
-    def it_prints_a_create_table_string_for_athena(spark, capsys):
+    def it_prints_a_create_table_string_for_athena(capsys):
         source_df = spark.createDataFrame(
             [("jets", "football", 45), ("nacional", "soccer", 10)],
             ["team", "sport", "goals_for"],
@@ -69,7 +68,7 @@ def describe_print_athena_create_table():
         )
 
 
-def test_create_df(spark):
+def test_create_df():
     rows_data = [("jose", 1), ("li", 2), ("luisa", 3)]
     col_specs = [("name", StringType()), ("age", IntegerType())]
 

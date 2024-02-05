@@ -3,12 +3,11 @@ from pyspark.sql.types import StringType, BooleanType, IntegerType
 import quinn
 import chispa
 
-from tests.conftest import auto_inject_fixtures
+from ..spark import spark
 from quinn.extensions import *  # noqa
 
 
-@auto_inject_fixtures("spark")
-def test_is_falsy(spark):
+def test_is_falsy():
     source_df = quinn.create_df(
         spark,
         [(True, False), (False, True), (None, True)],
@@ -21,7 +20,7 @@ def test_is_falsy(spark):
     chispa.assert_column_equality(actual_df, "is_has_stuff_falsy", "expected")
 
 
-def test_is_truthy(spark):
+def test_is_truthy():
     source_df = quinn.create_df(
         spark,
         [(True, True), (False, False), (None, False)],
@@ -33,7 +32,7 @@ def test_is_truthy(spark):
     chispa.assert_column_equality(actual_df, "is_has_stuff_truthy", "expected")
 
 
-def test_is_false(spark):
+def test_is_false():
     source_df = quinn.create_df(
         spark,
         [(True, False), (False, True), (None, None)],
@@ -43,7 +42,7 @@ def test_is_false(spark):
     chispa.assert_column_equality(actual_df, "is_has_stuff_false", "expected")
 
 
-def test_is_true(spark):
+def test_is_true():
     source_df = quinn.create_df(
         spark,
         [(True, True), (False, False), (None, None)],
@@ -53,7 +52,7 @@ def test_is_true(spark):
     chispa.assert_column_equality(actual_df, "is_stuff_true", "expected")
 
 
-def test_is_null_or_blank(spark):
+def test_is_null_or_blank():
     source_df = quinn.create_df(
         spark,
         [
@@ -73,7 +72,7 @@ def test_is_null_or_blank(spark):
     chispa.assert_column_equality(actual_df, "is_blah_null_or_blank", "expected")
 
 
-def test_is_not_in(spark):
+def test_is_not_in():
     source_df = quinn.create_df(
         spark,
         [
@@ -93,7 +92,7 @@ def test_is_not_in(spark):
     chispa.assert_column_equality(actual_df, "is_not_bobs_hobby", "expected")
 
 
-def test_null_between(spark):
+def test_null_between():
     source_df = quinn.create_df(
         spark,
         [

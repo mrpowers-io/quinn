@@ -19,11 +19,10 @@ from quinn.schema_helpers import print_schema_as_code, schema_from_csv, complex_
 from chispa.schema_comparer import assert_basic_schema_equality
 import pytest
 
-from tests.conftest import auto_inject_fixtures
+from .spark import spark
 
 
-@auto_inject_fixtures("spark")
-def test_print_schema_as_code(spark):
+def test_print_schema_as_code():
     fields = []
     fields.append(StructField("simple_int", IntegerType()))
     fields.append(StructField("decimal_with_nums", DecimalType(19, 8)))
@@ -46,7 +45,7 @@ def test_print_schema_as_code(spark):
     assert_basic_schema_equality(schema, eval(print_schema_as_code(schema)))
 
 
-def test_schema_from_csv_good_schema1(spark):
+def test_schema_from_csv_good_schema1():
     expected_schema = StructType([
         StructField("person", StringType(), False, {"description": "The person's name"}),
         StructField("address", StringType(), True),
@@ -57,7 +56,7 @@ def test_schema_from_csv_good_schema1(spark):
     assert_basic_schema_equality(expected_schema, schema_from_csv(spark, path))
 
 
-def test_schema_from_csv_good_schema2(spark):
+def test_schema_from_csv_good_schema2():
     expected_schema = StructType([
         StructField("person", StringType(), True),
         StructField("address", StringType(), True),
@@ -68,7 +67,7 @@ def test_schema_from_csv_good_schema2(spark):
     assert_basic_schema_equality(expected_schema, schema_from_csv(spark, path))
 
 
-def test_schema_from_csv_equality_for_bad_csv(spark):
+def test_schema_from_csv_equality_for_bad_csv():
     path = 'tests/test_files/bad_schema.csv'
     with pytest.raises(ValueError) as excinfo:
         schema_from_csv(spark, path)
@@ -78,7 +77,7 @@ def test_schema_from_csv_equality_for_bad_csv(spark):
     )
 
 
-def test_complex_fields(spark):
+def test_complex_fields():
     schema = StructType(
         [
             StructField("id", IntegerType(), True),

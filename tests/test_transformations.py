@@ -6,12 +6,11 @@ import quinn
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, MapType
 from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
-from tests.conftest import auto_inject_fixtures
+from .spark import spark
 
 
-@auto_inject_fixtures("spark")
 def describe_with_columns_renamed():
-    def it_renames_spaces_to_underscores(spark):
+    def it_renames_spaces_to_underscores():
         def spaces_to_underscores(s):
             return s.replace(" ", "_")
 
@@ -34,7 +33,7 @@ def describe_with_columns_renamed():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
-    def it_renames_dots_to_underscores(spark):
+    def it_renames_dots_to_underscores():
         def dots_to_underscores(s):
             return s.replace(".", "_")
 
@@ -59,7 +58,7 @@ def describe_with_columns_renamed():
 
 
 def describe_with_some_columns_renamed():
-    def it_renames_columns_based_on_a_map(spark):
+    def it_renames_columns_based_on_a_map():
         mapping = {"chips": "french_fries", "petrol": "gas"}
 
         def british_to_american(s):
@@ -91,7 +90,7 @@ def describe_with_some_columns_renamed():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
-    def it_renames_some_columns_with_dots(spark):
+    def it_renames_some_columns_with_dots():
         def dots_to_underscores(s):
             return s.replace(".", "_")
 
@@ -123,7 +122,7 @@ def describe_with_some_columns_renamed():
 
 
 def describe_snake_case_col_names():
-    def it_snake_cases_col_names(spark):
+    def it_snake_cases_col_names():
         schema = StructType(
             [
                 StructField("I like CHEESE", StringType(), True),
@@ -145,7 +144,7 @@ def describe_snake_case_col_names():
 
 
 def describe_sort_columns():
-    def it_sorts_columns_in_asc_order(spark):
+    def it_sorts_columns_in_asc_order():
         source_df = quinn.create_df(
             spark,
             [
@@ -175,7 +174,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
-    def it_sorts_columns_in_desc_order(spark):
+    def it_sorts_columns_in_desc_order():
         source_df = quinn.create_df(
             spark,
             [
@@ -205,7 +204,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
-    def it_throws_an_error_if_the_sort_order_is_invalid(spark):
+    def it_throws_an_error_if_the_sort_order_is_invalid():
         source_df = quinn.create_df(
             spark,
             [
@@ -286,11 +285,11 @@ def _test_sort_struct_flat(spark, sort_order: str):
     )
 
 
-def test_sort_struct_flat(spark):
+def test_sort_struct_flat():
     _test_sort_struct_flat(spark, "asc")
 
 
-def test_sort_struct_flat_desc(spark):
+def test_sort_struct_flat_desc():
     _test_sort_struct_flat(spark, "desc")
 
 
@@ -691,38 +690,38 @@ def _test_sort_struct_nested_in_arraytypes(spark, ignore_nullable: bool):
     )
 
 
-def test_sort_struct_nested(spark):
+def test_sort_struct_nested():
     _test_sort_struct_nested(spark, True)
 
 
-def test_sort_struct_nested_desc(spark):
+def test_sort_struct_nested_desc():
     _test_sort_struct_nested_desc(spark, True)
 
 
-def test_sort_struct_nested_with_arraytypes(spark):
+def test_sort_struct_nested_with_arraytypes():
     _test_sort_struct_nested_with_arraytypes(spark, True)
 
 
-def test_sort_struct_nested_with_arraytypes_desc(spark):
+def test_sort_struct_nested_with_arraytypes_desc():
     _test_sort_struct_nested_with_arraytypes_desc(spark, True)
 
 
-def test_sort_struct_nested_nullable(spark):
+def test_sort_struct_nested_nullable():
     _test_sort_struct_nested(spark, False)
 
 
-def test_sort_struct_nested_nullable_desc(spark):
+def test_sort_struct_nested_nullable_desc():
     _test_sort_struct_nested_desc(spark, False)
 
 
-def test_sort_struct_nested_with_arraytypes_nullable(spark):
+def test_sort_struct_nested_with_arraytypes_nullable():
     _test_sort_struct_nested_with_arraytypes(spark, False)
 
 
-def test_sort_struct_nested_with_arraytypes_nullable_desc(spark):
+def test_sort_struct_nested_with_arraytypes_nullable_desc():
     _test_sort_struct_nested_with_arraytypes_desc(spark, False)
 
-def test_flatten_struct(spark):
+def test_flatten_struct():
     data = [
         (1, ("name1", "address1", 20)),
         (2, ("name2", "address2", 30)),
@@ -763,7 +762,7 @@ def test_flatten_struct(spark):
     chispa.assert_df_equality(flattened_df, expected_df)
 
 
-def test_flatten_map(spark):
+def test_flatten_map():
     data = [
         (1, {"name": "Alice", "age": 25}),
         (2, {"name": "Bob", "age": 30}),
@@ -793,7 +792,7 @@ def test_flatten_map(spark):
     chispa.assert_df_equality(flattened_df, expected_df)
 
 
-def test_flatten_dataframe(spark):
+def test_flatten_dataframe():
     # Define input data
     data = [
         (

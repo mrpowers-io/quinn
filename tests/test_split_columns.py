@@ -1,11 +1,10 @@
 import quinn
-from tests.conftest import auto_inject_fixtures
 import chispa
 import pytest
+from .spark import spark
 
 
-@auto_inject_fixtures("spark")
-def test_split_columns(spark):
+def test_split_columns():
     data = [("chrisXXmoe", 2025, "bio"),
             ("davidXXbb", 2026, "physics"),
             (None, 2025, "physics")]
@@ -22,7 +21,7 @@ def test_split_columns(spark):
     expected = spark.createDataFrame(data, ["graduation_year", "major", "student_first_name", "student_last_name"])
     chispa.assert_df_equality(new_df, expected)
 
-def test_split_columns_advanced(spark):
+def test_split_columns_advanced():
     data = [("chrisXXsomethingXXmoe", 2025, "bio"),
             ("davidXXbb", 2026, "physics"),
             (None, 2025, "physics")]
@@ -39,7 +38,7 @@ def test_split_columns_advanced(spark):
     expected = spark.createDataFrame(data, ["graduation_year", "major", "student_first_name", "student_middle_name", "student_last_name"])
     chispa.assert_df_equality(new_df, expected)
 
-def test_split_columns_strict(spark):
+def test_split_columns_strict():
     data = [("chrisXXsomethingXXmoe", 2025, "bio"),
             ("davidXXbb", 2026, "physics"),
             (None, 2025, "physics")]
