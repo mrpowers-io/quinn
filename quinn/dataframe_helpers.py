@@ -27,7 +27,7 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
 
     # sparksession from df is not available in older versions of pyspark
     if sys.modules["pyspark"].__version__ < "3.3.0":
-        return [row[0] for row in df.select("mvv").collect()]
+        return [row[0] for row in df.select(col_name).collect()]
 
     spark_config = df.sparkSession.sparkContext.getConf().getAll()
 
@@ -40,7 +40,7 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
     if pyarrow_valid and pandas_valid:
         return df.select(col_name).toPandas()[col_name].tolist()
 
-    return [row[0] for row in df.select("mvv").collect()]
+    return [row[0] for row in df.select(col_name).collect()]
 
 
 def two_columns_to_dictionary(
