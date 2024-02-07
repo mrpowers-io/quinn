@@ -167,4 +167,3 @@ def complex_fields(schema: T.StructType) -> dict[str, object]:
         for field in schema.fields
         if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
     }
-

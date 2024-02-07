@@ -14,15 +14,14 @@ from pyspark.sql.types import (
 )
 
 import quinn
-from tests.conftest import auto_inject_fixtures
+from .spark import spark
 import chispa
 
 import datetime
 import uuid
 
 
-@auto_inject_fixtures("spark")
-def test_single_space(spark):
+def test_single_space():
     df = quinn.create_df(
         spark,
         [
@@ -40,7 +39,7 @@ def test_single_space(spark):
     chispa.assert_column_equality(actual_df, "words_single_spaced", "expected")
 
 
-def test_remove_all_whitespace(spark):
+def test_remove_all_whitespace():
     df = quinn.create_df(
         spark,
         [
@@ -60,7 +59,7 @@ def test_remove_all_whitespace(spark):
     chispa.assert_column_equality(actual_df, "words_without_whitespace", "expected")
 
 
-def test_remove_non_word_characters(spark):
+def test_remove_non_word_characters():
     df = quinn.create_df(
         spark,
         [
@@ -80,7 +79,7 @@ def test_remove_non_word_characters(spark):
     chispa.assert_column_equality(actual_df, "words_without_nonword_chars", "expected")
 
 
-def test_anti_trim(spark):
+def test_anti_trim():
     df = quinn.create_df(
         spark,
         [
@@ -98,7 +97,7 @@ def test_anti_trim(spark):
     chispa.assert_column_equality(actual_df, "words_anti_trimmed", "expected")
 
 
-def test_exists(spark):
+def test_exists():
     df = spark.createDataFrame(
         [
             ([1, 2, 3], False),
@@ -118,7 +117,7 @@ def test_exists(spark):
     chispa.assert_column_equality(actual_df, "any_num_greater_than_5", "expected")
 
 
-def test_forall(spark):
+def test_forall():
     df = spark.createDataFrame(
         [
             ([1, 2, 3], False),
@@ -138,7 +137,7 @@ def test_forall(spark):
     chispa.assert_column_equality(actual_df, "all_nums_greater_than_3", "expected")
 
 
-def test_multi_equals(spark):
+def test_multi_equals():
     df = quinn.create_df(
         spark,
         [
@@ -161,7 +160,7 @@ def test_multi_equals(spark):
 
 
 def describe_week_start_date():
-    def it_works_with_start_date_of_monday(spark):
+    def it_works_with_start_date_of_monday():
         df = quinn.create_df(
             spark,
             [
@@ -180,7 +179,7 @@ def describe_week_start_date():
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
-    def it_defaults_to_sunday_start_date(spark):
+    def it_defaults_to_sunday_start_date():
         df = quinn.create_df(
             spark,
             [
@@ -199,7 +198,7 @@ def describe_week_start_date():
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
-    def it_errors_out_if_with_invalid_week_start_date(spark):
+    def it_errors_out_if_with_invalid_week_start_date():
         df = quinn.create_df(
             spark,
             [
@@ -218,7 +217,7 @@ def describe_week_start_date():
 
 
 def describe_week_end_date():
-    def it_works_with_end_date_of_sunday(spark):
+    def it_works_with_end_date_of_sunday():
         df = quinn.create_df(
             spark,
             [
@@ -237,7 +236,7 @@ def describe_week_end_date():
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
-    def it_defaults_to_saturday_week_end(spark):
+    def it_defaults_to_saturday_week_end():
         df = quinn.create_df(
             spark,
             [
@@ -256,7 +255,7 @@ def describe_week_end_date():
         )
         chispa.assert_column_equality(actual_df, "week_start_date", "expected")
 
-    def it_errors_out_if_with_invalid_week_end_date(spark):
+    def it_errors_out_if_with_invalid_week_end_date():
         df = quinn.create_df(
             spark,
             [
@@ -275,7 +274,7 @@ def describe_week_end_date():
 
 
 def describe_approx_equal():
-    def it_works_with_floating_values(spark):
+    def it_works_with_floating_values():
         df = quinn.create_df(
             spark,
             [
@@ -297,7 +296,7 @@ def describe_approx_equal():
         )
         chispa.assert_column_equality(actual_df, "are_nums_approx_equal", "expected")
 
-    def it_works_with_integer_values(spark):
+    def it_works_with_integer_values():
         df = quinn.create_df(
             spark,
             [
@@ -330,7 +329,7 @@ def describe_approx_equal():
 #     chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
-def test_regexp_extract_all(spark):
+def test_regexp_extract_all():
     df = quinn.create_df(
         spark,
         [("200 - 300 PA.", ["200", "300"]), ("400 PA.", ["400"]), (None, None)],
@@ -345,7 +344,7 @@ def test_regexp_extract_all(spark):
     chispa.assert_column_equality(actual_df, "all_numbers", "expected")
 
 
-def test_business_days_between(spark):
+def test_business_days_between():
     df = quinn.create_df(
         spark,
         [
@@ -370,7 +369,7 @@ def test_business_days_between(spark):
 
 
 def describe_uuid5():
-    def test_no_extra_string(spark):
+    def test_no_extra_string():
         df = quinn.create_df(
             spark,
             [
@@ -392,7 +391,7 @@ def describe_uuid5():
         )
         chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
 
-    def test_with_extra_string(spark):
+    def test_with_extra_string():
         df = quinn.create_df(
             spark,
             [

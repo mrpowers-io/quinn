@@ -3,7 +3,7 @@ from functools import partial
 import chispa
 from pyspark.sql.functions import col
 
-from tests.conftest import auto_inject_fixtures
+from ..spark import spark
 
 from .dataframe_transformations import (
     with_greeting,
@@ -13,8 +13,7 @@ from .dataframe_transformations import (
 )
 
 
-@auto_inject_fixtures("spark")
-def test_verbose_code_without_transform(spark):
+def test_verbose_code_without_transform():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     df1 = with_greeting(source_df)
@@ -30,7 +29,7 @@ def test_verbose_code_without_transform(spark):
     chispa.assert_df_equality(df2, expected_df, ignore_nullable=True)
 
 
-def test_transform_with_lambda(spark):
+def test_transform_with_lambda():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(
@@ -41,7 +40,7 @@ def test_transform_with_lambda(spark):
     chispa.assert_df_equality(actual_df, expected_df)
 
 
-def test_transform_with_no_arg_fun(spark):
+def test_transform_with_no_arg_fun():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(lambda df: with_greeting(df))
@@ -50,7 +49,7 @@ def test_transform_with_no_arg_fun(spark):
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
-def test_transform_with_one_arg_fun(spark):
+def test_transform_with_one_arg_fun():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(lambda df: with_something(df, "crazy"))
@@ -59,7 +58,7 @@ def test_transform_with_one_arg_fun(spark):
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
-def test_chain_transforms(spark):
+def test_chain_transforms():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(with_greeting).transform(
@@ -76,7 +75,7 @@ def test_chain_transforms(spark):
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
-def test_transform_with_closure(spark):
+def test_transform_with_closure():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(with_greeting).transform(  # no lambda required
@@ -93,7 +92,7 @@ def test_transform_with_closure(spark):
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
-def test_transform_with_functools_partial(spark):
+def test_transform_with_functools_partial():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
     actual_df = source_df.transform(
