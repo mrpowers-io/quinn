@@ -104,14 +104,14 @@ def split_col(  # noqa: PLR0913
         df = df.withColumn("del_length", num_udf(df[col_name]))  # noqa: PD901
         df.cache()
         # Drop the original column if the new columns were created successfully
-        df = df.select( # noqa: PD901
+        df = df.select(  # noqa: PD901
             [c for c in df.columns if c not in {"del_length", col_name}],
         )
 
     elif mode == "permissive":
         # Create an array of select expressions to create new columns from the split values
         # Use the default value if a split value is missing or empty
-        select_exprs = select_exprs = [
+        select_exprs = [
             when(length(split_col_expr.getItem(i)) > 0, split_col_expr.getItem(i))
             .otherwise(default)
             .alias(new_col_names[i])
