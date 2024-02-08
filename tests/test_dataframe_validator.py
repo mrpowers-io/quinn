@@ -82,3 +82,75 @@ def describe_validate_absence_of_columns():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         quinn.validate_absence_of_columns(source_df, ["favorite_color"])
+
+
+@pytest.fixture(scope="session")
+def sample_schema(spark):
+    return StructType([
+        StructField("col1", StringType(), False),
+        StructField("col2", LongType(), False)
+    ])
+
+
+@pytest.fixture(scope='session')
+def sample_df(spark):
+    return spark.createDataFrame(
+        [
+            ("A", 1),
+            ("B", 2)
+        ], ["col1", "col2"]
+    )
+
+
+@pytest.fixture(scope='session')
+def missing_col_df(spark):
+    return spark.createDataFrame([(1,)], ["col1"])
+
+
+@pytest.fixture(scope='session')
+def extra_col_df(spark):
+    return spark.createDataFrame([("A", 1, "C")], ["col1", "col2", "extra_col"])
+
+
+def test_validate_returned_schema_positive(sample_schema, sample_df):
+    @quinn.validate_returned_schema(sample_schema)
+    def get_df():
+        return sample_df
+    get_df()
+
+
+def test_validate_returned_schema_negative(sample_schema, missing_col_df):
+    @quinn.validate_returned_schema(sample_schema)
+    def get_wrong_df():
+        return missing_col_df
+    with pytest.raises(quinn.DataFrameMissingStructFieldError):
+        get_wrong_df()
+
+
+def test_ensure_columns_present_positive(sample_df):
+    @quinn.ensure_columns_present(["col1", "col2"])
+    def get_df():
+        return sample_df
+    get_df()
+
+
+def test_ensure_columns_present_negative(missing_col_df):
+    @quinn.ensure_columns_present(["col1", "col2"])
+    def get_wrong_df():
+        return missing_col_df
+    with pytest.raises(quinn.DataFrameMissingColumnError):
+        get_wrong_df()
+
+def test_ensure_columns_absent_positive(sample_df):
+    @quinn.ensure_columns_absent(["extra_col"])
+    def get_df():
+        return sample_df
+    get_df()
+
+
+def test_ensure_columns_absent_negative(extra_col_df):
+    @quinn.ensure_columns_absent(["extra_col"])
+    def get_wrong_df():
+        return extra_col_df
+    with pytest.raises(quinn.DataFrameProhibitedColumnError):
+        get_wrong_df()
