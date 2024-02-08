@@ -48,7 +48,7 @@ pyspark = ">2"
 semver = "^3"
 
 [tool.poetry.group.linting.dependencies]
-ruff = "^0.0.291"
+ruff = "*"
 
 [tool.poetry.group.docs.dependencies]
 mkdocstrings-python = "^0.8.3"
