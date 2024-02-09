@@ -20,8 +20,6 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
     :return: List of values
     :rtype: List[Any]
     """
-    pyarrow_kv = ("spark.sql.execution.arrow.pyspark.enabled", "true")
-
     if "pyspark" not in sys.modules:
         raise ImportError
 
@@ -29,10 +27,18 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
     if sys.modules["pyspark"].__version__ < "3.3.0":
         return [row[0] for row in df.select(col_name).collect()]
 
-    spark_config = df.sparkSession.sparkContext.getConf().getAll()
+    spark_session = df.sparkSession.getActiveSession()
+    if spark_session is None:
+        return [row[0] for row in df.select(col_name).collect()]
 
-    pyarrow_enabled: bool = pyarrow_kv in spark_config
-    pyarrow_valid = pyarrow_enabled and sys.modules["pyarrow"] >= "0.17.0"
+    pyarrow_enabled = (
+        spark_session.conf.get(
+            "spark.sql.execution.arrow.pyspark.enabled",
+        )
+        == "true"
+    )
+
+    pyarrow_valid = pyarrow_enabled and sys.modules["pyarrow"].__version__ >= "0.17.0"
 
     pandas_exists = "pandas" in sys.modules
     pandas_valid = pandas_exists and sys.modules["pandas"].__version__ >= "0.24.2"
