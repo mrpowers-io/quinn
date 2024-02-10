@@ -17,7 +17,7 @@ build-backend = "poetry.masonry.api"
 ###########################################################################
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0"
+python = ">=3.8,<4.0"
 
 
 ###########################################################################
@@ -37,14 +37,14 @@ optional = true
 optional = true
 
 [tool.poetry.group.development.dependencies]
-pyspark = ">2"
+pyspark = "^3.5.0"
 semver = "^3"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
 chispa = "0.9.4"
 pytest-describe = "^2"
-pyspark = ">2"
+pyspark = "^3.5.0"
 semver = "^3"
 
 [tool.poetry.group.linting.dependencies]

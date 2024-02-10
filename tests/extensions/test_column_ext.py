@@ -16,7 +16,7 @@ def test_is_falsy():
             ("expected", BooleanType(), True),
         ],
     )
-    actual_df = source_df.withColumn("is_has_stuff_falsy", F.col("has_stuff").isFalsy())
+    actual_df = source_df.withColumn("is_has_stuff_falsy", isFalsy(F.col("has_stuff")))
     chispa.assert_column_equality(actual_df, "is_has_stuff_falsy", "expected")
 
 
@@ -27,7 +27,7 @@ def test_is_truthy():
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
     actual_df = source_df.withColumn(
-        "is_has_stuff_truthy", F.col("has_stuff").isTruthy()
+        "is_has_stuff_truthy", isTruthy(F.col("has_stuff"))
     )
     chispa.assert_column_equality(actual_df, "is_has_stuff_truthy", "expected")
 
@@ -38,7 +38,7 @@ def test_is_false():
         [(True, False), (False, True), (None, None)],
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
-    actual_df = source_df.withColumn("is_has_stuff_false", F.col("has_stuff").isFalse())
+    actual_df = source_df.withColumn("is_has_stuff_false", isFalse(F.col("has_stuff")))
     chispa.assert_column_equality(actual_df, "is_has_stuff_false", "expected")
 
 
@@ -48,7 +48,7 @@ def test_is_true():
         [(True, True), (False, False), (None, None)],
         [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
     )
-    actual_df = source_df.withColumn("is_stuff_true", F.col("has_stuff").isTrue())
+    actual_df = source_df.withColumn("is_stuff_true", isTrue(F.col("has_stuff")))
     chispa.assert_column_equality(actual_df, "is_stuff_true", "expected")
 
 
@@ -67,7 +67,7 @@ def test_is_null_or_blank():
         ],
     )
     actual_df = source_df.withColumn(
-        "is_blah_null_or_blank", F.col("blah").isNullOrBlank()
+        "is_blah_null_or_blank", isNullOrBlank(F.col("blah"))
     )
     chispa.assert_column_equality(actual_df, "is_blah_null_or_blank", "expected")
 
@@ -87,7 +87,7 @@ def test_is_not_in():
     )
     bobs_hobbies = ["dancing", "snowboarding"]
     actual_df = source_df.withColumn(
-        "is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies)
+        "is_not_bobs_hobby", isNotIn(F.col("fun_thing"), bobs_hobbies)
     )
     chispa.assert_column_equality(actual_df, "is_not_bobs_hobby", "expected")
 
@@ -113,6 +113,6 @@ def test_null_between():
         ],
     )
     actual_df = source_df.withColumn(
-        "is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age"))
+        "is_between", nullBetween(F.col("age"), (F.col("lower_age"), F.col("upper_age")))
     )
     chispa.assert_column_equality(actual_df, "is_between", "expected")
