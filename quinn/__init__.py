@@ -31,6 +31,13 @@ from quinn.functions import (
     uuid5,
     week_end_date,
     week_start_date,
+    is_falsy,
+    is_truthy,
+    is_false,
+    is_true,
+    is_null_or_blank,
+    is_not_in,
+    null_between,
 )
 from quinn.schema_helpers import print_schema_as_code
 from quinn.split_columns import split_col
@@ -78,4 +85,11 @@ __all__ = [
     "sort_columns",
     "append_if_schema_identical",
     "flatten_dataframe",
+    "is_falsy",
+    "is_truthy",
+    "is_false",
+    "is_true",
+    "is_null_or_blank",
+    "is_not_in",
+    "null_between",
 ]
