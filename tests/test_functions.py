@@ -329,20 +329,6 @@ def describe_approx_equal():
 #     chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
-def test_regexp_extract_all():
-    df = quinn.create_df(
-        spark,
-        [("200 - 300 PA.", ["200", "300"]), ("400 PA.", ["400"]), (None, None)],
-        [
-            ("str", StringType(), True),
-            ("expected", ArrayType(StringType(), True), True),
-        ],
-    )
-    actual_df = df.withColumn(
-        "all_numbers", quinn.regexp_extract_all(F.col("str"), F.lit(r"(\d+)"))
-    )
-    chispa.assert_column_equality(actual_df, "all_numbers", "expected")
-
 
 def test_business_days_between():
     df = quinn.create_df(

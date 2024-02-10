@@ -230,20 +230,6 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     return col[index]
 
 
-@F.udf(returnType=ArrayType(StringType()))
-def regexp_extract_all(s: Column, regexp: Column) -> Column:
-    """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
-
-    It returns a list of all matches, or    `None` if `s` is `None`.
-
-    :param s: input string (`Column`)
-    :type s: str
-    :param regexp: string `re` pattern
-    :rtype: Column
-    """
-    return None if s is None else re.findall(regexp, s)
-
-
 def business_days_between(
     start_date: Column, end_date: Column, # noqa: ARG001
 ) -> Column:
