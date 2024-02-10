@@ -247,10 +247,10 @@ def sort_columns(  # noqa: C901,PLR0915
         fix_nullability(field, result_dict)
 
     if not hasattr(SparkSession, "getActiveSession"):  # spark 2.4
-        spark = SparkSession.builder.getOrCreate()
+        spark = SparkSession.builder.remote("sc://localhost").getOrCreate()
     else:
         spark = SparkSession.getActiveSession()
-        spark = spark if spark is not None else SparkSession.builder.getOrCreate()
+        spark = spark if spark is not None else SparkSession.builder.remote("sc://localhost").getOrCreate()
 
     return output
 

@@ -154,6 +154,7 @@ def get_benchmark_date(benchmark_path: str) -> str:
 if __name__ == "__main__":
     spark = (
         SparkSession.builder.appName("MyApp")  # type: ignore # noqa: PGH003
+        .remote("sc://localhost")
         .config("spark.executor.memory", "10G")
         .config("spark.driver.memory", "25G")
         .config("spark.sql.shuffle.partitions", "2")
