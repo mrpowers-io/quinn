@@ -329,20 +329,6 @@ def describe_approx_equal():
 #     chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
-def test_regexp_extract_all():
-    df = quinn.create_df(
-        spark,
-        [("200 - 300 PA.", ["200", "300"]), ("400 PA.", ["400"]), (None, None)],
-        [
-            ("str", StringType(), True),
-            ("expected", ArrayType(StringType(), True), True),
-        ],
-    )
-    actual_df = df.withColumn(
-        "all_numbers", quinn.regexp_extract_all(F.col("str"), F.lit(r"(\d+)"))
-    )
-    chispa.assert_column_equality(actual_df, "all_numbers", "expected")
-
 
 def test_business_days_between():
     df = quinn.create_df(
@@ -414,3 +400,113 @@ def describe_uuid5():
             ),
         )
         chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
+
+def test_is_falsy():
+    source_df = quinn.create_df(
+        spark,
+        [(True, False), (False, True), (None, True)],
+        [
+            ("has_stuff", BooleanType(), True),
+            ("expected", BooleanType(), True),
+        ],
+    )
+    actual_df = source_df.withColumn("is_has_stuff_falsy", quinn.is_falsy(F.col("has_stuff")))
+    chispa.assert_column_equality(actual_df, "is_has_stuff_falsy", "expected")
+
+
+def test_is_truthy():
+    source_df = quinn.create_df(
+        spark,
+        [(True, True), (False, False), (None, False)],
+        [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
+    )
+    actual_df = source_df.withColumn(
+        "is_has_stuff_truthy", quinn.is_truthy(F.col("has_stuff"))
+    )
+    chispa.assert_column_equality(actual_df, "is_has_stuff_truthy", "expected")
+
+
+def test_is_false():
+    source_df = quinn.create_df(
+        spark,
+        [(True, False), (False, True), (None, None)],
+        [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
+    )
+    actual_df = source_df.withColumn("is_has_stuff_false", quinn.is_false(F.col("has_stuff")))
+    chispa.assert_column_equality(actual_df, "is_has_stuff_false", "expected")
+
+
+def test_is_true():
+    source_df = quinn.create_df(
+        spark,
+        [(True, True), (False, False), (None, None)],
+        [("has_stuff", BooleanType(), True), ("expected", BooleanType(), True)],
+    )
+    actual_df = source_df.withColumn("is_stuff_true", quinn.is_true(F.col("has_stuff")))
+    chispa.assert_column_equality(actual_df, "is_stuff_true", "expected")
+
+
+def test_is_null_or_blank():
+    source_df = quinn.create_df(
+        spark,
+        [
+            ("", True),
+            ("   ", True),
+            (None, True),
+            ("hi", False),
+        ],
+        [
+            ("blah", StringType(), True),
+            ("expected", BooleanType(), True),
+        ],
+    )
+    actual_df = source_df.withColumn(
+        "is_blah_null_or_blank", quinn.is_null_or_blank(F.col("blah"))
+    )
+    chispa.assert_column_equality(actual_df, "is_blah_null_or_blank", "expected")
+
+
+def test_is_not_in():
+    source_df = quinn.create_df(
+        spark,
+        [
+            ("surfing", True),
+            ("swimming", True),
+            ("dancing", False),
+        ],
+        [
+            ("fun_thing", StringType(), True),
+            ("expected", BooleanType(), True),
+        ],
+    )
+    bobs_hobbies = ["dancing", "snowboarding"]
+    actual_df = source_df.withColumn(
+        "is_not_bobs_hobby", quinn.is_not_in(F.col("fun_thing"), (bobs_hobbies))
+    )
+    chispa.assert_column_equality(actual_df, "is_not_bobs_hobby", "expected")
+
+
+def test_null_between():
+    source_df = quinn.create_df(
+        spark,
+        [
+            (17, None, 94, True),
+            (17, None, 10, False),
+            (None, 10, 5, True),
+            (None, 10, 88, False),
+            (10, 15, 11, True),
+            (None, None, 11, False),
+            (3, 5, None, False),
+            (None, None, None, False),
+        ],
+        [
+            ("lower_age", IntegerType(), True),
+            ("upper_age", IntegerType(), True),
+            ("age", IntegerType(), True),
+            ("expected", BooleanType(), True),
+        ],
+    )
+    actual_df = source_df.withColumn(
+        "is_between", quinn.null_between(F.col("age"), F.col("lower_age"), F.col("upper_age"))
+    )
+    chispa.assert_column_equality(actual_df, "is_between", "expected")

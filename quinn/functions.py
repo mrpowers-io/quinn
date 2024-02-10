@@ -14,6 +14,7 @@ import re
 import uuid
 from typing import Any
 
+from pyspark.sql.functions import lit, trim, when
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql.types import (
     ArrayType,
@@ -229,20 +230,6 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     return col[index]
 
 
-@F.udf(returnType=ArrayType(StringType()))
-def regexp_extract_all(s: Column, regexp: Column) -> Column:
-    """Function uses the Python `re` library to extract regular expressions from a string (`s`) using a regex pattern (`regexp`).
-
-    It returns a list of all matches, or    `None` if `s` is `None`.
-
-    :param s: input string (`Column`)
-    :type s: str
-    :param regexp: string `re` pattern
-    :rtype: Column
-    """
-    return None if s is None else re.findall(regexp, s)
-
-
 def business_days_between(
     start_date: Column, end_date: Column, # noqa: ARG001
 ) -> Column:
@@ -301,4 +288,93 @@ def uuid5(
         F.concat(F.lit("5"), F.substring(hashed, 14, 3)),  # Set version.
         variant_part,
         F.substring(hashed, 21, 12),
+    )
+
+def is_falsy(col: Column) -> Column:
+    """Returns a Column indicating whether all values in the Column are False or NULL (**falsy**).
+
+    Each element in the resulting column is True if all the elements in the
+    Column are either NULL or False, or False otherwise. This is accomplished by
+    performing a bitwise or of the ``isNull`` condition and a literal False value and
+    then wrapping the result in a **when** statement.
+
+    :param col: Column object
+    :returns: Column object
+    :rtype: Column
+    """
+    return when(col.isNull() | (col == lit(False)), True).otherwise(False)
+
+
+def is_truthy(col: Column) -> Column:
+    """Calculates a boolean expression that is the opposite of isFalsy for the given ``Column`` col.
+
+    :param Column col: The ``Column`` to calculate the opposite of isFalsy for.
+    :returns: A ``Column`` with the results of the calculation.
+    :rtype: Column
+    """
+    return ~(is_falsy(col))
+
+
+def is_false(col: Column) -> Column:
+    """Function checks if the column is equal to False and returns the column.
+
+    :param col: Column
+    :return: Column
+    :rtype: Column
+    """
+    return col == lit(False)
+
+
+def is_true(col: Column) -> Column:
+    """Function takes a column of type Column as an argument and returns a column of type Column.
+
+    It evaluates whether each element in the column argument is equal to True, and
+    if so will return True, otherwise False.
+
+    :param col: Column object
+    :returns: Column object
+    :rtype: Column
+    """
+    return col == lit(True)
+
+
+def is_null_or_blank(col: Column) -> Column:
+    r"""Returns a Boolean value which expresses whether a given column is ``null`` or contains only blank characters.
+
+    :param \*\*col: The  :class:`Column` to check.
+
+    :returns: A `Column` containing ``True`` if the column is ``null`` or only contains
+    blank characters, or ``False`` otherwise.
+    :rtype: Column
+    """
+    return (col.isNull()) | (trim(col) == "")
+
+
+def is_not_in(col: Column, _list: list[Any]) -> Column:
+    """To see if a value is not in a list of values.
+
+    :param col: Column object
+    :_list: list[Any]
+    :rtype: Column
+    """
+    return ~(col.isin(_list))
+
+
+def null_between(col: Column, lower: Column, upper: Column) -> Column:
+    """To see if a value is between two values in a null friendly way.
+
+    :param col: Column object
+    :lower: Column
+    :upper: Column
+    :rtype: Column
+    """
+    return when(lower.isNull() & upper.isNull(), False).otherwise(
+        when(col.isNull(), False).otherwise(
+            when(lower.isNull() & upper.isNotNull() & (col <= upper), True).otherwise(
+                when(
+                    lower.isNotNull() & upper.isNull() & (col >= lower),
+                    True,
+                ).otherwise(col.between(lower, upper)),
+            ),
+        ),
     )
