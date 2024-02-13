@@ -361,7 +361,7 @@ def _test_sort_struct_nested(spark, ignore_nullable: bool):
                         StructField(
                             "zip",
                             StructType([elements["first5"], elements["last4"]]),
-                            nullable=True,
+                            nullable=False,
                         ),
                     ]
                 ),
@@ -566,7 +566,7 @@ def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
                         elements["city"],
                     ]
                 ),
-                nullable=False,
+                nullable=True,
             ),
             elements["_id"],
         ]
@@ -715,7 +715,7 @@ def test_sort_struct_nested_with_arraytypes_desc():
 
 
 def test_sort_struct_nested_nullable():
-    _test_sort_struct_nested(spark, False)
+    _test_sort_struct_nested(spark, True)
 
 
 def test_sort_struct_nested_nullable_desc():
@@ -727,7 +727,7 @@ def test_sort_struct_nested_with_arraytypes_nullable():
 
 
 def test_sort_struct_nested_with_arraytypes_nullable_desc():
-    _test_sort_struct_nested_with_arraytypes_desc(spark, False)
+    _test_sort_struct_nested_with_arraytypes_desc(spark, True)
 
 
 def test_flatten_struct():
