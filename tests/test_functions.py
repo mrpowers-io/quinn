@@ -320,13 +320,13 @@ def describe_approx_equal():
 
 
 # TODO: Figure out how to make this test deterministic locally & on CI
-# def test_array_choice(spark):
-#     df = quinn.create_df(spark,
-#         [(["a", "b", "c"], "c"), (["a", "b", "c", "d"], "a"), (["x"], "x"), ([None], None)],
-#         [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
-#     )
-#     actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
-#     chispa.assert_column_equality(actual_df, "random_letter", "expected")
+def test_array_choice():
+    df = quinn.create_df(spark,
+        [(["a", "b", "c"], "c"), (["a", "b", "c", "d"], "a"), (["x"], "x"), ([None], None)],
+        [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
+    )
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+    # chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
 
