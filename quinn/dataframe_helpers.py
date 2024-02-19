@@ -80,32 +80,6 @@ def to_list_of_dictionaries(df: DataFrame) -> list[dict[str, Any]]:
     return list(map(lambda r: r.asDict(), df.collect()))  # noqa: C417
 
 
-def print_athena_create_table(
-    df: DataFrame,
-    athena_table_name: str,
-    s3location: str,
-) -> None:
-    """Generate the Athena create table statement for a given DataFrame.
-
-    :param df: The pyspark.sql.DataFrame to use
-    :param athena_table_name: The name of the athena table to generate
-    :param s3location: The S3 location of the parquet data
-    :return: None
-    """
-    fields = df.schema
-
-    print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
-
-    for field in fields.fieldNames()[:-1]:
-        print("\t", f"`{fields[field].name}` {fields[field].dataType.simpleString()}, ")
-    last = fields[fields.fieldNames()[-1]]
-    print("\t", f"`{last.name}` {last.dataType.simpleString()} ")
-
-    print(")")
-    print("STORED AS PARQUET")
-    print(f"LOCATION '{s3location}'\n")
-
-
 def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
     """Show output as spark DataFrame.
 

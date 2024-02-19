@@ -4,7 +4,6 @@ from quinn.append_if_schema_identical import append_if_schema_identical
 from quinn.dataframe_helpers import (
     column_to_list,
     create_df,
-    print_athena_create_table,
     show_output_to_df,
     to_list_of_dictionaries,
     two_columns_to_dictionary,
