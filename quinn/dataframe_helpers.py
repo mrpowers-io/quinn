@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame, SparkSession
 import sys
+import warnings
 from typing import Any
 
 from pyspark.sql.types import StructField, StructType
@@ -78,6 +79,37 @@ def to_list_of_dictionaries(df: DataFrame) -> list[dict[str, Any]]:
     :rtype: List[Dict[str, Any]]
     """
     return list(map(lambda r: r.asDict(), df.collect()))  # noqa: C417
+
+
+def print_athena_create_table(
+    df: DataFrame,
+    athena_table_name: str,
+    s3location: str,
+) -> None:
+    """Generate the Athena create table statement for a given DataFrame.
+    :param df: The pyspark.sql.DataFrame to use
+    :param athena_table_name: The name of the athena table to generate
+    :param s3location: The S3 location of the parquet data
+    :return: None
+    """
+    warnings.warn(
+        "Function may be removed in future versions of quinn. Please use explicit functions instead",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
+    fields = df.schema
+
+    print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
+
+    for field in fields.fieldNames()[:-1]:
+        print("\t", f"`{fields[field].name}` {fields[field].dataType.simpleString()}, ")
+    last = fields[fields.fieldNames()[-1]]
+    print("\t", f"`{last.name}` {last.dataType.simpleString()} ")
+
+    print(")")
+    print("STORED AS PARQUET")
+    print(f"LOCATION '{s3location}'\n")
 
 
 def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:

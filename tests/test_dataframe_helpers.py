@@ -54,6 +54,20 @@ def describe_show_output_to_df():
         chispa.assert_df_equality(expected_df, actual_df)
 
 
+def describe_print_athena_create_table():
+    def it_prints_a_create_table_string_for_athena(capsys):
+        source_df = spark.createDataFrame(
+            [("jets", "football", 45), ("nacional", "soccer", 10)],
+            ["team", "sport", "goals_for"],
+        )
+        quinn.print_athena_create_table(source_df, "athena_table", "s3://mock")
+        out, _ = capsys.readouterr()
+        assert (
+            out
+            == "CREATE EXTERNAL TABLE IF NOT EXISTS `athena_table` ( \n\t `team` string, \n\t `sport` string, \n\t `goals_for` bigint \n)\nSTORED AS PARQUET\nLOCATION 's3://mock'\n\n"  # noqa
+        )
+
+
 def test_create_df():
     rows_data = [("jose", 1), ("li", 2), ("luisa", 3)]
     col_specs = [("name", StringType()), ("age", IntegerType())]
