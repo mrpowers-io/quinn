@@ -93,7 +93,7 @@ def print_athena_create_table(
     :return: None
     """
     warnings.warn(
-        "Function may be removed in future versions of quinn. Please use explicit functions instead",
+        "Function print_athena_create_table is deprecated and will be removed in the version 1.0",
         category=DeprecationWarning,
         stacklevel=2,
     )
