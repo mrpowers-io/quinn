@@ -10,15 +10,8 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - pyspark-version: 3.4.0
-            pip-packages: "pyspark==3.4.0"
-
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
@@ -51,10 +44,5 @@ jobs:
         run: make install_test
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Change PySpark to version ${{ matrix.pyspark-version }}
-        env:
-          PIP_PACKAGES: ${{ matrix.pip-packages }}
-        run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
-
-      - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
+      - name: Run tests with pytest against PySpark 3.4.2
         run: make test
