@@ -1,4 +1,4 @@
-name: CI checks on PR
+name: Testing against single PySpark version
 
 on:
   workflow_dispatch:
