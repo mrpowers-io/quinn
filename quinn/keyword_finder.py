@@ -46,7 +46,7 @@ def search_file(path, keywords=default_keywords):
         for line_number, line in enumerate(f, 1):
             for keyword in keywords:    
                 if keyword in line:
-                    print(f"{line_number}: {line}", end='')
+                    print(f"{line_number}: {keyword_format(line)}", end='')
                     break
 
 
@@ -55,3 +55,23 @@ def search_files(path, keywords=default_keywords):
     file_list = [f for f in iglob(rootdir_glob, recursive=True) if os.path.isfile(f)]
     for f in file_list:
         search_file(f)
+
+
+def keyword_format(input, keywords=default_keywords):
+    nc = '\033[0m'
+    red = '\033[31m'
+    bold = '\033[1m'
+    res = input
+    for keyword in keywords:
+        res = surround_substring(res, keyword, red+bold, nc)
+    return res
+
+
+def surround_substring(input, substring, surround_start, surround_end):
+    index = input.find(substring)
+    res = ""
+    if index == -1:
+        res = input
+    else:
+        res = input[:index] + surround_start + substring + surround_end + input[(index+len(substring)):]
+    return res
