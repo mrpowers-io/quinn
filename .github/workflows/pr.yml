@@ -44,5 +44,5 @@ jobs:
         run: make install_test
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Run tests with pytest against PySpark 3.4.2
+      - name: Run tests with pytest
         run: make test
