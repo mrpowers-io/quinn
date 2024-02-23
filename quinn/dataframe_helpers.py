@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame, SparkSession
 import sys
+import warnings
 from typing import Any
 
 from pyspark.sql.types import StructField, StructType
@@ -86,12 +87,17 @@ def print_athena_create_table(
     s3location: str,
 ) -> None:
     """Generate the Athena create table statement for a given DataFrame.
-
     :param df: The pyspark.sql.DataFrame to use
     :param athena_table_name: The name of the athena table to generate
     :param s3location: The S3 location of the parquet data
     :return: None
     """
+    warnings.warn(
+        "Function print_athena_create_table is deprecated and will be removed in the version 1.0",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     fields = df.schema
 
     print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
