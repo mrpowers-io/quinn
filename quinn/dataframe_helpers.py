@@ -90,7 +90,7 @@ def print_athena_create_table(
     :param df: The pyspark.sql.DataFrame to use
     :param athena_table_name: The name of the athena table to generate
     :param s3location: The S3 location of the parquet data
-    :return: None
+    :return: None.
     """
     warnings.warn(
         "Function print_athena_create_table is deprecated and will be removed in the version 1.0",

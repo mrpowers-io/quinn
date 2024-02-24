@@ -10,16 +10,13 @@ if TYPE_CHECKING:
     from pyspark.sql.functions import udf
 
 
-import re
 import uuid
 from typing import Any
 
-from pyspark.sql.functions import lit, trim, when
 import pyspark.sql.functions as F  # noqa: N812
+from pyspark.sql.functions import lit, trim, when
 from pyspark.sql.types import (
-    ArrayType,
     BooleanType,
-    StringType,
 )
 
 
@@ -231,7 +228,8 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
 
 
 def business_days_between(
-    start_date: Column, end_date: Column, # noqa: ARG001
+    start_date: Column,  # noqa: ARG001
+    end_date: Column,  # noqa: ARG001
 ) -> Column:
     """Function takes two Spark `Columns` and returns a `Column` with the number of business days between the start and the end date.
 
@@ -289,6 +287,7 @@ def uuid5(
         variant_part,
         F.substring(hashed, 21, 12),
     )
+
 
 def is_falsy(col: Column) -> Column:
     """Returns a Column indicating whether all values in the Column are False or NULL (**falsy**).
