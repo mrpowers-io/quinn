@@ -11,6 +11,10 @@ Quinn provides DataFrame validation functions, useful column functions / DataFra
 
 ![quinn](https://github.com/MrPowers/quinn/raw/master/quinn.png)
 
+## Documentation
+
+You can find official documentation [here](https://mrpowers.github.io/quinn/).
+
 ## Setup
 
 Quinn is [uploaded to PyPi](https://pypi.org/project/quinn/) and can be installed with this command:

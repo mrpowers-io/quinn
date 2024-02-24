@@ -1,0 +1,38 @@
+name: Documentation Improvement
+description: Report wrong or missing documentation
+title: "DOC: "
+labels: [Docs]
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Quinn version checks
+      options:
+        - label: >
+            I have checked that the issue still exists on the latest versions of the docs
+            on `main` [here](https://mrpowers.github.io/quinn/)
+          required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Location of the documentation
+      description: >
+        Please provide the location of the documentation, e.g. "quinn.validate_schema()
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Documentation problem
+      description: >
+        Please provide a description of what documentation you believe needs to be fixed/improved
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested fix for documentation
+      description: >
+        Please explain the suggested fix and **why** it's better than the existing documentation
+    validations:
+      required: true
