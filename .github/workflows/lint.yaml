@@ -12,3 +12,5 @@ jobs:
           python-version: 3.9
       - name: Run Ruff
         uses: chartboost/ruff-action@v1
+        with: 
+          version: 0.0.291
