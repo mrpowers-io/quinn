@@ -85,9 +85,16 @@ ignore = [
     "PLC1901", # Strange thing
     "UP007",   # Not supported in py3.6
     "UP038",   # Not supported in all py versions
+    "SIM108",  # Don't create long ternary operators
+    "PTH123",  # Don't force use of Pathlib
+    "PTH207",  # Don't force use of Pathlib
+    "PTH113",  # Don't force use of Pathlib
 ]
 extend-exclude = ["tests", "docs"]
 
 [tool.ruff.per-file-ignores]
 "quinn/extensions/column_ext.py" = ["FBT003", "N802"]
-"quinn/extensions/__init__.py" = ["F403"]
+"quinn/extensions/__init__.py" = ["F401", "F403"]
+"quinn/__init__.py" = ["F401", "F403"]
+"quinn/functions.py" = ["FBT003"]
+"quinn/keyword_finder.py" = ["A002"]
