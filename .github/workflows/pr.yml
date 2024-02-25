@@ -11,7 +11,7 @@ jobs:
   detect_code_changes:
     runs-on: ubuntu-latest
     outputs:
-      code_changes: ${{ steps.filter.outputs.code_changes }}
+      code_changes: ${{ steps.changes.outputs.code_changes }}
     steps:
       - uses: dorny/paths-filter@v3
         id: changes
