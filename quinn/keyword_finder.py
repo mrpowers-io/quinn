@@ -111,8 +111,7 @@ def surround_substring(input: str, substring: str, surround_start: str, surround
     :rtype: str
 
     """
-    
     return input.replace(
         substring,
-        surround_start + substring + surround_end
+        surround_start + substring + surround_end,
     )
