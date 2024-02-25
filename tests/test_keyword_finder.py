@@ -17,4 +17,9 @@ def test_keyword_format():
 
 
 def test_surround_substring():
-    print(surround_substring("spark rdd stuff", "rdd", "**", "||"))
+
+    assert "spark **rdd|| stuff" == surround_substring("spark rdd stuff", "rdd", "**", "||")
+    assert "spark **rdd|| stuff with **rdd||" == surround_substring("spark rdd stuff with rdd", "rdd", "**", "||")
+    assert "spark **rdd||dd stuff" == surround_substring("spark rdddd stuff", "rdd", "**", "||")
+
+
