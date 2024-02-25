@@ -111,10 +111,8 @@ def surround_substring(input: str, substring: str, surround_start: str, surround
     :rtype: str
 
     """
-    index = input.find(substring)
-    res = ""
-    if index == -1:
-        res = input
-    else:
-        res = input[:index] + surround_start + substring + surround_end + input[(index + len(substring)) :]
-    return res
+    
+    return input.replace(
+        substring,
+        surround_start + substring + surround_end
+    )
