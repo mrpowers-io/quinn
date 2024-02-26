@@ -41,7 +41,7 @@ default_keywords = [
 ]
 
 
-def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, int]:
+def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, dict[str, int]]:
     """Searches a file for keywords and prints the line number and line containing the keyword.
 
     :param path: The path to the file to search.
@@ -49,7 +49,7 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
     :param keywords: The list of keywords to search for.
     :type keywords: list[str]
     :returns: A dictionary containing a file path and the number of lines containing a keyword in `keywords`.
-    :rtype: dict[str, int]
+    :rtype: dict[str, dict[str, int]]
 
     """
     match_results = {path: {keyword: 0 for keyword in keywords}}
@@ -60,7 +60,7 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
             line_printed = False
             for keyword in keywords:
                 if keyword in line:
-                    match_results[path][keyword] += 1 
+                    match_results[path][keyword] += 1
 
                     if not line_printed:
                         print(f"{line_number}: {keyword_format(line)}", end="")
@@ -77,7 +77,7 @@ def search_files(path: str, keywords: list[str] = default_keywords) -> dict[str,
     :param keywords: The list of keywords to search for.
     :type keywords: list[str]
     :returns: A dictionary of file paths and the number of lines containing a keyword in `keywords`.
-    :rtype: dict[str, int]
+    :rtype: dict[str, dict[str, int]]
 
     """
     rootdir_glob = f"{path}/**/*"
