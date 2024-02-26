@@ -52,20 +52,19 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
     :rtype: dict[str, int]
 
     """
-    match_results = {path: 0}
+    match_results = {path: {keyword: 0 for keyword in keywords}}
 
     print(f"\nSearching: {path}")
     with open(path) as f:
         for line_number, line in enumerate(f, 1):
             for keyword in keywords:
                 if keyword in line:
-                    print(f"{line_number}: {keyword_format(line)}", end="")
-                    match_results[path] += 1
+                    match_results[path][keyword] += 1 
 
     return match_results
 
 
-def search_files(path: str, keywords: list[str] = default_keywords) -> dict[str, int]:
+def search_files(path: str, keywords: list[str] = default_keywords) -> dict[str, dict[str, int]]:
     """Searches all files in a directory for keywords.
 
     :param path: The path to the directory to search.
@@ -78,12 +77,11 @@ def search_files(path: str, keywords: list[str] = default_keywords) -> dict[str,
     """
     rootdir_glob = f"{path}/**/*"
     file_list = [f for f in iglob(rootdir_glob, recursive=True) if os.path.isfile(f)]
-    match_results = {path: 0 for path in file_list}
-    
+    match_results = {path: {keyword: 0 for keyword in keywords} for path in file_list}
+
     for f in file_list:
         file_results = search_file(f, keywords)
-        for path, count in file_results.items():
-            match_results[path] += count
+        match_results.update(file_results)
     return match_results
 
 

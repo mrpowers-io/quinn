@@ -3,16 +3,18 @@ from quinn.keyword_finder import search_file, search_files, keyword_format, surr
 
 def test_search_file():
     file_path = "tests/test_files/some_pyspark.py"
-    
     results = search_file(file_path)
-    assert results[file_path] == 8
+
+    assert results[file_path]["rdd"] == 5
+    assert results[file_path]["sparkContext"] == 2
 
 
 def test_search_files():
     results = search_files("tests/test_files")
 
-    assert results["tests/test_files/some_pyspark.py"] == 8
-    assert results["tests/test_files/good_schema1.csv"] == 0
+    assert results["tests/test_files/some_pyspark.py"]["rdd"] == 5
+    assert results["tests/test_files/some_pyspark.py"]["sparkContext"] == 2
+    assert results["tests/test_files/good_schema1.csv"]["rdd"] == 0
 
 
 def test_keyword_format():
