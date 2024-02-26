@@ -57,9 +57,14 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
     print(f"\nSearching: {path}")
     with open(path) as f:
         for line_number, line in enumerate(f, 1):
+            line_printed = False
             for keyword in keywords:
                 if keyword in line:
                     match_results[path][keyword] += 1 
+
+                    if not line_printed:
+                        print(f"{line_number}: {keyword_format(line)}", end="")
+                        line_printed = True
 
     return match_results
 
