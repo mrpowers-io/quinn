@@ -1,0 +1,75 @@
+name: Testing against single PySpark version
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  detect_code_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code_changes: ${{ steps.changes.outputs.code_changes }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            code_changes:
+              - 'quinn/**'
+              - 'tests/**'
+              - 'benchmarks/**'
+              - '.github/**'
+              - 'poetry.lock'
+              - 'pyproject.toml'
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [detect_code_changes]
+    steps:
+      - uses: actions/checkout@v3
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        with:
+          distribution: 'zulu'
+          java-version: '8'  # Supported by Spark 2.x & 3.x
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        with:
+          version: 1.6.1
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v1
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: |
+          needs.detect_code_changes.outputs.code_changes == 'true' &&
+          steps.cache.outputs.cache-hit != 'true'
+        run: make install_test
+        # if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Run tests with pytest
+        if: needs.detect_code_changes.outputs.code_changes == 'true'
+        run: make test
