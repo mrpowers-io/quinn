@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from glob import iglob
-from typing import TypedDict
 
 default_keywords = [
     "_jsc",
@@ -41,8 +41,8 @@ default_keywords = [
     "sparkContext",
 ]
 
-
-class SearchResult(TypedDict):
+@dataclass
+class SearchResult:
     """Class to hold the results of a file search.
     file_path: The path to the file that was searched.
     word_count: A dictionary containing the number of times each keyword was found in the file.
@@ -63,7 +63,7 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> SearchResu
     :rtype: SearchResult
 
     """
-    match_results: SearchResult = {"file_path": path, "word_count": {keyword: 0 for keyword in keywords}}
+    match_results = SearchResult(file_path=path, word_count={keyword: 0 for keyword in keywords})
 
     print(f"\nSearching: {path}")
     with open(path) as f:
@@ -71,7 +71,7 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> SearchResu
             line_printed = False
             for keyword in keywords:
                 if keyword in line:
-                    match_results["word_count"][keyword] += 1
+                    match_results.word_count[keyword] += 1
 
                     if not line_printed:
                         print(f"{line_number}: {keyword_format(line)}", end="")
