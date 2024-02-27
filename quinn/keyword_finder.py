@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from glob import iglob
+from typing import TypedDict
 
 default_keywords = [
     "_jsc",
@@ -41,7 +42,17 @@ default_keywords = [
 ]
 
 
-def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, dict[str, int]]:
+class SearchResult(TypedDict):
+    """Class to hold the results of a file search.
+    file_path: The path to the file that was searched.
+    word_count: A dictionary containing the number of times each keyword was found in the file.
+    """
+
+    file_path: str
+    word_count: dict[str, int]
+
+
+def search_file(path: str, keywords: list[str] = default_keywords) -> SearchResult:
     """Searches a file for keywords and prints the line number and line containing the keyword.
 
     :param path: The path to the file to search.
@@ -49,10 +60,10 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
     :param keywords: The list of keywords to search for.
     :type keywords: list[str]
     :returns: A dictionary containing a file path and the number of lines containing a keyword in `keywords`.
-    :rtype: dict[str, dict[str, int]]
+    :rtype: SearchResult
 
     """
-    match_results = {path: {keyword: 0 for keyword in keywords}}
+    match_results: SearchResult = {"file_path": path, "word_count": {keyword: 0 for keyword in keywords}}
 
     print(f"\nSearching: {path}")
     with open(path) as f:
@@ -60,7 +71,7 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
             line_printed = False
             for keyword in keywords:
                 if keyword in line:
-                    match_results[path][keyword] += 1
+                    match_results["word_count"][keyword] += 1
 
                     if not line_printed:
                         print(f"{line_number}: {keyword_format(line)}", end="")
@@ -69,25 +80,20 @@ def search_file(path: str, keywords: list[str] = default_keywords) -> dict[str, 
     return match_results
 
 
-def search_files(path: str, keywords: list[str] = default_keywords) -> dict[str, dict[str, int]]:
+def search_files(path: str, keywords: list[str] = default_keywords) -> list[SearchResult]:
     """Searches all files in a directory for keywords.
 
     :param path: The path to the directory to search.
     :type path: str
     :param keywords: The list of keywords to search for.
     :type keywords: list[str]
-    :returns: A dictionary of file paths and the number of lines containing a keyword in `keywords`.
-    :rtype: dict[str, dict[str, int]]
+    :returns: A list of dictionaries containing file paths and the number of lines containing a keyword in `keywords`.
+    :rtype: list[SearchResult]
 
     """
     rootdir_glob = f"{path}/**/*"
     file_list = [f for f in iglob(rootdir_glob, recursive=True) if os.path.isfile(f)]
-    match_results = {path: {keyword: 0 for keyword in keywords} for path in file_list}
-
-    for f in file_list:
-        file_results = search_file(f, keywords)
-        match_results.update(file_results)
-    return match_results
+    return [search_file(f, keywords) for f in file_list]
 
 
 def keyword_format(input: str, keywords: list[str] = default_keywords) -> str:
