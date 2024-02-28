@@ -1,5 +1,6 @@
 from functools import partial
-
+import pytest
+import pyspark
 import chispa
 from pyspark.sql.functions import col
 
@@ -29,6 +30,7 @@ def test_verbose_code_without_transform():
     chispa.assert_df_equality(df2, expected_df, ignore_nullable=True)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_transform_with_lambda():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
@@ -40,6 +42,7 @@ def test_transform_with_lambda():
     chispa.assert_df_equality(actual_df, expected_df)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_transform_with_no_arg_fun():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
@@ -49,6 +52,7 @@ def test_transform_with_no_arg_fun():
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_transform_with_one_arg_fun():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
@@ -58,6 +62,7 @@ def test_transform_with_one_arg_fun():
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_chain_transforms():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
@@ -75,6 +80,7 @@ def test_chain_transforms():
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_transform_with_closure():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
@@ -92,6 +98,7 @@ def test_transform_with_closure():
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable=True)
 
 
+@pytest.mark.skipif(pyspark.__version__ < '3.0', reason="df.transform not available for Spark<3.0")
 def test_transform_with_functools_partial():
     data = [("jose", 1), ("li", 2), ("liz", 3)]
     source_df = spark.createDataFrame(data, ["name", "age"])
