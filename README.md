@@ -287,11 +287,11 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 
 **schema_from_csv()**
 
+Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the column name and type.  The nullable and metadata columns are optional.
+
 ```python
 quinn.schema_from_csv("schema.csv")
 ```
-
-Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the column name and type.  The nullable and metadata columns are optional.
 
 Here's an example CSV file:
 
@@ -303,7 +303,7 @@ phoneNumber,string
 age,int
 ```
 
-Here's how to convert that CSV file to a PySpark schema:
+Here's how to convert that CSV file to a PySpark schema using schema_from_csv():
 
 ```python
 schema = schema_from_csv(spark, "some_file.csv")
@@ -341,20 +341,20 @@ StructType([
 
 **print_schema_as_code()**
 
-```python   
+Converts a Spark `DataType` to a string of Python code that can be evaluated as code using eval(). If the `DataType` is a `StructType`, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. 
+
+For example:
+
+```python
+# Consider the below schema for fields
 fields = [
     StructField("simple_int", IntegerType()),
     StructField("decimal_with_nums", DecimalType(19, 8)),
     StructField("array", ArrayType(FloatType()))
 ]
 schema = StructType(fields)
+
 printable_schema: str = quinn.print_schema_as_code(schema)
-```
-
-Converts a Spark `DataType` to a string of Python code that can be evaluated as code using eval(). If the `DataType` is a `StructType`, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. 
-
-For example:
-```python
 print(printable_schema)
 ```
 
@@ -380,7 +380,6 @@ from chispa.schema_comparer import assert_basic_schema_equality
 parsed_schema = eval(printable_schema)
 assert_basic_schema_equality(parsed_schema, schema) # passes
 ```
-
 
 `print_schema_as_code()` can also be used to print other `DataType` objects.
 
