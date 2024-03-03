@@ -33,31 +33,33 @@ import quinn
 
 **validate_presence_of_columns()**
 
+Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
+
 ```python
 quinn.validate_presence_of_columns(source_df, ["name", "age", "fun"])
 ```
 
-Raises an exception unless `source_df` contains the `name`, `age`, and `fun` column.
-
 **validate_schema()**
+
+Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
 
 ```python
 quinn.validate_schema(source_df, required_schema)
 ```
 
-Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`.
-
 **validate_absence_of_columns()**
+
+Raises an exception if `source_df` contains `age` or `cool` columns.
 
 ```python
 quinn.validate_absence_of_columns(source_df, ["age", "cool"])
 ```
 
-Raises an exception if `source_df` contains `age` or `cool` columns.
-
 ### Functions
 
 **single_space()**
+
+Replaces all multispaces with single spaces (e.g. changes `"this has   some"` to `"this has some"`.
 
 ```python
 actual_df = source_df.withColumn(
@@ -66,9 +68,9 @@ actual_df = source_df.withColumn(
 )
 ```
 
-Replaces all multispaces with single spaces (e.g. changes `"this has   some"` to `"this has some"`.
-
 **remove_all_whitespace()**
+
+Removes all whitespace in a string (e.g. changes `"this has some"` to `"thishassome"`.
 
 ```python
 actual_df = source_df.withColumn(
@@ -77,9 +79,9 @@ actual_df = source_df.withColumn(
 )
 ```
 
-Removes all whitespace in a string (e.g. changes `"this has some"` to `"thishassome"`.
-
 **anti_trim()**
+
+Removes all inner whitespace, but doesn't delete leading or trailing whitespace (e.g. changes `" this has some "` to `" thishassome "`.
 
 ```python
 actual_df = source_df.withColumn(
@@ -88,9 +90,9 @@ actual_df = source_df.withColumn(
 )
 ```
 
-Removes all inner whitespace, but doesn't delete leading or trailing whitespace (e.g. changes `" this has some "` to `" thishassome "`.
-
 **remove_non_word_characters()**
+
+Removes all non-word characters from a string (e.g. changes `"si%$#@!#$!@#mpsons"` to `"simpsons"`.
 
 ```python
 actual_df = source_df.withColumn(
@@ -99,9 +101,9 @@ actual_df = source_df.withColumn(
 )
 ```
 
-Removes all non-word characters from a string (e.g. changes `"si%$#@!#$!@#mpsons"` to `"simpsons"`.
-
 **multi_equals()**
+
+`multi_equals` returns true if `s1` and `s2` are both equal to `"cat"`.
 
 ```python
 source_df.withColumn(
@@ -109,8 +111,6 @@ source_df.withColumn(
     quinn.multi_equals("cat")(col("s1"), col("s2"))
 )
 ```
-
-`multi_equals` returns true if `s1` and `s2` are both equal to `"cat"`.
 
 **approx_equal()**
 
@@ -225,45 +225,45 @@ The output is :=
 
 **snake_case_col_names()**
 
+Converts all the column names in a DataFrame to snake_case. It's annoying to write SQL queries when columns aren't snake cased.
+
 ```python
 quinn.snake_case_col_names(source_df)
 ```
 
-Converts all the column names in a DataFrame to snake_case. It's annoying to write SQL queries when columns aren't snake cased.
-
 **sort_columns()**
+
+Sorts the DataFrame columns in alphabetical order, including nested columns if sort_nested is set to True. Wide DataFrames are easier to navigate when they're sorted alphabetically.
 
 ```python
 quinn.sort_columns(df=source_df, sort_order="asc", sort_nested=True)
 ```
 
-Sorts the DataFrame columns in alphabetical order, including nested columns if sort_nested is set to True. Wide DataFrames are easier to navigate when they're sorted alphabetically.
-
 ### DataFrame Helpers
 
 **column_to_list()**
+
+Converts a column in a DataFrame to a list of values.
 
 ```python
 quinn.column_to_list(source_df, "name")
 ```
 
-Converts a column in a DataFrame to a list of values.
-
 **two_columns_to_dictionary()**
+
+Converts two columns of a DataFrame into a dictionary. In this example, `name` is the key and `age` is the value.
 
 ```python
 quinn.two_columns_to_dictionary(source_df, "name", "age")
 ```
 
-Converts two columns of a DataFrame into a dictionary. In this example, `name` is the key and `age` is the value.
-
 **to_list_of_dictionaries()**
+
+Converts an entire DataFrame into a list of dictionaries.
 
 ```python
 quinn.to_list_of_dictionaries(source_df)
 ```
-
-Converts an entire DataFrame into a list of dictionaries.
 
 **show_output_to_df()**
 
@@ -287,11 +287,11 @@ Parses a spark DataFrame output string into a spark DataFrame. Useful for quickl
 
 **schema_from_csv()**
 
+Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the column name and type.  The nullable and metadata columns are optional.
+
 ```python
 quinn.schema_from_csv("schema.csv")
 ```
-
-Converts a CSV file into a PySpark schema (aka `StructType`). The CSV must contain the column name and type.  The nullable and metadata columns are optional.
 
 Here's an example CSV file:
 
@@ -303,7 +303,7 @@ phoneNumber,string
 age,int
 ```
 
-Here's how to convert that CSV file to a PySpark schema:
+Here's how to convert that CSV file to a PySpark schema using schema_from_csv():
 
 ```python
 schema = schema_from_csv(spark, "some_file.csv")
@@ -341,20 +341,20 @@ StructType([
 
 **print_schema_as_code()**
 
-```python   
+Converts a Spark `DataType` to a string of Python code that can be evaluated as code using eval(). If the `DataType` is a `StructType`, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. 
+
+For example:
+
+```python
+# Consider the below schema for fields
 fields = [
     StructField("simple_int", IntegerType()),
     StructField("decimal_with_nums", DecimalType(19, 8)),
     StructField("array", ArrayType(FloatType()))
 ]
 schema = StructType(fields)
+
 printable_schema: str = quinn.print_schema_as_code(schema)
-```
-
-Converts a Spark `DataType` to a string of Python code that can be evaluated as code using eval(). If the `DataType` is a `StructType`, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. 
-
-For example:
-```python
 print(printable_schema)
 ```
 
@@ -380,7 +380,6 @@ from chispa.schema_comparer import assert_basic_schema_equality
 parsed_schema = eval(printable_schema)
 assert_basic_schema_equality(parsed_schema, schema) # passes
 ```
-
 
 `print_schema_as_code()` can also be used to print other `DataType` objects.
 
@@ -431,43 +430,43 @@ from quinn.extensions import *
 
 **isFalsy()**
 
+Returns `True` if `has_stuff` is `None` or `False`.
+
 ```python
 source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 ```
 
-Returns `True` if `has_stuff` is `None` or `False`.
-
 **isTruthy()**
+
+Returns `True` unless `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
 ```
 
-Returns `True` unless `has_stuff` is `None` or `False`.
-
 **isNullOrBlank()**
+
+Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
 
 ```python
 source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
 ```
 
-Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
-
 **isNotIn()**
+
+Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 
 ```python
 source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
 ```
 
-Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
-
 **nullBetween()**
+
+Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ```python
 source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
 ```
-
-Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ## Contributing
 
