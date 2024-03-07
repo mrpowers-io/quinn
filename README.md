@@ -241,6 +241,53 @@ quinn.sort_columns(df=source_df, sort_order="asc", sort_nested=True)
 
 ### DataFrame Helpers
 
+**with_columns_renamed()**
+
+Rename ALL or MULTIPLE columns in a dataframe by implementing a common logic to rename the columns.
+
+Consider you have the following two dataframes for orders coming from a source A and a source B:
+
+```
+order_a_df.show()
+
++--------+---------+--------+
+|order_id|order_qty|store_id|
++--------+---------+--------+
+|     001|       23|    45AB|
+|     045|        2|    98HX|
+|     021|      142|    09AA|
++--------+---------+--------+
+
+order_b_df.show()
+
++--------+---------+--------+
+|order_id|order_qty|store_id|
++--------+---------+--------+
+|     001|       23|    47AB|
+|     985|        2|    54XX|
+|    0112|       12|    09AA|
++--------+---------+--------+
+```
+
+Now, you need to join these two dataframes. However, in Spark, when two dfs with identical column names are joined, you may start running into ambiguous column name issue due to multiple columns with the same name in the resulting df. So it's a best practice to rename all of these columns to reflect which df they originate from:
+
+```python
+def add_suffix(s):
+    return s + '_a'
+
+order_a_df_renamed = quinn.with_columns_renamed(add_suffix)(order_a_df)
+
+order_a_df_renamed.show()
+
++----------+-----------+----------+
+|order_id_a|order_qty_a|store_id_a|
++----------+-----------+----------+
+|       001|         23|      45AB|
+|       045|          2|      98HX|
+|       021|        142|      09AA|
++----------+-----------+----------+
+```
+
 **column_to_list()**
 
 Converts a column in a DataFrame to a list of values.
