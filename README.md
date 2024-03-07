@@ -278,7 +278,8 @@ def add_suffix(s):
 order_a_df_renamed = quinn.with_columns_renamed(add_suffix)(order_a_df)
 
 order_a_df_renamed.show()
-
+```
+```
 +----------+-----------+----------+
 |order_id_a|order_qty_a|store_id_a|
 +----------+-----------+----------+
