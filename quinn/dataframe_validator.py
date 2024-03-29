@@ -36,9 +36,38 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str]) -
     error_message = f"The {missing_col_names} columns are not included in the DataFrame with the following columns {all_col_names}"
     if missing_col_names:
         raise DataFrameMissingColumnError(error_message)
+    
+def validate_schema(required_schema: StructType, ignore_nullable=False, _func=None):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            df = func(*args, **kwargs)
+            _all_struct_fields = copy.deepcopy(df.schema)
+            _required_schema = copy.deepcopy(required_schema)
+
+            if ignore_nullable:
+                for x in _all_struct_fields:
+                    x.nullable = None
+
+                for x in _required_schema:
+                    x.nullable = None
+
+            missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
+            error_message = f"The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {_all_struct_fields}"
+
+            if missing_struct_fields:
+                raise DataFrameMissingStructFieldError(error_message)
+            return df
+        return wrapper
+
+    if _func is None:
+        # This means the function is being used as a decorator
+        return decorator
+    else:
+        # This means the function is being called directly with a DataFrame
+        return decorator(lambda: _func)()
 
 
-def validate_schema(
+def x_validate_schema(
     df: DataFrame,
     required_schema: StructType,
     ignore_nullable: bool = False,
