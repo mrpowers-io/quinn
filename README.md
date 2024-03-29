@@ -41,8 +41,7 @@ quinn.validate_presence_of_columns(source_df, ["name", "age", "fun"])
 
 **validate_schema()**
 
-Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`. By default, `ignore_nullable` is set to False, so exception 
-will be raised even if column names and data types are matching but nullability conditions are mismatching.
+Raises an exception unless `source_df` contains all the `StructFields` defined in the `required_schema`. By default, `ignore_nullable` is set to False, so exception will be raised even if column names and data types are matching but nullability conditions are mismatching.
 
 ```python
 quinn.validate_schema(required_schema, _df=source_df)
@@ -55,7 +54,7 @@ quinn.validate_schema(required_schema, ignore_nullable=True, _df=source_df)
 ```
 
 > [!TIP]
-> This function can also be used as a decorator to other functions that return a dataframe. This can help validate the schema of the returned df.
+> This function can also be used as a decorator to other functions that return a dataframe. This can help validate the schema of the returned df. When used as a decorator, you don't need to pass the `_df` argument as this validation is performed on the df returned by the base function on which the decorator is applied
 > 
 > ```python
 > @quinn.validate_schema(required_schema, ignore_nullable=True)
