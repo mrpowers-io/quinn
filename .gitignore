@@ -5,6 +5,7 @@ quinn.egg-info/
 tmp/
 .idea/
 .DS_Store
+uncommitted/
 
 .coverage*
 
