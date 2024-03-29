@@ -60,7 +60,7 @@ quinn.validate_schema(required_schema, ignore_nullable=True, _df=source_df)
 > ```python
 > @quinn.validate_schema(required_schema, ignore_nullable=True)
 > def get_df():
-    return df
+>   return df
 > ```
 
 
