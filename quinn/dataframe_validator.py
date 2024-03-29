@@ -77,6 +77,9 @@ def validate_schema(
 
             if missing_struct_fields:
                 raise DataFrameMissingStructFieldError(error_message)
+            else:
+                print("Success! DataFrame matches the required schema!")
+
             return df
         return wrapper
 
