@@ -11,7 +11,7 @@ from quinn.schema_helpers import complex_fields
 
 
 def with_columns_renamed(fun: Callable[[str], str]) -> Callable[[DataFrame], DataFrame]:
-    """Ffunction designed to rename the columns of a `Spark DataFrame`.
+    """Function designed to rename the columns of a `Spark DataFrame`.
 
     It takes a `Callable[[str], str]` object as an argument (``fun``) and returns a
     `Callable[[DataFrame], DataFrame]` object.
