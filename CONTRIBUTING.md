@@ -50,7 +50,7 @@ make install_deps
 To run spark tests you need to have properly configured Java. Apache Spark currently supports mainly only Java 8 (1.8). You can find an instruction on how to set up Java [here](https://www.java.com/en/download/help/download_options.html). When you are running spark tests you should have `JAVA_HOME` variable in your environment which points to the  installation of Java 8.
 
 
-### Rinning Tests
+### Running Tests
 
 This project uses `pytest` and `chispa` for running spark tests. Please run all the tests before creating a pull request. In the case when you are working on new functionality you should also add new tests.
 You can run test as following:
