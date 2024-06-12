@@ -1,3 +1,5 @@
+# This workflow was inspired by the issue_comments.yml workflow from the delta-io/delta-rs repository.
+# Source: https://github.com/delta-io/delta-rs/blob/main/.github/workflows/issue_comments.yml
 name: Auto-assign issue on comment
 
 on:
