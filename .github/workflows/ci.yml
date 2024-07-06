@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - main
+  pull_request:
+    branches:
+    - main
   workflow_dispatch:
 
 jobs:
@@ -84,3 +87,17 @@ jobs:
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: make test
+
+  check-license-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Check License Header
+        uses: apache/skywalking-eyes/dependency@main
+        with:
+          log: debug
+          config: .licenserc.yaml
+          mode: check
