@@ -74,11 +74,49 @@ This project follows the [PySpark style guide](https://github.com/MrPowers/spark
 """
 ```
 
-We are using `isort`, `black` and `ruff` as linters. You can find instructions on how to set up and use these tools here:
+We are using `isort` and `ruff` as linters. You can find instructions on how to set up and use these tools here:
 
 1. [isort](https://pycqa.github.io/isort/)
-2. [black](https://black.readthedocs.io/en/stable/)
-3. [ruff](https://github.com/charliermarsh/ruff)
+2. [ruff](https://github.com/charliermarsh/ruff)
+
+### Adding ruff to IDEs
+
+#### VSCode
+
+1. Install the `Ruff` extension by Astral Software from the VSCode marketplace (Extension ID: *charliermarsh.ruff*).
+2. Open the command palette (Ctrl+Shift+P) and select `Preferences: Open Settings (JSON)`.
+3. Add the following configuration to your settings.json file:
+
+```json
+{
+    "python.linting.ruffEnabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "none",
+    "editor.formatOnSave": true
+}
+```
+The above settings will enable linting with Ruff, and format your code with Ruff on save.
+
+#### PyCharm
+
+To set up `Ruff` in PyCharm using `poetry`, follow these steps:
+
+1. **Find the path to your `poetry` executable:**
+   - Open a terminal.
+   - For macOS/Linux, use the command `which poetry`.
+   - For Windows, use the command `where poetry`.
+   - Note down the path returned by the command.
+
+2. **Open the `Preferences` window** (Cmd+, on macOS).
+3. **Navigate to `Tools` > `External Tools`.**
+4. **Click the `+` icon** to add a new external tool.
+5. **Fill in the following details:**
+   - **Name:** `Ruff`
+   - **Program:** Enter the path to your `poetry` executable that you noted earlier.
+   - **Arguments:** `run ruff check --fix $FilePathRelativeToProjectRoot$`
+   - **Working directory:** `$ProjectFileDir$`
+6. **Click `OK`** to save the configuration.
+7. **To run Ruff,** right-click on a file or directory in the project view, select `External Tools`, and then select `Ruff`.
 
 ### Pull Request
 
