@@ -60,11 +60,11 @@ def remove_all_whitespace(col: Column) -> Column:
 
 
 def anti_trim(col: Column) -> Column:
-    """Remove whitespace from the boundaries of ``col`` using the regexp_replace function.
+    """Remove all inner whitespace but retain leading and trailing whitespace.
 
     :param col: Column on which to perform the regexp_replace.
     :type col: Column
-    :return: A new Column with all whitespace removed from the boundaries.
+    :return: A new Column with all inner whitespace removed but leading and trailing whitespace retained.
     :rtype: Column
     """
     return F.regexp_replace(col, "\\b\\s+\\b", "")
