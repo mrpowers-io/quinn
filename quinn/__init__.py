@@ -35,8 +35,6 @@ from quinn.functions import (
     approx_equal,
     array_choice,
     business_days_between,
-    exists,
-    forall,
     is_false,
     is_falsy,
     is_not_in,
