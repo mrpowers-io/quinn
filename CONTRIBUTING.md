@@ -124,8 +124,3 @@ When you're finished with the changes, create a pull request, also known as a PR
 - Don't forget to link PR to the issue if you are solving one.
 - As you update your PR and apply changes, mark each conversation as resolved.
 - If you run into any merge issues, checkout this [git tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge conflicts and other issues.
-
-## Maintainers and Reviewers
-
-1. [MrPowers](https://github.com/MrPowers)
-2. ...
