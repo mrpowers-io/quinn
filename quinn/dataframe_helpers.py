@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame, SparkSession
 import sys
-import warnings
 from typing import Any
 
 from pyspark.sql.types import StructField, StructType
@@ -46,10 +45,10 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
         return [row[0] for row in df.select(col_name).collect()]
 
     pyarrow_enabled = (
-        spark_session.conf.get(
-            "spark.sql.execution.arrow.pyspark.enabled",
-        )
-        == "true"
+            spark_session.conf.get(
+                "spark.sql.execution.arrow.pyspark.enabled",
+            )
+            == "true"
     )
 
     pyarrow_valid = pyarrow_enabled and sys.modules["pyarrow"].__version__ >= "0.17.0"
@@ -64,9 +63,9 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
 
 
 def two_columns_to_dictionary(
-    df: DataFrame,
-    key_col_name: str,
-    value_col_name: str,
+        df: DataFrame,
+        key_col_name: str,
+        value_col_name: str,
 ) -> dict[str, Any]:
     """Collect two columns as dictionary when first column is key and second is value.
 
@@ -92,37 +91,6 @@ def to_list_of_dictionaries(df: DataFrame) -> list[dict[str, Any]]:
     :rtype: List[Dict[str, Any]]
     """
     return list(map(lambda r: r.asDict(), df.collect()))  # noqa: C417
-
-
-def print_athena_create_table(
-    df: DataFrame,
-    athena_table_name: str,
-    s3location: str,
-) -> None:
-    """Generate the Athena create table statement for a given DataFrame.
-    :param df: The pyspark.sql.DataFrame to use
-    :param athena_table_name: The name of the athena table to generate
-    :param s3location: The S3 location of the parquet data
-    :return: None.
-    """
-    warnings.warn(
-        "Function print_athena_create_table is deprecated and will be removed in the version 1.0",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-
-    fields = df.schema
-
-    print(f"CREATE EXTERNAL TABLE IF NOT EXISTS `{athena_table_name}` ( ")
-
-    for field in fields.fieldNames()[:-1]:
-        print("\t", f"`{fields[field].name}` {fields[field].dataType.simpleString()}, ")
-    last = fields[fields.fieldNames()[-1]]
-    print("\t", f"`{last.name}` {last.dataType.simpleString()} ")
-
-    print(")")
-    print("STORED AS PARQUET")
-    print(f"LOCATION '{s3location}'\n")
 
 
 def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
