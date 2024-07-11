@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quinn"
-version = "1.0"
+version = "0.10.3"
 description = "Pyspark helper methods to maximize developer efficiency"
 authors = ["MrPowers <matthewkevinpowers@gmail.com>"]
 
@@ -22,7 +22,7 @@ build-backend = "poetry.masonry.api"
 ###########################################################################
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.7,<4.0"
 
 # Below are the optional dependencies
 pyarrow = "13.0.0"
@@ -48,29 +48,27 @@ optional = true
 optional = true
 
 [tool.poetry.group.development.dependencies]
-pyspark = ">3"
+pyspark = ">2"
 semver = "^3"
 pre-commit = "*"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
-chispa = "^0.10"
+chispa = "0.9.4"
 pytest-describe = "^2"
-pyspark = ">3"
+pyspark = ">2"
 semver = "^3"
 
 [tool.poetry.group.linting.dependencies]
-ruff = "^0.5"
+ruff = "^0.0.291"
 
 [tool.poetry.group.docs.dependencies]
-# All the dependencies related to mkdocs;
-# We are pinning only the main version of mkdocs.
-mkdocstrings-python = "*"
-mkdocs-gen-files = "*"
-mkdocs-literate-nav = "*"
-mkdocs-section-index = "*"
-markdown-include = "*"
-mkdocs = "^1.6"
+mkdocstrings-python = "^0.8.3"
+mkdocs-gen-files = "^0.4.0"
+mkdocs-literate-nav = "^0.6.0"
+mkdocs-section-index = "^0.3.5"
+markdown-include = "^0.8.1"
+mkdocs = "^1"
 jupyterlab = "*"
 mkdocs-jupyter = "*"
 mkdocs-material = "*"
@@ -85,11 +83,8 @@ markdown-exec = "*"
 
 
 [tool.ruff]
-line-length = 150
-extend-exclude = ["tests", "docs"]
-
-[tool.ruff.lint]
 select = ["ALL"]
+line-length = 150
 ignore = [
     "D100",
     "D203",    # Ignore blank line before summary of class
@@ -106,11 +101,10 @@ ignore = [
     "PTH123",  # Don't force use of Pathlib
     "PTH207",  # Don't force use of Pathlib
     "PTH113",  # Don't force use of Pathlib
-    "ISC001",  # Recommended by Ruff
-    "COM812",  # Recommended by Ruff
 ]
+extend-exclude = ["tests", "docs"]
 
-[tool.ruff.lint.per-file-ignores]
+[tool.ruff.per-file-ignores]
 "quinn/extensions/column_ext.py" = ["FBT003", "N802"]
 "quinn/extensions/__init__.py" = ["F401", "F403"]
 "quinn/__init__.py" = ["F401", "F403"]
