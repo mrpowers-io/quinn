@@ -22,9 +22,9 @@ To start contributing you should fork this repository and only after that clone 
 
 ```shell
 # for user-login
-git remote --set-url origin https://github.com/your-github-name/quinn.git
+git remote set-url origin https://github.com/your-github-name/quinn.git
 # for private keys way
-git remote --set-url origin git@github.com:your-github-name/quinn.git
+git remote set-url origin git@github.com:your-github-name/quinn.git
 ```
 
 ### Install the project
