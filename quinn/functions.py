@@ -16,7 +16,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from numbers import Number
 
     from pyspark.sql import Column
@@ -82,45 +81,6 @@ def remove_non_word_characters(col: Column) -> Column:
 
     """
     return F.regexp_replace(col, "[^\\w\\s]+", "")
-
-
-def exists(f: Callable[[Any], bool]) -> udf:
-    """Create a user-defined function.
-
-    It takes a list expressed as a column of type ``ArrayType(AnyType)`` as an argument and returns a boolean value indicating
-    whether any element in the list is true according to the argument ``f`` of the ``exists()`` function.
-
-    :param f: Callable function - A callable function that takes an element of
-    type Any and returns a boolean value.
-    :return: A user-defined function that takes
-    a list expressed as a column of type ArrayType(AnyType) as an argument and
-    returns a boolean value indicating whether any element in the list is true
-    according to the argument ``f`` of the ``exists()`` function.
-    :rtype: UserDefinedFunction
-    """
-
-    def temp_udf(list_: list) -> bool:
-        return any(map(f, list_))
-
-    return F.udf(temp_udf, BooleanType())
-
-
-def forall(f: Callable[[Any], bool]) -> udf:
-    """The **forall** function allows for mapping a given boolean function to a list of arguments and return a single boolean value.
-
-    It does this by creating a Spark UDF which takes in a list of arguments, applying the given boolean function to
-    each element of the list and returning a single boolean value if all the elements pass through the given boolean function.
-
-    :param f: A callable function ``f`` which takes in any type and returns a boolean
-    :return: A spark UDF which accepts a list of arguments and returns True if all
-    elements pass through the given boolean function, False otherwise.
-    :rtype: UserDefinedFunction
-    """
-
-    def temp_udf(list_: list) -> bool:
-        return all(map(f, list_))
-
-    return F.udf(temp_udf, BooleanType())
 
 
 def multi_equals(value: Any) -> udf:  # noqa: ANN401

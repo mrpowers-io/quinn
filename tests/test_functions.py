@@ -97,46 +97,6 @@ def test_anti_trim():
     chispa.assert_column_equality(actual_df, "words_anti_trimmed", "expected")
 
 
-def test_exists():
-    df = spark.createDataFrame(
-        [
-            ([1, 2, 3], False),
-            ([4, 5, 6], True),
-            ([10, 11, 12], True),
-        ],
-        StructType(
-            [
-                StructField("nums", ArrayType(IntegerType(), True), True),
-                StructField("expected", BooleanType(), True),
-            ]
-        ),
-    )
-    actual_df = df.withColumn(
-        "any_num_greater_than_5", quinn.exists(lambda n: n > 5)(F.col("nums"))
-    )
-    chispa.assert_column_equality(actual_df, "any_num_greater_than_5", "expected")
-
-
-def test_forall():
-    df = spark.createDataFrame(
-        [
-            ([1, 2, 3], False),
-            ([4, 5, 6], True),
-            ([10, 11, 12], True),
-        ],
-        StructType(
-            [
-                StructField("nums", ArrayType(IntegerType(), True), True),
-                StructField("expected", BooleanType(), True),
-            ]
-        ),
-    )
-    actual_df = df.withColumn(
-        "all_nums_greater_than_3", quinn.forall(lambda n: n > 3)(F.col("nums"))
-    )
-    chispa.assert_column_equality(actual_df, "all_nums_greater_than_3", "expected")
-
-
 def test_multi_equals():
     df = quinn.create_df(
         spark,
