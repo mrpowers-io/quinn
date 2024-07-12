@@ -318,9 +318,9 @@ def is_falsy(col: Column) -> Column:
 
 
 def is_truthy(col: Column) -> Column:
-    """Calculates a boolean expression that is the opposite of isFalsy for the given ``Column`` col.
+    """Calculates a boolean expression that is the opposite of is_falsy for the given ``Column`` col.
 
-    :param Column col: The ``Column`` to calculate the opposite of isFalsy for.
+    :param Column col: The ``Column`` to calculate the opposite of is_falsy for.
     :returns: A ``Column`` with the results of the calculation.
     :rtype: Column
     """
