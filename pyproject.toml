@@ -93,8 +93,6 @@ ignore = [
     "D205",    # It is broken
     "TCH003",  # I have no idea what is it about
     "PLC1901", # Strange thing
-    "UP007",   # Not supported in py3.6
-    "UP038",   # Not supported in all py versions
     "SIM108",  # Don't create long ternary operators
     "PTH123",  # Don't force use of Pathlib
     "PTH207",  # Don't force use of Pathlib
@@ -109,3 +107,6 @@ ignore = [
 "quinn/__init__.py" = ["F401", "F403"]
 "quinn/functions.py" = ["FBT003"]
 "quinn/keyword_finder.py" = ["A002"]
+
+[tool.ruff.isort]
+required-imports = ["from __future__ import annotations"]
