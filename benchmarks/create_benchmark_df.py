@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F  # noqa: N812
@@ -38,7 +38,7 @@ def save_benchmark_df(
     spark: SparkSession,
     n: int,
     data_label: str,
-    repartition_n: Optional[int] = None,
+    repartition_n: int | None = None,
 ) -> None:
     """Save a benchmark dataframe to disk."""
     print(f"Generating benchmark df for n={n}")

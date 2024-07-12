@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 
 from pyspark.sql import SparkSession
 from pyspark.sql import types as T  # noqa: N812
@@ -100,7 +99,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
     :rtype: pyspark.sql.types.StructType
     """
 
-    def _validate_json(metadata: Optional[str]) -> dict:
+    def _validate_json(metadata: str | None) -> dict:
         if metadata is None:
             return {}
 
