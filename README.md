@@ -476,41 +476,41 @@ from quinn.extensions import *
 
 ### Column Extensions
 
-**isFalsy()**
+**is_falsy()**
 
-Returns `True` if `has_stuff` is `None` or `False`.
+Returns a Column indicating whether all values in the Column are False or NULL: `True` if `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 ```
 
-**isTruthy()**
+**is_truthy()**
 
-Returns `True` unless `has_stuff` is `None` or `False`.
+Calculates a boolean expression that is the opposite of is_falsy for the given Column: `True` unless `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
 ```
 
-**isNullOrBlank()**
+**is_null_or_blank()**
 
-Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
+Returns a Boolean value which expresses whether a given column is NULL or contains only blank characters: `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
 
 ```python
 source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
 ```
 
-**isNotIn()**
+**is_not_in()**
 
-Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
+To see if a value is not in a list of values: `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 
 ```python
 source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
 ```
 
-**nullBetween()**
+**null_between()**
 
-Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
+To see if a value is between two values in a null friendly way: `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ```python
 source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
