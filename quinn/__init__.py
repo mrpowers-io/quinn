@@ -12,6 +12,7 @@
 # limitations under the License.
 
 """quinn API."""
+from __future__ import annotations
 
 from __future__ import annotations
 
