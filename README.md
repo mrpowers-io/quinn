@@ -494,7 +494,7 @@ from quinn.extensions import *
 
 **is_falsy()**
 
-Returns a column indicating whether all values in the column are False or NULL: `True` if `has_stuff` is `None` or `False`.
+Returns a Column indicating whether all values in the Column are False or NULL: `True` if `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
@@ -502,7 +502,7 @@ source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 
 **is_truthy()**
 
-Calculates a boolean expression that is the opposite of is_falsy for the given column: `True` unless `has_stuff` is `None` or `False`.
+Calculates a boolean expression that is the opposite of is_falsy for the given Column: `True` unless `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
