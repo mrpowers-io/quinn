@@ -64,12 +64,7 @@ def with_some_columns_renamed(
     """
 
     def _(df: DataFrame) -> DataFrame:
-        cols = [
-            F.col(f"`{col_name}`").alias(fun(col_name))
-            if change_col_name(col_name)
-            else F.col(f"`{col_name}`")
-            for col_name in df.columns
-        ]
+        cols = [F.col(f"`{col_name}`").alias(fun(col_name)) if change_col_name(col_name) else F.col(f"`{col_name}`") for col_name in df.columns]
         return df.select(*cols)
 
     return _
@@ -120,7 +115,9 @@ def sort_columns(  # noqa: C901,PLR0915
     """
 
     def sort_nested_cols(
-        schema: StructType, is_reversed: bool, base_field: str="",
+        schema: StructType,
+        is_reversed: bool,
+        base_field: str = "",
     ) -> list[str]:
         # recursively check nested fields and sort them
         # https://stackoverflow.com/questions/57821538/how-to-sort-columns-of-nested-structs-alphabetically-in-pyspark
@@ -146,7 +143,9 @@ def sort_columns(  # noqa: C901,PLR0915
 
                 results.extend(
                     sort_nested_cols(
-                        new_struct, is_reversed, base_field=new_base_field,
+                        new_struct,
+                        is_reversed,
+                        base_field=new_base_field,
                     ),
                 )
             return results
@@ -242,10 +241,7 @@ def sort_columns(  # noqa: C901,PLR0915
     if not sort_nested:
         return top_level_sorted_df
 
-    is_nested: bool = any(
-        isinstance(i.dataType, (StructType, ArrayType))
-        for i in top_level_sorted_df.schema
-    )
+    is_nested: bool = any(isinstance(i.dataType, (StructType, ArrayType)) for i in top_level_sorted_df.schema)
 
     if not is_nested:
         return top_level_sorted_df
@@ -281,10 +277,7 @@ def flatten_struct(df: DataFrame, col_name: str, separator: str = ":") -> DataFr
     :rtype: List[Column]
     """
     struct_type = complex_fields(df.schema)[col_name]
-    expanded = [
-        F.col(f"`{col_name}`.`{k}`").alias(col_name + separator + k)
-        for k in [n.name for n in struct_type.fields]
-    ]
+    expanded = [F.col(f"`{col_name}`.`{k}`").alias(col_name + separator + k) for k in [n.name for n in struct_type.fields]]
     return df.select("*", *expanded).drop(F.col(f"`{col_name}`"))
 
 
@@ -302,9 +295,7 @@ def flatten_map(df: DataFrame, col_name: str, separator: str = ":") -> DataFrame
     """
     keys_df = df.select(F.explode_outer(F.map_keys(F.col(f"`{col_name}`")))).distinct()
     keys = [row[0] for row in keys_df.collect()]
-    key_cols = [
-        F.col(f"`{col_name}`").getItem(k).alias(col_name + separator + k) for k in keys
-    ]
+    key_cols = [F.col(f"`{col_name}`").getItem(k).alias(col_name + separator + k) for k in keys]
     return df.select(
         [F.col(f"`{col}`") for col in df.columns if col != col_name] + key_cols,
     )
@@ -407,9 +398,7 @@ def flatten_dataframe(
 
     # Sanitize column names with the specified replace_char
     if sanitized_columns:
-        sanitized_columns = [
-            sanitize_column_name(col_name, replace_char) for col_name in df.columns
-        ]
+        sanitized_columns = [sanitize_column_name(col_name, replace_char) for col_name in df.columns]
         df = df.toDF(*sanitized_columns)  # noqa: PD901
 
     return df

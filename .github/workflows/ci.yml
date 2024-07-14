@@ -17,18 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pyspark-version: 2.4.8  # latest published 2.x version
-            pip-packages: "pypandoc==1.7 pyspark==2.4.8"  # downgrade of pypandoc necessary
-          - pyspark-version: 3.0.3
-            pip-packages: "pyspark==3.0.3"
-          - pyspark-version: 3.1.3
-            pip-packages: "pyspark==3.1.3"
-          - pyspark-version: 3.2.4
-            pip-packages: "pyspark==3.2.4"
-          - pyspark-version: 3.3.2
-            pip-packages: "pyspark==3.3.2"
-          - pyspark-version: 3.4.0
-            pip-packages: "pyspark==3.4.0"
+          - pyspark-version: 3.3.4
+            pip-packages: "pyspark==3.3.4"
+          - pyspark-version: 3.4.3
+            pip-packages: "pyspark==3.4.3"
+          - pyspark-version: 3.5.1
+            pip-packages: "pyspark==3.5.1"
 
     steps:
       - uses: actions/checkout@v1
@@ -39,33 +33,17 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '8'  # Supported by Spark 2.x & 3.x
-
-      - name: Get supported Python Version depending on PySpark
-        uses: haya14busa/action-cond@v1
-        id: python_version
-        with:
-          cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
-          if_true: '3.7'  # latest supported version for PySpark 2.x
-          if_false: '3.9'  # PySpark 3+
+          java-version: '17'  # Spark 4.0 will drop Java 11;
 
       - name: Set up Python ${{ steps.python_version.outputs.value }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ steps.python_version.outputs.value }}
-
-      - name: Get supported Poetry version
-        uses: haya14busa/action-cond@v1
-        id: poetry_version
-        with:
-          cond: ${{ startsWith(matrix.pyspark-version, '2.') }}
-          if_true: '1.5.1'  # latest supported version for PySpark 2.x
-          if_false: '1.6.1'  # PySpark 3+
+          python-version: '3.10'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: ${{ steps.poetry_version.outputs.value }}
+          version: '1.6.1'
 
       - name: Cache Poetry virtualenv
         uses: actions/cache@v1
