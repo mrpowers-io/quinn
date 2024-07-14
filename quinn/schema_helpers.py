@@ -159,8 +159,8 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
         field = T.StructField(
             name=row["name"],
             dataType=_lookup_type(row["type"]),
-            nullable=_convert_nullable(row["nullable"]) if "nullable" in row else True,
-            metadata=_validate_json(row["metadata"] if "metadata" in row else None),
+            nullable=_convert_nullable(row.get("nullable", True)),
+            metadata=_validate_json(row.get("metadata", None)),
         )
         fields.append(field)
 
@@ -175,8 +175,4 @@ def complex_fields(schema: T.StructType) -> dict[str, object]:
     :return: A dictionary with complex field names as keys and their respective data types as values.
     :rtype: Dict[str, object]
     """
-    return {
-        field.name: field.dataType
-        for field in schema.fields
-        if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
-    }
+    return {field.name: field.dataType for field in schema.fields if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))}

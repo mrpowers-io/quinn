@@ -45,10 +45,10 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
         return [row[0] for row in df.select(col_name).collect()]
 
     pyarrow_enabled = (
-            spark_session.conf.get(
-                "spark.sql.execution.arrow.pyspark.enabled",
-            )
-            == "true"
+        spark_session.conf.get(
+            "spark.sql.execution.arrow.pyspark.enabled",
+        )
+        == "true"
     )
 
     pyarrow_valid = pyarrow_enabled and sys.modules["pyarrow"].__version__ >= "0.17.0"
@@ -63,9 +63,9 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
 
 
 def two_columns_to_dictionary(
-        df: DataFrame,
-        key_col_name: str,
-        value_col_name: str,
+    df: DataFrame,
+    key_col_name: str,
+    value_col_name: str,
 ) -> dict[str, Any]:
     """Collect two columns as dictionary when first column is key and second is value.
 

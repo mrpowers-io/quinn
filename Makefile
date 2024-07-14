@@ -1,5 +1,7 @@
 # COMMON CLI COMMANDS FOR DEVELOPMENT 
 
+all: help
+
 .PHONY: install_test
 install_test:
 	@poetry install --with=development,testing
@@ -19,3 +21,18 @@ test:
 .PHONY: lint 
 lint:
 	@poetry run ruff check --fix quinn
+
+.PHONY: format
+format:
+	@poetry run ruff format quinn
+
+.PHONY: help
+help:
+	@echo '................... Quin ..........................'
+	@echo 'help                      - print that message'
+	@echo 'lint                      - run linter'
+	@echo 'format                    - reformat the code'
+	@echo 'test                      - run tests'
+	@echo 'install_test              - install test deps'
+	@echo 'install_deps              - install dev deps'
+	@echo 'update_deps               - update and install deps'
