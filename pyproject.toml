@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quinn"
-version = "0.10.3"
+version = "1.0.0"
 description = "Pyspark helper methods to maximize developer efficiency"
 authors = ["MrPowers <matthewkevinpowers@gmail.com>"]
 
