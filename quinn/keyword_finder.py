@@ -54,6 +54,7 @@ default_keywords = [
     "sparkContext",
 ]
 
+
 @dataclass
 class SearchResult:
     """Class to hold the results of a file search.

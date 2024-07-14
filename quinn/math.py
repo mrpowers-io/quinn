@@ -12,6 +12,7 @@
 # limitations under the License.
 
 """Math routines for PySpark."""
+
 from __future__ import annotations
 
 from typing import Optional, Union
@@ -40,11 +41,7 @@ def rand_laplace(
 
     u = F.rand(seed)
 
-    return (
-        F.when(u < F.lit(0.5), mu + beta * F.log(2 * u))
-        .otherwise(mu - beta * F.log(2 * (1 - u)))
-        .alias("laplace_random")
-    )
+    return F.when(u < F.lit(0.5), mu + beta * F.log(2 * u)).otherwise(mu - beta * F.log(2 * (1 - u))).alias("laplace_random")
 
 
 def div_or_else(

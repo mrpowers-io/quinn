@@ -132,7 +132,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
 
         return type_lookup[type_str]
 
-    def _convert_nullable(null_str: str) -> bool:
+    def _convert_nullable(null_str: Optional[str]) -> bool:
         if null_str is None:
             return True
 
@@ -160,7 +160,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
             name=row["name"],
             dataType=_lookup_type(row["type"]),
             nullable=_convert_nullable(row["nullable"]) if "nullable" in row else True,
-            metadata=_validate_json(row["metadata"] if "metadata" in row else None),
+            metadata=_validate_json(row["metadata"] if "metadata" in row else None),  # noqa: SIM401
         )
         fields.append(field)
 
