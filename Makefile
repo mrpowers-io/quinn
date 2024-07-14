@@ -16,7 +16,11 @@ update_deps:
 
 .PHONY: test
 test:
-	@poetry run pytest tests
+	@poetry run pytest tests -k "not test_spark_connect.py"
+
+.PHONY: test
+test_spark_connect:
+    @poetry run pytest tests/test_spark_connect.py
 
 .PHONY: lint 
 lint:
