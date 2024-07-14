@@ -66,6 +66,15 @@ jobs:
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: make test
 
+      - name: Run tests using Spark-Connect
+        run: |
+          sh scripts/run_spark_connect_server.sh
+          make test_spark_connect
+        env:
+          HADOOP_VERSION: 3
+          SPARK_VERSION: ${{ matrix.pyspark-version }}
+          
+
   check-license-headers:
     runs-on: ubuntu-latest
     steps:
