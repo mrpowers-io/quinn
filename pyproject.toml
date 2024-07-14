@@ -98,7 +98,6 @@ ignore = [
 extend-exclude = ["tests", "docs"]
 
 [tool.ruff.per-file-ignores]
-"quinn/extensions/__init__.py" = ["F401", "F403"]
 "quinn/__init__.py" = ["F401", "F403"]
 "quinn/functions.py" = ["FBT003"]
 "quinn/keyword_finder.py" = ["A002"]
