@@ -45,10 +45,10 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
         return [row[0] for row in df.select(col_name).collect()]
 
     pyarrow_enabled = (
-            spark_session.conf.get(
-                "spark.sql.execution.arrow.pyspark.enabled",
-            )
-            == "true"
+        spark_session.conf.get(
+            "spark.sql.execution.arrow.pyspark.enabled",
+        )
+        == "true"
     )
 
     pyarrow_valid = pyarrow_enabled and sys.modules["pyarrow"].__version__ >= "0.17.0"
@@ -63,9 +63,9 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
 
 
 def two_columns_to_dictionary(
-        df: DataFrame,
-        key_col_name: str,
-        value_col_name: str,
+    df: DataFrame,
+    key_col_name: str,
+    value_col_name: str,
 ) -> dict[str, Any]:
     """Collect two columns as dictionary when first column is key and second is value.
 
@@ -114,18 +114,18 @@ def show_output_to_df(show_output: str, spark: SparkSession) -> DataFrame:
     return spark.createDataFrame(pretty_data, pretty_column_names)
 
 
-def create_df(spark: SparkSession, rows_data, col_specs) -> DataFrame:  # noqa: ANN001
-    """Create a new DataFrame from the given data and column specs.
+def create_df(spark: SparkSession, rows_data: list[tuple], col_specs: list[tuple]) -> DataFrame:
+    """Creates a new DataFrame from the given data and column specifications.
 
-    The returned DataFrame s created using the StructType and StructField classes provided by PySpark.
+    The returned DataFrame created using the StructType and StructField classes provided by PySpark.
 
-    :param spark: SparkSession object
+    :param spark: SparkSession object to create the DataFrame
     :type spark: SparkSession
-    :param rows_data: the data used to create the DataFrame
-    :type rows_data: array-like
-    :param col_specs: list of tuples containing the name and type of the field
-    :type col_specs: list of tuples
-    :return: a new DataFrame
+    :param rows_data: The data used to populate the DataFrame, where each tuple represents a row.
+    :type rows_data: list[tuple]
+    :param col_specs: list of tuples containing the name and type of the field, i.e., specifications for the columns.
+    :type col_specs: list[tuple]
+    :return: A new DataFrame constructed from the provided rows and column specifications.
     :rtype: DataFrame
     """
     struct_fields = list(map(lambda x: StructField(*x), col_specs))  # noqa: C417
