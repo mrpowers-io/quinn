@@ -22,13 +22,21 @@ update_deps: ## Update dependencies
 test: ## Run all tests
 	@poetry run pytest tests
 
-.PHONY: check
-check: ## Lint and format the code by running pre-commit hooks
-	@poetry run pre-commit run -a
+.PHONY: lint 
+lint:
+	@poetry run ruff check --fix quinn
 
-# Inspired by https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+.PHONY: format
+format:
+	@poetry run ruff format quinn
+
 .PHONY: help
-help: ## Show help for the commands
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
-.DEFAULT_GOAL := help
+help:
+	@echo '................... Quin ..........................'
+	@echo 'help                      - print that message'
+	@echo 'lint                      - run linter'
+	@echo 'format                    - reformat the code'
+	@echo 'test                      - run tests'
+	@echo 'install_test              - install test deps'
+	@echo 'install_deps              - install dev deps'
+	@echo 'update_deps               - update and install deps'
