@@ -69,13 +69,12 @@ jobs:
 
       - name: Run tests using Spark-Connect against PySpark ${{ matrix.pyspark-version }}
         env:
-          HADOOP_VERSION: 3
           SPARK_VERSION: ${{ matrix.pyspark-version }}
-          SPARK_CONNECT_MODE_ENABLE: 1
+          SPARK_CONNECT_MODE_ENABLED: 1
         run: |
           if [[ "${SPARK_VERSION}" > "3.4" ]]; then
             sh scripts/run_spark_connect_server.sh
-            make test_spark_connect
+            # The tests should be called from here.
           else
             echo "Skipping Spark-Connect tests for Spark version <= 3.4"
           fi
