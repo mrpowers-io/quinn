@@ -23,11 +23,16 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-pandas = "^1.5.3"
-pyarrow = "16.1.0"
-numpy = "^1.21.0"
-grpcio = "^1.48.1"
-grpcio-status = "^1.64.1"
+
+# Below are the optional dependencies
+pyarrow = "13.0.0"
+pandas = { version = "^1.5.3", optional = true }
+numpy = { version = "^1.21.0", optional = true }
+grpcio = { version = "^1.48.1", optional = true }
+grpcio-status = { version = "^1.64.1", optional = true }
+
+[tool.poetry.extras]
+spark-classic = ["pyarrow", "pandas", "numpy", "grpcio", "grpcio-status"]
 
 ###########################################################################
 #                         DEPENDENCY GROUPS 
