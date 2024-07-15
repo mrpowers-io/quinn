@@ -1,6 +1,14 @@
 name: Lint
 
-on: push 
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+    - planning-1.0-release
+  workflow_dispatch:
 
 jobs:
   precommit:
