@@ -4,9 +4,11 @@ on:
   push:
     branches:
     - main
+    - planning-1.0-release
   pull_request:
     branches:
     - main
+    - planning-1.0-release
   workflow_dispatch:
 
 jobs:
@@ -67,13 +69,12 @@ jobs:
         run: make test
 
       - name: Run tests using Spark-Connect
-        run: |
-          sh scripts/run_spark_connect_server.sh
-          make test_spark_connect
         env:
           HADOOP_VERSION: 3
           SPARK_VERSION: ${{ matrix.pyspark-version }}
-          
+        run: |
+          sh scripts/run_spark_connect_server.sh
+          make test_spark_connect
 
   check-license-headers:
     runs-on: ubuntu-latest

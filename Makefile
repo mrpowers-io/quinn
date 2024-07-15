@@ -20,7 +20,7 @@ test:
 
 .PHONY: test
 test_spark_connect:
-    @poetry run pytest tests/test_spark_connect.py
+	@poetry run pytest tests/test_spark_connect.py
 
 .PHONY: lint 
 lint:
@@ -32,7 +32,7 @@ format:
 
 .PHONY: help
 help:
-	@echo '................... Quin ..........................'
+	@echo '................... Quinn ..........................'
 	@echo 'help                      - print that message'
 	@echo 'lint                      - run linter'
 	@echo 'format                    - reformat the code'
