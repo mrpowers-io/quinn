@@ -62,7 +62,7 @@ pyspark = ">3"
 semver = "^3"
 
 [tool.poetry.group.linting.dependencies]
-ruff = "^0.5"
+ruff = "0.5.2"
 
 [tool.poetry.group.docs.dependencies]
 # All the dependencies related to mkdocs;
