@@ -175,6 +175,17 @@ files = [
 dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
+name = "backports-strenum"
+version = "1.3.1"
+description = "Base class for creating enumerated constants that are also subclasses of str"
+optional = false
+python-versions = ">=3.8.6,<3.11"
+files = [
+    {file = "backports_strenum-1.3.1-py3-none-any.whl", hash = "sha256:cdcfe36dc897e2615dc793b7d3097f54d359918fc448754a517e6f23044ccf83"},
+    {file = "backports_strenum-1.3.1.tar.gz", hash = "sha256:77c52407342898497714f0596e86188bb7084f89063226f4ba66863482f42414"},
+]
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.12.3"
 description = "Screen-scraping library"
@@ -609,16 +620,17 @@ grpc = ["grpcio (>=1.44.0,<2.0.0.dev0)"]
 
 [[package]]
 name = "griffe"
-version = "0.47.0"
+version = "0.48.0"
 description = "Signatures for entire Python programs. Extract the structure, the frame, the skeleton of your project, to generate API documentation or find breaking changes in your API."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "griffe-0.47.0-py3-none-any.whl", hash = "sha256:07a2fd6a8c3d21d0bbb0decf701d62042ccc8a576645c7f8799fe1f10de2b2de"},
-    {file = "griffe-0.47.0.tar.gz", hash = "sha256:95119a440a3c932b13293538bdbc405bee4c36428547553dc6b327e7e7d35e5a"},
+    {file = "griffe-0.48.0-py3-none-any.whl", hash = "sha256:f944c6ff7bd31cf76f264adcd6ab8f3d00a2f972ae5cc8db2d7b6dcffeff65a2"},
+    {file = "griffe-0.48.0.tar.gz", hash = "sha256:f099461c02f016b6be4af386d5aa92b01fb4efe6c1c2c360dda9a5d0a863bb7f"},
 ]
 
 [package.dependencies]
+backports-strenum = {version = ">=1.3", markers = "python_version < \"3.11\""}
 colorama = ">=0.4"
 
 [[package]]
@@ -3143,4 +3155,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "a81c34cd3c2df5d5673b4dbaea7c0855c17774bd41407846143bc513da2fa1c9"
+content-hash = "6f7bcd8a2108bfb4df7eef4f092f3889de53b921a8c42ebb0f22748c5ab6ac39"
