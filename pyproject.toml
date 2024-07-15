@@ -115,5 +115,5 @@ ignore = [
 "quinn/functions.py" = ["FBT003"]
 "quinn/keyword_finder.py" = ["A002"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
