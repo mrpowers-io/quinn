@@ -3,36 +3,31 @@
 all: help
 
 .PHONY: install_test
-install_test:
+install_test: ## Install test dependencies
 	@poetry install --with=development,testing
 
 .PHONY: install_deps
-install_deps:
+install_deps: ## Install all dependencies
 	@poetry install --with=development,linting,testing,docs
 
 .PHONY: update_deps
-update_deps:
+update_deps: ## Update dependencies
 	@poetry update --with=development,linting,testing,docs
 
 .PHONY: test
-test:
+test: ## Run the unit tests
 	@poetry run pytest tests
 
 .PHONY: lint 
-lint:
+lint: ## Lint the code
 	@poetry run ruff check --fix quinn
 
 .PHONY: format
-format:
+format: ## Format the code
 	@poetry run ruff format quinn
 
 .PHONY: help
-help:
-	@echo '................... Quin ..........................'
-	@echo 'help                      - print that message'
-	@echo 'lint                      - run linter'
-	@echo 'format                    - reformat the code'
-	@echo 'test                      - run tests'
-	@echo 'install_test              - install test deps'
-	@echo 'install_deps              - install dev deps'
-	@echo 'update_deps               - update and install deps'
+help: ## Show help for the commands.
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help
