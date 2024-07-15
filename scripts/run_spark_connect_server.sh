@@ -19,11 +19,3 @@ fi
 # Start the Spark server
 echo "Starting the Spark-Connect server"
 ./spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION/sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:$SPARK_VERSION
-
-# Check if the Spark-Connect server is listening on port 15002
-if ! netstat -tuln | grep ":15002" > /dev/null && ! ss -tuln | grep ":15002" > /dev/null; then
-  echo "Error: Spark-Connect server is not running on port 15002"
-  exit 1
-else
-  echo "Spark-Connect server is running on port 15002."
-fi
