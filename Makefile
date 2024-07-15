@@ -27,7 +27,7 @@ format: ## Format the code
 	@poetry run ruff format quinn
 
 .PHONY: help
-help: ## Show help for the commands.
+help: ## Show help for the commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 .DEFAULT_GOAL := help
