@@ -15,16 +15,14 @@
 
 from __future__ import annotations
 
-from typing import Optional, Union
-
 from pyspark.sql import Column
 from pyspark.sql import functions as F  # noqa: N812
 
 
 def rand_laplace(
-    mu: Union[float, Column],
-    beta: Union[float, Column],
-    seed: Optional[int] = None,
+    mu: float | Column,
+    beta: float | Column,
+    seed: int | None = None,
 ) -> Column:
     """Generate random numbers from Laplace(mu, beta).
 
@@ -47,7 +45,7 @@ def rand_laplace(
 def div_or_else(
     cola: Column,
     colb: Column,
-    default: Union[float, Column] = 0.0,
+    default: float | Column = 0.0,
 ) -> Column:
     """Return result of division of cola by colb or default if colb is zero.
 
