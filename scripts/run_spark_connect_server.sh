@@ -19,3 +19,5 @@ fi
 # Start the Spark server
 echo "Starting the Spark-Connect server"
 ./spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION/sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:$SPARK_VERSION
+
+# TODO: Check if the server is running or not (maybe using netstat) and throw an error message if it is not running
