@@ -10,6 +10,10 @@ install_test: ## Install the 'dev, test and extras' dependencies
 install_deps: ## Install all dependencies
 	@poetry install --with=development,linting,testing,docs
 
+.PHONY: install_ruff
+install_ruff: ## Install ruff for use within IDE
+	@poetry run pip install ruff==0.5.2
+
 .PHONY: update_deps
 update_deps: ## Update dependencies
 	@poetry update --with=development,linting,testing,docs
@@ -18,13 +22,9 @@ update_deps: ## Update dependencies
 test: ## Run all tests
 	@poetry run pytest tests
 
-.PHONY: lint 
-lint: ## Lint the code
-	@poetry run ruff check --fix quinn
-
-.PHONY: format
-format: ## Format the code
-	@poetry run ruff format quinn
+.PHONY: check
+check: ## Lint and format the code by running pre-commit hooks
+	@poetry run pre-commit run -a
 
 # Inspired by https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help

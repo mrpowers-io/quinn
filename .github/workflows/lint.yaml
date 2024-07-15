@@ -1,16 +1,26 @@
 name: Lint
 
-on: push 
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+    - planning-1.0-release
+  workflow_dispatch:
 
 jobs:
-  ruff:
+  precommit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Run Ruff
-        uses: chartboost/ruff-action@v1
-        with: 
-          version: 0.5.2
+          
+      - name: Run pre-commit hooks
+        run: |
+          pip install pre-commit
+          pre-commit install
+          pre-commit run -a
