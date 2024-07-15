@@ -11,7 +11,7 @@ def spark():
     return SparkSession.builder.remote("sc://localhost:15002").getOrCreate()
 
 
-def test_create_df():
+def test_create_df(spark):
     rows_data = [("abc", 1), ("lu", 2), ("torrence", 3)]
     col_specs = [("name", StringType()), ("age", IntegerType())]
 
