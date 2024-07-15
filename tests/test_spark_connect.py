@@ -1,17 +1,11 @@
-import pytest
 import chispa
-from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType
 
 import quinn
+from .spark import spark
 
 
-@pytest.fixture(scope="module")
-def spark():
-    return SparkSession.builder.remote("sc://localhost:15002").getOrCreate()
-
-
-def test_create_df(spark):
+def test_create_df():
     rows_data = [("abc", 1), ("lu", 2), ("torrence", 3)]
     col_specs = [("name", StringType()), ("age", IntegerType())]
 
