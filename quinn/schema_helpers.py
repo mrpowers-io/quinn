@@ -131,7 +131,7 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
 
         return type_lookup[type_str]
 
-    def _convert_nullable(null_str: Optional[str]) -> bool:
+    def _convert_nullable(null_str: str | None) -> bool:
         if null_str is None:
             return True
 
