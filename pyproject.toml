@@ -32,7 +32,7 @@ grpcio = { version = "^1.48.1", optional = true }
 grpcio-status = { version = "^1.64.1", optional = true }
 
 [tool.poetry.extras]
-spark-classic = ["pyarrow", "pandas", "numpy", "grpcio", "grpcio-status"]
+connect = ["pyarrow", "pandas", "numpy", "grpcio", "grpcio-status"]
 
 ###########################################################################
 #                         DEPENDENCY GROUPS 

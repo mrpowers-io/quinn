@@ -3089,9 +3089,9 @@ doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linke
 test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [extras]
-spark-classic = ["grpcio", "grpcio-status", "numpy", "pandas", "pyarrow"]
+connect = ["grpcio", "grpcio-status", "numpy", "pandas", "pyarrow"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "c806610a0a18738161f11898fde5ab286a28642a727bbce9b0eae4f990bdb3ef"
+content-hash = "33ebb67505f1c02956085f8caab93f8a1bd403d34103eb44262fcc58bbed73a0"
