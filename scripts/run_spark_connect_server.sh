@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# This script was inspired by https://github.com/pyspark-ai/pyspark-ai/blob/master/run_spark_connect.sh
+
 # The Hadoop and Spark versions are set as environment variables for this script.
 echo "The HADOOP_VERSION is $HADOOP_VERSION"
 echo "The SPARK_VERSION is $SPARK_VERSION"
