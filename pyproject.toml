@@ -23,7 +23,11 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-
+pandas = "^1.5.3"
+pyarrow = "16.1.0"
+numpy = "^1.21.0"
+grpcio = "^1.48.1"
+grpcio-status = "^1.64.1"
 
 ###########################################################################
 #                         DEPENDENCY GROUPS 
@@ -104,8 +108,6 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"quinn/extensions/column_ext.py" = ["FBT003", "N802"]
-"quinn/extensions/__init__.py" = ["F401", "F403"]
 "quinn/__init__.py" = ["F401", "F403"]
 "quinn/functions.py" = ["FBT003"]
 "quinn/keyword_finder.py" = ["A002"]
