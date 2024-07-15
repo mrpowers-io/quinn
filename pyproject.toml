@@ -50,7 +50,7 @@ optional = true
 [tool.poetry.group.development.dependencies]
 pyspark = ">3"
 semver = "^3"
-pre-commit = "^3.7.1"
+pre-commit = "*"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
