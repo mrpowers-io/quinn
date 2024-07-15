@@ -4,7 +4,7 @@ all: help
 
 .PHONY: install_test
 install_test:
-	@poetry install --with=development,testing
+	@poetry install --with=development,testing --extras connect
 
 .PHONY: install_deps
 install_deps:
