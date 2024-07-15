@@ -174,8 +174,4 @@ def complex_fields(schema: T.StructType) -> dict[str, object]:
     :return: A dictionary with complex field names as keys and their respective data types as values.
     :rtype: Dict[str, object]
     """
-    return {
-        field.name: field.dataType
-        for field in schema.fields
-        if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))
-    }
+    return {field.name: field.dataType for field in schema.fields if isinstance(field.dataType, (T.ArrayType, T.StructType, T.MapType))}

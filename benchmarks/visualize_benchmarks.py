@@ -58,12 +58,7 @@ def parse_results(spark: SparkSession) -> tuple[pd.DataFrame, pd.DataFrame, str]
         ["xsmall", "small", "medium", "large"],
     )
 
-    average_df = (
-        result_df[["test_name", "dataset_size", "runtime"]]
-        .groupby(["test_name", "dataset_size"], observed=False)
-        .mean()
-        .reset_index()
-    )
+    average_df = result_df[["test_name", "dataset_size", "runtime"]].groupby(["test_name", "dataset_size"], observed=False).mean().reset_index()
 
     benchmark_date = get_benchmark_date(benchmark_path="benchmarks/results/")
     return result_df, average_df, benchmark_date

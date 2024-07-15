@@ -26,11 +26,7 @@ if TYPE_CHECKING:
 def generate_df(spark: SparkSession, n: int) -> DataFrame:
     """Generate a dataframe with a monotonically increasing id column and a random count column."""
     count_vals = [(random.randint(1, 10),) for _ in range(n)]  # noqa: S311
-    output: DataFrame = (
-        spark.createDataFrame(count_vals, schema=["count"])
-        .withColumn("mvv", F.monotonically_increasing_id())
-        .select("mvv", "count")
-    )
+    output: DataFrame = spark.createDataFrame(count_vals, schema=["count"]).withColumn("mvv", F.monotonically_increasing_id()).select("mvv", "count")
     return output
 
 

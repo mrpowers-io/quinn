@@ -47,12 +47,10 @@ optional = true
 [tool.poetry.group.testing]
 optional = true
 
-[tool.poetry.group.linting]
-optional = true
-
 [tool.poetry.group.development.dependencies]
 pyspark = ">3"
 semver = "^3"
+pre-commit = "^3.7.1"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
@@ -60,9 +58,6 @@ chispa = "^0.10"
 pytest-describe = "^2"
 pyspark = ">3"
 semver = "^3"
-
-[tool.poetry.group.linting.dependencies]
-ruff = "0.5.2"
 
 [tool.poetry.group.docs.dependencies]
 # All the dependencies related to mkdocs;
@@ -80,12 +75,15 @@ pymdown-extensions = "*"
 mkdocs-macros-plugin = "*"
 mkdocs-material-extensions = "*"
 markdown-exec = "*"
+
 ###########################################################################
 #                         LINTING CONFIGURATION 
 ###########################################################################
 
+
 [tool.ruff]
 line-length = 150
+fix = true
 extend-exclude = ["tests", "docs"]
 
 [tool.ruff.lint]
