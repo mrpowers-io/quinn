@@ -22,13 +22,9 @@ update_deps: ## Update dependencies
 test: ## Run all tests
 	@poetry run pytest tests
 
-.PHONY: lint 
-lint: ## Lint the code
-	@poetry run ruff check --fix quinn
-
-.PHONY: format
-format: ## Format the code
-	@poetry run ruff format quinn
+.PHONY: check
+check: ## Lint and format the code by running pre-commit hooks
+	@poetry run pre-commit run -a
 
 .PHONY: help
 help: ## Show help for the commands.

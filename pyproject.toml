@@ -45,7 +45,7 @@ optional = true
 [tool.poetry.group.development.dependencies]
 pyspark = ">2"
 semver = "^3"
-pre-commit = "*"
+pre-commit = "^3.7.1"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
@@ -53,9 +53,6 @@ chispa = "0.9.4"
 pytest-describe = "^2"
 pyspark = ">2"
 semver = "^3"
-
-[tool.poetry.group.linting.dependencies]
-ruff = "0.5.2"
 
 [tool.poetry.group.docs.dependencies]
 mkdocstrings-python = "^0.8.3"
@@ -78,6 +75,11 @@ markdown-exec = "*"
 
 
 [tool.ruff]
+line-length = 150
+fix = true
+extend-exclude = ["tests", "docs"]
+
+[tool.ruff.lint]
 select = ["ALL"]
 line-length = 150
 ignore = [
