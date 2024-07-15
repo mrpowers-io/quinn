@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
     - main
+    - planning-1.0-release
   workflow_dispatch:
 
 jobs:
@@ -65,6 +66,18 @@ jobs:
 
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: make test
+
+      - name: Run tests using Spark-Connect against PySpark ${{ matrix.pyspark-version }}
+        env:
+          SPARK_VERSION: ${{ matrix.pyspark-version }}
+          SPARK_CONNECT_MODE_ENABLED: 1
+        run: |
+          if [[ "${SPARK_VERSION}" > "3.4" ]]; then
+            sh scripts/run_spark_connect_server.sh
+            # The tests should be called from here.
+          else
+            echo "Skipping Spark-Connect tests for Spark version <= 3.4"
+          fi
 
   check-license-headers:
     runs-on: ubuntu-latest

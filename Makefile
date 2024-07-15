@@ -3,8 +3,8 @@
 all: help
 
 .PHONY: install_test
-install_test: ## Install test dependencies
-	@poetry install --with=development,testing
+install_test: ## Install the 'dev, test and extras' dependencies
+	@poetry install --with=development,testing --extras connect
 
 .PHONY: install_deps
 install_deps: ## Install all dependencies
@@ -15,7 +15,7 @@ update_deps: ## Update dependencies
 	@poetry update --with=development,linting,testing,docs
 
 .PHONY: test
-test: ## Run the unit tests
+test: ## Run all tests
 	@poetry run pytest tests
 
 .PHONY: lint 
