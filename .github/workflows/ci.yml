@@ -73,8 +73,12 @@ jobs:
           HADOOP_VERSION: 3
           SPARK_VERSION: ${{ matrix.pyspark-version }}
         run: |
-          sh scripts/run_spark_connect_server.sh
-          make test_spark_connect
+          if [[ "${SPARK_VERSION}" > "3.4" ]]; then
+            sh scripts/run_spark_connect_server.sh
+            make test_spark_connect
+          else
+            echo "Skipping Spark-Connect tests for Spark version <= 3.4"
+          fi
 
   check-license-headers:
     runs-on: ubuntu-latest
