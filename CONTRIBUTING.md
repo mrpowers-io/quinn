@@ -57,8 +57,8 @@ To run spark tests you need to have properly configured Java. Apache Spark curre
 
 We use pre-commit hooks to ensure code quality. The configuration for pre-commit hooks is in the `.pre-commit-config.yaml` file. To install pre-commit, run:
 ```shell
-pip install pre-commit
-pre-commit install
+poetry shell
+poetry run pre-commit install
 ```
 To run pre-commit hooks manually, use:
 ```shell
