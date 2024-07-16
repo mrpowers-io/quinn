@@ -16,7 +16,7 @@ You can find a list of [good first issues](https://github.com/MrPowers/quinn/iss
 
 ### Auto-assigning issues
 
-We have a workflow that automatically assigns issues to users who comment 'take' on an issue. This is configured in the `.github/workflows/assign-on-comment.yml` file.
+We have a workflow that automatically assigns issues to users who comment 'take' on an issue. This is configured in the `.github/workflows/assign-on-comment.yml` file. When a user comments `take` on the issue, a GitHub Action will be run to assign the issue to the user if it's not already assigned.
 
 ## Contributing
 
