@@ -34,7 +34,7 @@ def describe_validate_schema():
             ]
         )
         with pytest.raises(quinn.DataFrameMissingStructFieldError) as excinfo:
-            quinn.validate_schema(required_schema, _df=source_df)
+            quinn.validate_schema(required_schema, df_to_be_validated=source_df)
 
         current_spark_version = semver.Version.parse(spark.version)
         spark_330 = semver.Version.parse("3.3.0")
@@ -53,7 +53,7 @@ def describe_validate_schema():
                 StructField("age", LongType(), True),
             ]
         )
-        quinn.validate_schema(required_schema, _df=source_df)
+        quinn.validate_schema(required_schema, df_to_be_validated=source_df)
 
     def nullable_column_mismatches_are_ignored():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
@@ -64,7 +64,7 @@ def describe_validate_schema():
                 StructField("age", LongType(), False),
             ]
         )
-        quinn.validate_schema(required_schema, ignore_nullable=True, _df=source_df)
+        quinn.validate_schema(required_schema, ignore_nullable=True, df_to_be_validated=source_df)
 
 
 def describe_validate_absence_of_columns():

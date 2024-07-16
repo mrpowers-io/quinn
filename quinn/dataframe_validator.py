@@ -53,7 +53,7 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str]) -
 def validate_schema(
     required_schema: StructType,
     ignore_nullable: bool = False,
-    _df: DataFrame = None,
+    df_to_be_validated: DataFrame = None,
 ) -> Callable[[Any, Any], Any]:
     """Function that validate if a given DataFrame has a given StructType as its schema.
     Implemented as a decorator factory so can be used both as a standalone function or as
@@ -64,9 +64,9 @@ def validate_schema(
     :param ignore_nullable: (Optional) A flag for if nullable fields should be
     ignored during validation
     :type ignore_nullable: bool, optional
-    :param _df: DataFrame to validate, mandatory when called as a function. Not required
+    :param df_to_be_validated: DataFrame to validate, mandatory when called as a function. Not required
     when called as a decorator
-    :type _df: DataFrame
+    :type df_to_be_validated: DataFrame
 
     :raises DataFrameMissingStructFieldError: if any StructFields from the required
     schema are not included in the DataFrame schema
@@ -96,12 +96,12 @@ def validate_schema(
             return dataframe
         return wrapper
 
-    if _df is None:
+    if df_to_be_validated is None:
         # This means the function is being used as a decorator
         return decorator
 
     # This means the function is being called directly with a DataFrame
-    return decorator(lambda: _df)()
+    return decorator(lambda: df_to_be_validated)()
 
 
 def validate_absence_of_columns(df: DataFrame, prohibited_col_names: list[str]) -> None:
