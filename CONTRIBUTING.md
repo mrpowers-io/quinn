@@ -14,6 +14,10 @@ Scan through our [existing issues](https://github.com/MrPowers/quinn/issues) to 
 
 You can find a list of [good first issues](https://github.com/MrPowers/quinn/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) which can help you better understand code base of the project.
 
+### Auto-assigning issues
+
+We have a workflow that automatically assigns issues to users who comment 'take' on an issue. This is configured in the `.github/workflows/assign-on-comment.yml` file. When a user comments `take` on the issue, a GitHub Action will be run to assign the issue to the user if it's not already assigned.
+
 ## Contributing
 
 ### Fork the repository
@@ -49,6 +53,17 @@ make install_deps
 
 To run spark tests you need to have properly configured Java. Apache Spark currently supports mainly only Java 8 (1.8). You can find an instruction on how to set up Java [here](https://www.java.com/en/download/help/download_options.html). When you are running spark tests you should have `JAVA_HOME` variable in your environment which points to the  installation of Java 8.
 
+### Pre-commit installation and execution
+
+We use pre-commit hooks to ensure code quality. The configuration for pre-commit hooks is in the `.pre-commit-config.yaml` file. To install pre-commit, run:
+```shell
+poetry shell
+poetry run pre-commit install
+```
+To run pre-commit hooks manually, use:
+```shell
+pre-commit run --all-files
+```
 
 ### Running Tests
 
@@ -57,6 +72,26 @@ You can run test as following:
 ```shell
 make test
 ```
+
+### GitHub Actions local setup using 'act'
+
+You can run GitHub Actions locally using the `act` tool. The configuration for GitHub Actions is in the `.github/workflows/ci.yml` file. To install `act`, follow the instructions [here](https://github.com/nektos/act#installation). To run a specific job, use:
+```shell
+act -j <job-name>
+```
+For example, to run the `test` job, use:
+```shell
+act -j test
+```
+If you need help with `act`, use:
+```shell
+act --help
+```
+For MacBooks with M1 processors, you might have to add the `--container-architecture` tag:
+```shell
+act -j <job-name> --container-architecture linux/arm64
+```
+
 ### Code style
 
 This project follows the [PySpark style guide](https://github.com/MrPowers/spark-style-guide/blob/main/PYSPARK_STYLE_GUIDE.md). All public functions and methods should be documented in `README.md` and also should have docstrings in `sphinx format`:
