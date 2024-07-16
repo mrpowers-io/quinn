@@ -1,3 +1,16 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -47,11 +60,11 @@ def remove_all_whitespace(col: Column) -> Column:
 
 
 def anti_trim(col: Column) -> Column:
-    """Remove whitespace from the boundaries of ``col`` using the regexp_replace function.
+    """Remove all inner whitespace but retain leading and trailing whitespace.
 
     :param col: Column on which to perform the regexp_replace.
     :type col: Column
-    :return: A new Column with all whitespace removed from the boundaries.
+    :return: A new Column with all inner whitespace removed but leading and trailing whitespace retained.
     :rtype: Column
     """
     return F.regexp_replace(col, "\\b\\s+\\b", "")
@@ -305,9 +318,9 @@ def is_falsy(col: Column) -> Column:
 
 
 def is_truthy(col: Column) -> Column:
-    """Calculates a boolean expression that is the opposite of isFalsy for the given ``Column`` col.
+    """Calculates a boolean expression that is the opposite of is_falsy for the given ``Column`` col.
 
-    :param Column col: The ``Column`` to calculate the opposite of isFalsy for.
+    :param Column col: The ``Column`` to calculate the opposite of is_falsy for.
     :returns: A ``Column`` with the results of the calculation.
     :rtype: Column
     """

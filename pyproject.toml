@@ -3,7 +3,12 @@ name = "quinn"
 version = "0.10.3"
 description = "Pyspark helper methods to maximize developer efficiency"
 authors = ["MrPowers <matthewkevinpowers@gmail.com>"]
-license = "Apache-2.0"
+
+# Maintainers of the project
+maintainers = [
+    "SemyonSinchenko <ssinchenko@apache.org>"
+]
+
 readme = "README.md"
 homepage = "https://github.com/MrPowers/quinn/"
 keywords = ['apachespark', 'spark', 'pyspark']

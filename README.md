@@ -257,6 +257,54 @@ quinn.sort_columns(df=source_df, sort_order="asc", sort_nested=True)
 
 ### DataFrame Helpers
 
+**with_columns_renamed()**
+
+Rename ALL or MULTIPLE columns in a dataframe by implementing a common logic to rename the columns.
+
+Consider you have the following two dataframes for orders coming from a source A and a source B:
+
+```
+order_a_df.show()
+
++--------+---------+--------+
+|order_id|order_qty|store_id|
++--------+---------+--------+
+|     001|       23|    45AB|
+|     045|        2|    98HX|
+|     021|      142|    09AA|
++--------+---------+--------+
+
+order_b_df.show()
+
++--------+---------+--------+
+|order_id|order_qty|store_id|
++--------+---------+--------+
+|     001|       23|    47AB|
+|     985|        2|    54XX|
+|    0112|       12|    09AA|
++--------+---------+--------+
+```
+
+Now, you need to join these two dataframes. However, in Spark, when two dfs with identical column names are joined, you may start running into ambiguous column name issue due to multiple columns with the same name in the resulting df. So it's a best practice to rename all of these columns to reflect which df they originate from:
+
+```python
+def add_suffix(s):
+    return s + '_a'
+
+order_a_df_renamed = quinn.with_columns_renamed(add_suffix)(order_a_df)
+
+order_a_df_renamed.show()
+```
+```
++----------+-----------+----------+
+|order_id_a|order_qty_a|store_id_a|
++----------+-----------+----------+
+|       001|         23|      45AB|
+|       045|          2|      98HX|
+|       021|        142|      09AA|
++----------+-----------+----------+
+```
+
 **column_to_list()**
 
 Converts a column in a DataFrame to a list of values.
@@ -444,41 +492,41 @@ from quinn.extensions import *
 
 ### Column Extensions
 
-**isFalsy()**
+**is_falsy()**
 
-Returns `True` if `has_stuff` is `None` or `False`.
+Returns a Column indicating whether all values in the Column are False or NULL: `True` if `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
 ```
 
-**isTruthy()**
+**is_truthy()**
 
-Returns `True` unless `has_stuff` is `None` or `False`.
+Calculates a boolean expression that is the opposite of is_falsy for the given Column: `True` unless `has_stuff` is `None` or `False`.
 
 ```python
 source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
 ```
 
-**isNullOrBlank()**
+**is_null_or_blank()**
 
-Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
+Returns a Boolean value which expresses whether a given column is NULL or contains only blank characters: `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
 
 ```python
 source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
 ```
 
-**isNotIn()**
+**is_not_in()**
 
-Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
+To see if a value is not in a list of values: `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 
 ```python
 source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
 ```
 
-**nullBetween()**
+**null_between()**
 
-Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
+To see if a value is between two values in a null friendly way: `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
 
 ```python
 source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
