@@ -40,7 +40,7 @@ def column_to_list(df: DataFrame, col_name: str) -> list[Any]:
     if sys.modules["pyspark"].__version__ < "3.3.0":
         return [row[0] for row in df.select(col_name).collect()]
 
-    spark_session = df.sparkSession.getActiveSession()
+    spark_session = df.sparkSession
     if spark_session is None:
         return [row[0] for row in df.select(col_name).collect()]
 
