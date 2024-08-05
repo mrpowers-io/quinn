@@ -19,15 +19,16 @@ from .spark import spark
 from functools import wraps
 
 
-def skip_if_spark_connect_mode(func):
+def check_spark_connect_compatibility(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        spark_version = args[0].version  # Assuming the first argument is the Spark session
+        spark_version = args[0].version
         if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-            pytest.skip(
-                "Skipping test because sort_columns is not supported in Spark-Connect mode for Spark versions < 3.5.2"
-            )
-        return func(*args, **kwargs)
+            with pytest.raises(Exception) as excinfo:
+                func(*args, **kwargs)
+            assert str(excinfo.value) == "sort_columns is not supported on Spark-Connect mode for Spark versions <3.5.2"
+        else:
+            return func(*args, **kwargs)
     return wrapper
 
 
@@ -248,6 +249,7 @@ def describe_sort_columns():
         )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_flat(spark, sort_order: str):
     def _get_simple_test_dataframes(sort_order) -> tuple[(DataFrame, DataFrame)]:
         col_a = 1
@@ -308,12 +310,10 @@ def _test_sort_struct_flat(spark, sort_order: str):
     )
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_flat():
     _test_sort_struct_flat(spark, "asc")
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_flat_desc():
     _test_sort_struct_flat(spark, "desc")
 
@@ -364,6 +364,7 @@ def _get_unsorted_nested_struct_fields(elements: dict):
     return unsorted_fields
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -413,6 +414,7 @@ def _test_sort_struct_nested(spark, ignore_nullable: bool):
     )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -493,6 +495,7 @@ def _get_unsorted_nested_array_fields(elements: dict) -> list:
     return unsorted_fields
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -559,6 +562,7 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
     )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -715,42 +719,34 @@ def _test_sort_struct_nested_in_arraytypes(spark, ignore_nullable: bool):
     )
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested():
     _test_sort_struct_nested(spark, True)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_desc():
     _test_sort_struct_nested_desc(spark, True)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_with_arraytypes():
     _test_sort_struct_nested_with_arraytypes(spark, True)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_with_arraytypes_desc():
     _test_sort_struct_nested_with_arraytypes_desc(spark, True)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_nullable():
     _test_sort_struct_nested(spark, True)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_nullable_desc():
     _test_sort_struct_nested_desc(spark, False)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_with_arraytypes_nullable():
     _test_sort_struct_nested_with_arraytypes(spark, False)
 
 
-@skip_if_spark_connect_mode
 def test_sort_struct_nested_with_arraytypes_nullable_desc():
     _test_sort_struct_nested_with_arraytypes_desc(spark, True)
 
