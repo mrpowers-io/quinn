@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from pyspark.sql.functions import udf
 
 
+import os
+import sys
 import uuid
 from typing import Any
 
@@ -196,6 +198,10 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     :return: random element from the given column
     :rtype: Column
     """
+
+    if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        raise Exception("array_choice is not supported on Spark-Connect mode for Spark versions < 3.5.2")
+
     index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
 

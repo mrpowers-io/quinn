@@ -14,6 +14,8 @@
 from __future__ import annotations
 
 import re
+import os
+import sys
 from collections.abc import Callable
 
 from pyspark.sql import DataFrame, SparkSession
@@ -113,6 +115,8 @@ def sort_columns(  # noqa: C901,PLR0915
     :return: A DataFrame with the columns sorted in the chosen order
     :rtype: pyspark.sql.DataFrame
     """
+    if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        raise Exception("sort_columns is not supported on Spark-Connect mode for Spark versions < 3.5.2")
 
     def sort_nested_cols(
         schema: StructType,

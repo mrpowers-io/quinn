@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 import pyspark.sql.functions as F
@@ -171,8 +173,8 @@ def describe_week_start_date():
                 "week_start_date", quinn.week_start_date(F.col("some_date"), "hello")
             )
         assert (
-            excinfo.value.args[0]
-            == "The day you entered 'hello' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
+                excinfo.value.args[0]
+                == "The day you entered 'hello' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
         )
 
 
@@ -228,8 +230,8 @@ def describe_week_end_date():
                 "week_start_date", quinn.week_end_date(F.col("some_date"), "Friday")
             )
         assert (
-            excinfo.value.args[0]
-            == "The day you entered 'Friday' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
+                excinfo.value.args[0]
+                == "The day you entered 'Friday' is not valid.  Here are the valid days: [Mon,Tue,Wed,Thu,Fri,Sat,Sun]"
         )
 
 
@@ -281,13 +283,23 @@ def describe_approx_equal():
 
 # TODO: Figure out how to make this test deterministic locally & on CI
 def test_array_choice():
-    df = quinn.create_df(spark,
+    # Create the DataFrame so that it can be passed to the if & else blocks
+    df = quinn.create_df(
+        spark,
         [(["a", "b", "c"], "c"), (["a", "b", "c", "d"], "a"), (["x"], "x"), ([None], None)],
         [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
     )
-    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
-    # chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
+    # Check if the SPARK_CONNECT_MODE_ENABLED environment variable is set and if the Spark version is less than 3.5.2.
+    # If so check for the exception and if not, run the test.
+    spark_version = spark.version
+    if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        with pytest.raises(Exception) as excinfo:
+            df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+        assert excinfo.value.args[0] == "array_choice is not supported on Spark-Connect mode for Spark versions < 3.5.2"
+    else:
+        actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+        # chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
 def test_business_days_between():
@@ -360,6 +372,7 @@ def describe_uuid5():
             ),
         )
         chispa.assert_column_equality(actual_df, "uuid5_of_s1", "expected")
+
 
 def test_is_falsy():
     source_df = quinn.create_df(

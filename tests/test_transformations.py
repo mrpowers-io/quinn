@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import pytest
 import chispa
 import quinn
@@ -535,11 +537,15 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
-
-    chispa.schema_comparer.assert_schema_equality(
-        sorted_df.schema, expected_df.schema, ignore_nullable
-    )
+    if spark.version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        with pytest.raises(Exception) as excinfo:
+            quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
+        assert str(excinfo.value) == "sort_columns is not supported on Spark-Connect mode for Spark versions < 3.5.2"
+    else:
+        sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
+        chispa.schema_comparer.assert_schema_equality(
+            sorted_df.schema, expected_df.schema, ignore_nullable
+        )
 
 
 def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
