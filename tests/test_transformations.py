@@ -22,7 +22,7 @@ from functools import wraps
 def check_spark_connect_compatibility(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        spark_version = args[0].version
+        spark_version = spark.version
         if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
             with pytest.raises(Exception) as excinfo:
                 func(*args, **kwargs)
@@ -166,6 +166,7 @@ def describe_snake_case_col_names():
         chispa.assert_df_equality(actual_df, expected_df)
 
 
+@check_spark_connect_compatibility
 def describe_sort_columns():
     def it_sorts_columns_in_asc_order():
         source_df = quinn.create_df(
