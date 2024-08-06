@@ -166,8 +166,8 @@ def describe_snake_case_col_names():
         chispa.assert_df_equality(actual_df, expected_df)
 
 
-@check_spark_connect_compatibility
 def describe_sort_columns():
+    @check_spark_connect_compatibility
     def it_sorts_columns_in_asc_order():
         source_df = quinn.create_df(
             spark,
@@ -198,6 +198,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
+    @check_spark_connect_compatibility
     def it_sorts_columns_in_desc_order():
         source_df = quinn.create_df(
             spark,
@@ -228,6 +229,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
+    @check_spark_connect_compatibility
     def it_throws_an_error_if_the_sort_order_is_invalid():
         source_df = quinn.create_df(
             spark,
