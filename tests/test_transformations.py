@@ -39,7 +39,7 @@ def check_spark_connect_compatibility(func):
         if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
             with pytest.raises(Exception) as excinfo:
                 func(*args, **kwargs)
-            assert str(excinfo.value) == "sort_columns is not supported on Spark-Connect mode for Spark versions <3.5.2"
+            assert str(excinfo.value) == "sort_columns is not supported on Spark-Connect < 3.5.2"
         else:
             return func(*args, **kwargs)
     return wrapper

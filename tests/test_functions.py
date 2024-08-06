@@ -296,7 +296,7 @@ def test_array_choice():
     if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
         with pytest.raises(Exception) as excinfo:
             df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
-        assert excinfo.value.args[0] == "array_choice is not supported on Spark-Connect mode for Spark versions < 3.5.2"
+        assert excinfo.value.args[0] == "array_choice is not supported on Spark-Connect < 3.5.2"
     else:
         actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
         # chispa.assert_column_equality(actual_df, "random_letter", "expected")

@@ -34,6 +34,21 @@ from pyspark.sql.types import (
 )
 
 
+class UnsupportedSparkConnectFunctionError(Exception):
+    """Raise this when a function that is not supported by Spark-Connect < v3.5.2 is called."""
+
+    def __init__(self, function_name: str) -> None:
+        """Initialize the UnsupportedSparkConnectFunction exception.
+
+        :param function_name: The name of the function that is not supported.
+        :type function_name: str
+        :returns: None
+        :rtype: None
+        """
+        self.message = f"{function_name} is not supported on Spark-Connect < 3.5.2"
+        super().__init__(self.message)
+
+
 def single_space(col: Column) -> Column:
     """Function takes a column and replaces all the multiple white spaces with a single space.
 
@@ -198,9 +213,8 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     :return: random element from the given column
     :rtype: Column
     """
-
     if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-        raise Exception("array_choice is not supported on Spark-Connect mode for Spark versions < 3.5.2")
+        raise UnsupportedSparkConnectFunctionError(array_choice.__name__)
 
     index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
