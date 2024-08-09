@@ -15,34 +15,8 @@ from pyspark.sql.types import (
     MapType,
 )
 from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
+from tests import check_spark_connect_compatibility
 from .spark import spark
-from functools import wraps
-
-
-def check_spark_connect_compatibility(func):
-    """
-    Decorator to check Spark-Connect compatibility for a given function.
-
-    This decorator will check the Spark version and the environment variable
-    `SPARK_CONNECT_MODE_ENABLED`. If the Spark version is less than 3.5.2 and
-    `SPARK_CONNECT_MODE_ENABLED` is set, it will raise an exception when the
-    decorated function is called. Otherwise, it will execute the function normally.
-
-    :param func: The function to be decorated.
-    :type func: function
-    :return: The wrapped function with Spark-Connect compatibility check.
-    :rtype: function
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        spark_version = spark.version
-        if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-            with pytest.raises(Exception) as excinfo:
-                func(*args, **kwargs)
-            assert str(excinfo.value) == "sort_columns is not supported on Spark-Connect < 3.5.2"
-        else:
-            return func(*args, **kwargs)
-    return wrapper
 
 
 def describe_with_columns_renamed():

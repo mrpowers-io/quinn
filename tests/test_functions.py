@@ -21,6 +21,7 @@ import chispa
 
 import datetime
 import uuid
+from tests import check_spark_connect_compatibility
 
 
 def test_single_space():
@@ -282,6 +283,7 @@ def describe_approx_equal():
 
 
 # TODO: Figure out how to make this test deterministic locally & on CI
+@check_spark_connect_compatibility
 def test_array_choice():
     # Create the DataFrame so that it can be passed to the if & else blocks
     df = quinn.create_df(
@@ -290,16 +292,8 @@ def test_array_choice():
         [("letters", ArrayType(StringType(), True), True), ("expected", StringType(), True)],
     )
 
-    # Check if the SPARK_CONNECT_MODE_ENABLED environment variable is set and if the Spark version is less than 3.5.2.
-    # If so check for the exception and if not, run the test.
-    spark_version = spark.version
-    if spark_version < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-        with pytest.raises(Exception) as excinfo:
-            df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
-        assert excinfo.value.args[0] == "array_choice is not supported on Spark-Connect < 3.5.2"
-    else:
-        actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
-        # chispa.assert_column_equality(actual_df, "random_letter", "expected")
+    actual_df = df.withColumn("random_letter", quinn.array_choice(F.col("letters"), 42))
+    # chispa.assert_column_equality(actual_df, "random_letter", "expected")
 
 
 def test_business_days_between():

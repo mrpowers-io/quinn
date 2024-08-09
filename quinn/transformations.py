@@ -117,7 +117,7 @@ def sort_columns(  # noqa: C901,PLR0915
     :rtype: pyspark.sql.DataFrame
     """
     if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-        raise UnsupportedSparkConnectFunctionError(sort_columns.__name__)
+        raise UnsupportedSparkConnectFunctionError
 
     def sort_nested_cols(
         schema: StructType,

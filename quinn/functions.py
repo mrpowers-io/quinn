@@ -37,15 +37,15 @@ from pyspark.sql.types import (
 class UnsupportedSparkConnectFunctionError(Exception):
     """Raise this when a function that is not supported by Spark-Connect < v3.5.2 is called."""
 
-    def __init__(self, function_name: str) -> None:
+    def __init__(self) -> None:
         """Initialize the UnsupportedSparkConnectFunction exception.
 
-        :param function_name: The name of the function that is not supported.
-        :type function_name: str
+        # :param function_name: The name of the function that is not supported.
+        # :type function_name: str
         :returns: None
         :rtype: None
         """
-        self.message = f"{function_name} is not supported on Spark-Connect < 3.5.2"
+        self.message = "This function is not supported on Spark-Connect < 3.5.2"
         super().__init__(self.message)
 
 
@@ -214,7 +214,7 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     :rtype: Column
     """
     if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
-        raise UnsupportedSparkConnectFunctionError(array_choice.__name__)
+        raise UnsupportedSparkConnectFunctionError
 
     index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
