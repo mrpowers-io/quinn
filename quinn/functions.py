@@ -40,8 +40,6 @@ class UnsupportedSparkConnectFunctionError(Exception):
     def __init__(self) -> None:
         """Initialize the UnsupportedSparkConnectFunction exception.
 
-        # :param function_name: The name of the function that is not supported.
-        # :type function_name: str
         :returns: None
         :rtype: None
         """
