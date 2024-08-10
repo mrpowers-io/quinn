@@ -39,3 +39,7 @@ site
 *.crc
 *.parquet
 _SUCCESS
+
+# Spark-Connect related files/binaries
+spark-*-bin-hadoop3/**
+spark-*-bin-hadoop3.tgz

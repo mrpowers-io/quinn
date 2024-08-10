@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from pyspark.sql.functions import udf
 
 
+import os
+import sys
 import uuid
 from typing import Any
 
@@ -30,6 +32,19 @@ from pyspark.sql.functions import lit, trim, when
 from pyspark.sql.types import (
     BooleanType,
 )
+
+
+class UnsupportedSparkConnectFunctionError(Exception):
+    """Raise this when a function that is not supported by Spark-Connect < v3.5.2 is called."""
+
+    def __init__(self) -> None:
+        """Initialize the UnsupportedSparkConnectFunction exception.
+
+        :returns: None
+        :rtype: None
+        """
+        self.message = "This function is not supported on Spark-Connect < 3.5.2"
+        super().__init__(self.message)
 
 
 def single_space(col: Column) -> Column:
@@ -196,6 +211,9 @@ def array_choice(col: Column, seed: int | None = None) -> Column:
     :return: random element from the given column
     :rtype: Column
     """
+    if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        raise UnsupportedSparkConnectFunctionError
+
     index = (F.rand(seed) * F.size(col)).cast("int")
     return col[index]
 

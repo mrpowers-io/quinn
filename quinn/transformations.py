@@ -13,13 +13,16 @@
 
 from __future__ import annotations
 
+import os
 import re
+import sys
 from collections.abc import Callable
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F  # noqa: N812
 from pyspark.sql.types import ArrayType, MapType, StructField, StructType
 
+from quinn.functions import UnsupportedSparkConnectFunctionError
 from quinn.schema_helpers import complex_fields
 
 
@@ -113,6 +116,8 @@ def sort_columns(  # noqa: C901,PLR0915
     :return: A DataFrame with the columns sorted in the chosen order
     :rtype: pyspark.sql.DataFrame
     """
+    if sys.modules["pyspark"].__version__ < "3.5.2" and os.getenv("SPARK_CONNECT_MODE_ENABLED"):
+        raise UnsupportedSparkConnectFunctionError
 
     def sort_nested_cols(
         schema: StructType,

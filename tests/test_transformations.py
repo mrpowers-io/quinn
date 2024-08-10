@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import pytest
 import chispa
 import quinn
@@ -13,6 +15,7 @@ from pyspark.sql.types import (
     MapType,
 )
 from quinn.transformations import flatten_struct, flatten_map, flatten_dataframe
+from tests import check_spark_connect_compatibility
 from .spark import spark
 
 
@@ -151,6 +154,7 @@ def describe_snake_case_col_names():
 
 
 def describe_sort_columns():
+    @check_spark_connect_compatibility
     def it_sorts_columns_in_asc_order():
         source_df = quinn.create_df(
             spark,
@@ -181,6 +185,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
+    @check_spark_connect_compatibility
     def it_sorts_columns_in_desc_order():
         source_df = quinn.create_df(
             spark,
@@ -211,6 +216,7 @@ def describe_sort_columns():
         )
         chispa.assert_df_equality(actual_df, expected_df)
 
+    @check_spark_connect_compatibility
     def it_throws_an_error_if_the_sort_order_is_invalid():
         source_df = quinn.create_df(
             spark,
@@ -233,6 +239,7 @@ def describe_sort_columns():
         )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_flat(spark, sort_order: str):
     def _get_simple_test_dataframes(sort_order) -> tuple[(DataFrame, DataFrame)]:
         col_a = 1
@@ -347,6 +354,7 @@ def _get_unsorted_nested_struct_fields(elements: dict):
     return unsorted_fields
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -396,6 +404,7 @@ def _test_sort_struct_nested(spark, ignore_nullable: bool):
     )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -476,6 +485,7 @@ def _get_unsorted_nested_array_fields(elements: dict) -> list:
     return unsorted_fields
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
@@ -535,13 +545,14 @@ def _test_sort_struct_nested_with_arraytypes(spark, ignore_nullable: bool):
         return unsorted_df, expected_df
 
     unsorted_df, expected_df = _get_test_dataframes()
-    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
 
+    sorted_df = quinn.sort_columns(unsorted_df, "asc", sort_nested=True)
     chispa.schema_comparer.assert_schema_equality(
         sorted_df.schema, expected_df.schema, ignore_nullable
     )
 
 
+@check_spark_connect_compatibility
 def _test_sort_struct_nested_with_arraytypes_desc(spark, ignore_nullable: bool):
     def _get_test_dataframes() -> tuple[(DataFrame, DataFrame)]:
         elements = _get_test_dataframes_schemas()
