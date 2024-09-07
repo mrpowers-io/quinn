@@ -23,11 +23,16 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-pandas = "^1.5.3"
-pyarrow = "16.1.0"
-numpy = "^1.21.0"
-grpcio = "^1.48.1"
-grpcio-status = "^1.64.1"
+
+# Below are the optional dependencies
+pyarrow = "13.0.0"
+pandas = { version = "^1.5.3", optional = true }
+numpy = { version = "^1.21.0", optional = true }
+grpcio = { version = "^1.48.1", optional = true }
+grpcio-status = { version = "^1.64.1", optional = true }
+
+[tool.poetry.extras]
+connect = ["pyarrow", "pandas", "numpy", "grpcio", "grpcio-status"]
 
 ###########################################################################
 #                         DEPENDENCY GROUPS 
@@ -43,24 +48,26 @@ optional = true
 optional = true
 
 [tool.poetry.group.development.dependencies]
-pyspark = ">2"
+pyspark = ">3"
 semver = "^3"
 pre-commit = "*"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7"
-chispa = "0.9.4"
+chispa = "^0.10"
 pytest-describe = "^2"
-pyspark = ">2"
+pyspark = ">3"
 semver = "^3"
 
 [tool.poetry.group.docs.dependencies]
-mkdocstrings-python = "^0.8.3"
-mkdocs-gen-files = "^0.4.0"
-mkdocs-literate-nav = "^0.6.0"
-mkdocs-section-index = "^0.3.5"
-markdown-include = "^0.8.1"
-mkdocs = "^1"
+# All the dependencies related to mkdocs;
+# We are pinning only the main version of mkdocs.
+mkdocstrings-python = "*"
+mkdocs-gen-files = "*"
+mkdocs-literate-nav = "*"
+mkdocs-section-index = "*"
+markdown-include = "*"
+mkdocs = "^1.6"
 jupyterlab = "*"
 mkdocs-jupyter = "*"
 mkdocs-material = "*"
@@ -81,7 +88,6 @@ extend-exclude = ["tests", "docs"]
 
 [tool.ruff.lint]
 select = ["ALL"]
-line-length = 150
 ignore = [
     "D100",
     "D203",    # Ignore blank line before summary of class
@@ -98,13 +104,14 @@ ignore = [
     "PTH123",  # Don't force use of Pathlib
     "PTH207",  # Don't force use of Pathlib
     "PTH113",  # Don't force use of Pathlib
+    "ISC001",  # Recommended by Ruff
+    "COM812",  # Recommended by Ruff
 ]
-extend-exclude = ["tests", "docs"]
 
 [tool.ruff.lint.per-file-ignores]
 "quinn/__init__.py" = ["F401", "F403"]
 "quinn/functions.py" = ["FBT003"]
 "quinn/keyword_finder.py" = ["A002"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]

@@ -158,8 +158,8 @@ def schema_from_csv(spark: SparkSession, file_path: str) -> T.StructType:  # noq
         field = T.StructField(
             name=row["name"],
             dataType=_lookup_type(row["type"]),
-            nullable=_convert_nullable(row.get("nullable", True)),
-            metadata=_validate_json(row.get("metadata", None)),
+            nullable=_convert_nullable(row["nullable"]) if "nullable" in row else True,
+            metadata=_validate_json(row["metadata"] if "metadata" in row else None),  # noqa: SIM401
         )
         fields.append(field)
 

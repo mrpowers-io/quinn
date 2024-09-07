@@ -15,8 +15,6 @@
 
 from __future__ import annotations
 
-from __future__ import annotations
-
 from quinn.append_if_schema_identical import append_if_schema_identical
 from quinn.dataframe_helpers import (
     column_to_list,
