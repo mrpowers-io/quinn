@@ -64,11 +64,6 @@ jobs:
           PIP_PACKAGES: ${{ matrix.pip-packages }}
         run: poetry run pip install $PIP_PACKAGES  # Using pip shouldn't mess up poetry cache
 
-      - name: Run pre-commit hooks
-        run: |
-          pre-commit install
-          pre-commit run -a
-
       - name: Run tests with pytest against PySpark ${{ matrix.pyspark-version }}
         run: make test
 
@@ -79,9 +74,9 @@ jobs:
         run: |
           if [[ "${SPARK_VERSION}" > "3.4" ]]; then
             sh scripts/run_spark_connect_server.sh
-            # The tests should be called from here.
+            make test
           else
-            echo "Skipping Spark-Connect tests for Spark version <= 3.4"
+            echo "Skipping Spark-Connect tests for Spark version ${SPARK_VERSION}, which is <= 3.4"
           fi
 
   check-license-headers:

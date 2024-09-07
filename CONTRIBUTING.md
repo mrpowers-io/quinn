@@ -73,24 +73,87 @@ You can run test as following:
 make test
 ```
 
-### GitHub Actions local setup using 'act'
+#### GitHub Actions local setup using 'act'
 
-You can run GitHub Actions locally using the `act` tool. The configuration for GitHub Actions is in the `.github/workflows/ci.yml` file. To install `act`, follow the instructions [here](https://github.com/nektos/act#installation). To run a specific job, use:
+You can run GitHub Actions locally using the `act` tool. The configuration for GitHub Actions is in
+the `.github/workflows/ci.yml` file. To install `act`, follow the
+instructions [here](https://github.com/nektos/act#installation). To run a specific job, use:
+
 ```shell
 act -j <job-name>
 ```
+
 For example, to run the `test` job, use:
+
 ```shell
 act -j test
 ```
+
 If you need help with `act`, use:
+
 ```shell
 act --help
 ```
+
 For MacBooks with M1 processors, you might have to add the `--container-architecture` tag:
+
 ```shell
 act -j <job-name> --container-architecture linux/arm64
 ```
+
+#### Running Spark-Connect tests locally
+
+To run the Spark-Connect tests locally, follow the below steps. Please note, this only works on Mac/UNIX-based systems.
+
+1. **Set up the required environment variables:** Following variables need to be setup, so that the shell script that
+   is used to install the Spark-Connect binary & start the server picks the version.
+
+   The version can either be `3.5.1` or `3.4.3`, as those are the ones used in our CI.
+   
+   ```shell
+   export SPARK_VERSION=3.5.1
+   export SPARK_CONNECT_MODE_ENABLED=1
+   ```
+
+2. **Check if the required environment variables are set:** Run the below command to check if the required environment
+   variables are set.
+
+   ```shell
+   echo $SPARK_VERSION
+   echo $SPARK_CONNECT_MODE_ENABLED
+   ```
+
+3. **Install required system packages:** Run the below command to install wget.
+
+   For Mac users:
+   ```shell
+   brew install wget
+   ```
+   
+   For Ubuntu users:
+   ```shell
+   sudo apt-get install wget
+   ```
+
+4. **Execute the shell script:** Run the below command to execute the shell script that installs the Spark-Connect &
+   starts the server.
+   
+   ```shell
+   sh scripts/run_spark_connect_server.sh
+   ```
+
+5. **Run the tests:** Run the below command to execute the tests using Spark-Connect.
+   
+   ```shell
+   make test
+   ```
+
+6. **Cleanups:** After running the tests, you can stop the Spark-Connect server and unset the environment variables.
+   
+   ```shell
+   unset SPARK_VERSION
+   unset SPARK_CONNECT_MODE_ENABLED
+   ```
 
 ### Code style
 
