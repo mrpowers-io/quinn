@@ -8,7 +8,7 @@ install_test: ## Install the 'dev, test and extras' dependencies
 
 .PHONY: install_deps
 install_deps: ## Install all dependencies
-	@poetry install --with=development,linting,testing,docs
+	@poetry install --with=development,testing,docs
 
 .PHONY: install_ruff
 install_ruff: ## Install ruff for use within IDE
@@ -16,7 +16,7 @@ install_ruff: ## Install ruff for use within IDE
 
 .PHONY: update_deps
 update_deps: ## Update dependencies
-	@poetry update --with=development,linting,testing,docs
+	@poetry update --with=development,testing,docs
 
 .PHONY: test
 test: ## Run all tests
