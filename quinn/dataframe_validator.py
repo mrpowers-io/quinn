@@ -11,10 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import annotations
+from __future__ import annotations  # noqa: I001
 
 import copy
-from typing import TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame
@@ -52,38 +52,60 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str]) -
 
 
 def validate_schema(
-    df: DataFrame,
     required_schema: StructType,
     ignore_nullable: bool = False,
-) -> None:
+    df_to_be_validated: DataFrame = None,
+) -> Callable[[Any, Any], Any]:
     """Function that validate if a given DataFrame has a given StructType as its schema.
+    Implemented as a decorator factory so can be used both as a standalone function or as
+    a decorator to another function.
 
-    :param df: DataFrame to validate
-    :type df: DataFrame
     :param required_schema: StructType required for the DataFrame
     :type required_schema: StructType
     :param ignore_nullable: (Optional) A flag for if nullable fields should be
     ignored during validation
     :type ignore_nullable: bool, optional
+    :param df_to_be_validated: DataFrame to validate, mandatory when called as a function. Not required
+    when called as a decorator
+    :type df_to_be_validated: DataFrame
 
     :raises DataFrameMissingStructFieldError: if any StructFields from the required
     schema are not included in the DataFrame schema
     """
-    _all_struct_fields = copy.deepcopy(df.schema)
-    _required_schema = copy.deepcopy(required_schema)
 
-    if ignore_nullable:
-        for x in _all_struct_fields:
-            x.nullable = None
+    def decorator(func: Callable[..., DataFrame]) -> Callable[..., DataFrame]:
+        def wrapper(*args: object, **kwargs: object) -> DataFrame:
+            dataframe = func(*args, **kwargs)
+            _all_struct_fields = copy.deepcopy(dataframe.schema)
+            _required_schema = copy.deepcopy(required_schema)
 
-        for x in _required_schema:
-            x.nullable = None
+            if ignore_nullable:
+                for x in _all_struct_fields:
+                    x.nullable = None
 
-    missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
-    error_message = f"The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {_all_struct_fields}"
+                for x in _required_schema:
+                    x.nullable = None
 
-    if missing_struct_fields:
-        raise DataFrameMissingStructFieldError(error_message)
+            missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
+            error_message = (
+                f"The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {_all_struct_fields}"
+            )
+
+            if missing_struct_fields:
+                raise DataFrameMissingStructFieldError(error_message)
+
+            print("Success! DataFrame matches the required schema!")
+
+            return dataframe
+
+        return wrapper
+
+    if df_to_be_validated is None:
+        # This means the function is being used as a decorator
+        return decorator
+
+    # This means the function is being called directly with a DataFrame
+    return decorator(lambda: df_to_be_validated)()
 
 
 def validate_absence_of_columns(df: DataFrame, prohibited_col_names: list[str]) -> None:
