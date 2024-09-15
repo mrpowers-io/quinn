@@ -399,7 +399,8 @@ IntegerType()
 ## Pyspark Core Class Extensions
 
 ```
-from quinn.extensions import *
+import pyspark.sql.functions as F
+import quinn
 ```
 
 ### Column Extensions
@@ -407,7 +408,7 @@ from quinn.extensions import *
 **isFalsy()**
 
 ```python
-source_df.withColumn("is_stuff_falsy", F.col("has_stuff").isFalsy())
+source_df.withColumn("is_stuff_falsy", quinn.is_falsy(F.col("has_stuff")))
 ```
 
 Returns `True` if `has_stuff` is `None` or `False`.
@@ -415,7 +416,7 @@ Returns `True` if `has_stuff` is `None` or `False`.
 **isTruthy()**
 
 ```python
-source_df.withColumn("is_stuff_truthy", F.col("has_stuff").isTruthy())
+source_df.withColumn("is_stuff_truthy", quinn.is_truthy(F.col("has_stuff")))
 ```
 
 Returns `True` unless `has_stuff` is `None` or `False`.
@@ -423,7 +424,7 @@ Returns `True` unless `has_stuff` is `None` or `False`.
 **isNullOrBlank()**
 
 ```python
-source_df.withColumn("is_blah_null_or_blank", F.col("blah").isNullOrBlank())
+source_df.withColumn("is_blah_null_or_blank", quinn.is_null_or_blank(F.col("blah")))
 ```
 
 Returns `True` if `blah` is `null` or blank (the empty string or a string that only contains whitespace).
@@ -431,7 +432,7 @@ Returns `True` if `blah` is `null` or blank (the empty string or a string that o
 **isNotIn()**
 
 ```python
-source_df.withColumn("is_not_bobs_hobby", F.col("fun_thing").isNotIn(bobs_hobbies))
+source_df.withColumn("is_not_bobs_hobby", quinn.is_not_in(F.col("fun_thing")))
 ```
 
 Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
@@ -439,7 +440,7 @@ Returns `True` if `fun_thing` is not included in the `bobs_hobbies` list.
 **nullBetween()**
 
 ```python
-source_df.withColumn("is_between", F.col("age").nullBetween(F.col("lower_age"), F.col("upper_age")))
+source_df.withColumn("is_between", quinn.null_between(F.col("age"), F.col("lower_age"), F.col("upper_age")))
 ```
 
 Returns `True` if `age` is between `lower_age` and `upper_age`. If `lower_age` is populated and `upper_age` is `null`, it will return `True` if `age` is greater than or equal to `lower_age`. If `lower_age` is `null` and `upper_age` is populate, it will return `True` if `age` is lower than or equal to `upper_age`.
