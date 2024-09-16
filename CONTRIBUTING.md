@@ -225,23 +225,58 @@ When you're finished with the changes, create a pull request, also known as a PR
 
 ### Release Process
 
-#### How to create a release
+#### How to Create a Release
 
-If the latest release on GitHub is 1.0.0, and the latest pre-release is 1.1.0-rc, and if we want to create a release of 1.1.0 then the `release-please-config.json` should be updated by removing the `"versioning":"prerelease"` and setting the `"prerelease": false`. Otherwise, the GitHub Actions will not create a release and it would rather create a pre-release again.
+- **Update `release-please-config.json`:**
+   - Remove `"versioning": "prerelease"`.
+   - Set `"prerelease": false`.
 
-For this whole release process to work seamlessly, lets say the latest release on GitHub is 1.0.0, and the latest pre-release is 1.1.0-rc, and if we want to create a release of 1.1.0, then we will have to set `"bump-minor-pre-major": true,` in the `release-please-config.json` and we should change the version in the `.release-please-manifest.json` from `1.1.0-rc` to `1.0.0` before pushing changes to the remote branch.
+- **Ensure correct version bump:**
+   - If the latest release is `1.0.0` and the latest pre-release is `1.1.0-rc`, and you want to create a release with the version `1.1.0`:
+      - Set `"bump-minor-pre-major": true` in `release-please-config.json`.
+      - Change the version in `.release-please-manifest.json` from `1.1.0-rc` to `1.0.0`.
 
-Improper configs:
-If the config is `"bump-minor-pre-major": false,` and the `.release-please-manifest.json` contains the version as `1.1.0-rc`, then the automated GH Actions will bump the major version creating a release of 2.0.0.
+- **Avoid configurations that cause version/release gaps:**
+   - If `"bump-minor-pre-major": false` and `.release-please-manifest.json` is `1.1.0-rc`, it will create a major release `2.0.0`.
+   - If `"bump-minor-pre-major": true` and `.release-please-manifest.json` is `1.1.0-rc`, it will create a minor release `1.2.0`.
 
-If the config is `"bump-minor-pre-major": true,` and the `.release-please-manifest.json` contains the version as `1.1.0-rc`, then the automated GH Actions will create a version of `1.2.0`. Either of those above improper configs will lead to a gap in the release. Hence, it's important to downgrade the version in the version file and set the  `"bump-minor-pre-major": true,` if we are creating a minor release. If we are creating a major release, then perhaps use the config `"bump-minor-pre-major": false,` and then set the version in the version file to the latest release version. 
+- **Key points:**
+   - Downgrade the version in the version file for minor releases.
+   - Use `"bump-minor-pre-major": true` for minor releases.
+   - Use `"bump-minor-pre-major": false` for major releases and set the version to the latest release version. 
 
-#### How to create a pre-release
+#### How to Create a Pre-Release
 
-In order to create a pre-release, the user should just update the `release-please-config.json` in the root. They should set the `"prerelease"` to `true` and the `"versioning"` to `"prerelease"`. Otherwise, a pre-release will not be created. In this case, since the pre-release-type is set to `rc`, if the current version is `1.0.0`, and the following configs are set as `"bump-minor-pre-major": true, "bump-patch-for-minor-pre-major": false,`, then the pre-release version will be bumped to as `1.1.0-rc`.
+- Update the `release-please-config.json` in the root.
+   - Set `"prerelease"` to `true`.
+   - Add the line `"versioning": "prerelease"`.
+- Ensure the pre-release type is set to `rc`.
+   - For example, if the current version is `1.0.0` and the following configs are set:
+      - `"bump-minor-pre-major": true`
+      - `"bump-patch-for-minor-pre-major": false`
+   - The pre-release version will be bumped to `1.1.0-rc`.
+   - If the configs are set as:
+      - `"bump-minor-pre-major": false`
+      - `"bump-patch-for-minor-pre-major": false`
+   - The pre-release version will be `2.0.0-rc`, i.e., the major version will be bumped.
 
-If the configs are as follows `"bump-minor-pre-major": false, "bump-patch-for-minor-pre-major": false,`, then the pre-release version will be `2.0.0-rc`, i.e., the major version will be bumped.
 
-#### Conventional commit messages tips
+### Conventional Commit Messages
 
--
+- **Format**: `<type>[optional scope]: <description>`
+- **Type**: Specifies the nature of the change (e.g., `feat`, `fix`, `docs`).
+- **Scope**: Optional part that specifies the section of the codebase affected.
+- **Description**: A brief summary of the change.
+- **Body**: Optional detailed explanation of the change.
+- **Footer**: Optional additional information, such as breaking changes or issue references.
+
+#### Example
+
+```plaintext
+feat(parser): add support for new data format
+
+Added a new parser to handle the VARIANT data format. This change includes updates to the parser module and corresponding tests.
+
+Closes #123
+```
+For more information on conventional commit messages, check this site: https://www.conventionalcommits.org/en/v1.0.0/ 
