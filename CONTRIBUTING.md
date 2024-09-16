@@ -222,3 +222,26 @@ When you're finished with the changes, create a pull request, also known as a PR
 - Don't forget to link PR to the issue if you are solving one.
 - As you update your PR and apply changes, mark each conversation as resolved.
 - If you run into any merge issues, checkout this [git tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge conflicts and other issues.
+
+### Release Process
+
+#### How to create a release
+
+If the latest release on GitHub is 1.0.0, and the latest pre-release is 1.1.0-rc, and if we want to create a release of 1.1.0 then the `release-please-config.json` should be updated by removing the `"versioning":"prerelease"` and setting the `"prerelease": false`. Otherwise, the GitHub Actions will not create a release and it would rather create a pre-release again.
+
+For this whole release process to work seamlessly, lets say the latest release on GitHub is 1.0.0, and the latest pre-release is 1.1.0-rc, and if we want to create a release of 1.1.0, then we will have to set `"bump-minor-pre-major": true,` in the `release-please-config.json` and we should change the version in the `.release-please-manifest.json` from `1.1.0-rc` to `1.0.0` before pushing changes to the remote branch.
+
+Improper configs:
+If the config is `"bump-minor-pre-major": false,` and the `.release-please-manifest.json` contains the version as `1.1.0-rc`, then the automated GH Actions will bump the major version creating a release of 2.0.0.
+
+If the config is `"bump-minor-pre-major": true,` and the `.release-please-manifest.json` contains the version as `1.1.0-rc`, then the automated GH Actions will create a version of `1.2.0`. Either of those above improper configs will lead to a gap in the release. Hence, it's important to downgrade the version in the version file and set the  `"bump-minor-pre-major": true,` if we are creating a minor release. If we are creating a major release, then perhaps use the config `"bump-minor-pre-major": false,` and then set the version in the version file to the latest release version. 
+
+#### How to create a pre-release
+
+In order to create a pre-release, the user should just update the `release-please-config.json` in the root. They should set the `"prerelease"` to `true` and the `"versioning"` to `"prerelease"`. Otherwise, a pre-release will not be created. In this case, since the pre-release-type is set to `rc`, if the current version is `1.0.0`, and the following configs are set as `"bump-minor-pre-major": true, "bump-patch-for-minor-pre-major": false,`, then the pre-release version will be bumped to as `1.1.0-rc`.
+
+If the configs are as follows `"bump-minor-pre-major": false, "bump-patch-for-minor-pre-major": false,`, then the pre-release version will be `2.0.0-rc`, i.e., the major version will be bumped.
+
+#### Conventional commit messages tips
+
+-
