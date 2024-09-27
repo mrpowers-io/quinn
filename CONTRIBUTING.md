@@ -222,3 +222,61 @@ When you're finished with the changes, create a pull request, also known as a PR
 - Don't forget to link PR to the issue if you are solving one.
 - As you update your PR and apply changes, mark each conversation as resolved.
 - If you run into any merge issues, checkout this [git tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge conflicts and other issues.
+
+### Release Process
+
+#### How to Create a Release
+
+- **Update `release-please-config.json`:**
+   - Remove `"versioning": "prerelease"`.
+   - Set `"prerelease": false`.
+
+- **Ensure correct version bump:**
+   - If the latest release is `1.0.0` and the latest pre-release is `1.1.0-rc`, and you want to create a release with the version `1.1.0`:
+      - Set `"bump-minor-pre-major": true` in `release-please-config.json`.
+      - Change the version in `.release-please-manifest.json` from `1.1.0-rc` to `1.0.0`.
+
+- **Avoid configurations that cause version/release gaps:**
+   - If `"bump-minor-pre-major": false` and `.release-please-manifest.json` is `1.1.0-rc`, it will create a major release `2.0.0`.
+   - If `"bump-minor-pre-major": true` and `.release-please-manifest.json` is `1.1.0-rc`, it will create a minor release `1.2.0`.
+
+- **Key points:**
+   - Downgrade the version in the version file for minor releases.
+   - Use `"bump-minor-pre-major": true` for minor releases.
+   - Use `"bump-minor-pre-major": false` for major releases and set the version to the latest release version. 
+
+#### How to Create a Pre-Release
+
+- Update the `release-please-config.json` in the root.
+   - Set `"prerelease"` to `true`.
+   - Add the line `"versioning": "prerelease"`.
+- Ensure the pre-release type is set to `rc`.
+   - For example, if the current version is `1.0.0` and the following configs are set:
+      - `"bump-minor-pre-major": true`
+      - `"bump-patch-for-minor-pre-major": false`
+   - The pre-release version will be bumped to `1.1.0-rc`.
+   - If the configs are set as:
+      - `"bump-minor-pre-major": false`
+      - `"bump-patch-for-minor-pre-major": false`
+   - The pre-release version will be `2.0.0-rc`, i.e., the major version will be bumped.
+
+
+### Conventional Commit Messages
+
+- **Format**: `<type>[optional scope]: <description>`
+- **Type**: Specifies the nature of the change (e.g., `feat`, `fix`, `docs`).
+- **Scope**: Optional part that specifies the section of the codebase affected.
+- **Description**: A brief summary of the change.
+- **Body**: Optional detailed explanation of the change.
+- **Footer**: Optional additional information, such as breaking changes or issue references.
+
+#### Example
+
+```plaintext
+feat(parser): add support for new data format
+
+Added a new parser to handle the VARIANT data format. This change includes updates to the parser module and corresponding tests.
+
+Closes #123
+```
+For more information on conventional commit messages, check this site: https://www.conventionalcommits.org/en/v1.0.0/ 
