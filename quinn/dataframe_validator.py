@@ -53,6 +53,8 @@ def validate_presence_of_columns(df: DataFrame, required_col_names: list[str], r
         if return_bool:
             return False
         raise DataFrameMissingColumnError(error_message)
+    
+    return True if return_bool else None
 
     return True if return_bool else None
 
@@ -96,6 +98,8 @@ def validate_schema(
         if return_bool:
             return False
         raise DataFrameMissingStructFieldError(error_message)
+    
+    return True if return_bool else None
 
     return True if return_bool else None
 
@@ -112,7 +116,6 @@ def validate_absence_of_columns(df: DataFrame, prohibited_col_names: list[str], 
     """
     all_col_names = df.columns
     extra_col_names = [x for x in all_col_names if x in prohibited_col_names]
-
     if extra_col_names:
         error_message = f"The {extra_col_names} columns are not allowed to be included in the DataFrame with the following columns {all_col_names}"
         if return_bool:
