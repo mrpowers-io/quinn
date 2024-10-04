@@ -1,7 +1,6 @@
 import pytest
 from pyspark.sql.types import StructType, StructField, StringType, LongType
 import semver
-
 import quinn
 from .spark import spark
 
@@ -21,7 +20,7 @@ def describe_validate_presence_of_columns():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         quinn.validate_presence_of_columns(source_df, ["name"], False)
-        
+
     def it_returns_false_if_a_required_column_is_missing_and_return_bool_is_true():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
@@ -66,7 +65,7 @@ def describe_validate_schema():
             ]
         )
         quinn.validate_schema(source_df, required_schema, return_bool = False)
-        
+
     def it_returns_false_when_struct_field_is_missing_and_return_bool_is_true():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
@@ -118,7 +117,7 @@ def describe_validate_absence_of_columns():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
         quinn.validate_absence_of_columns(source_df, ["favorite_color"], False)
-        
+
     def it_returns_false_when_a_unallowed_column_is_present_and_return_bool_is_true():
         data = [("jose", 1), ("li", 2), ("luisa", 3)]
         source_df = spark.createDataFrame(data, ["name", "age"])
