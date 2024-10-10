@@ -52,6 +52,10 @@ from quinn.functions import (
     week_end_date,
     week_start_date,
 )
+from quinn.math import (
+    rand_laplace,
+    rand_range,
+)
 from quinn.schema_helpers import print_schema_as_code
 from quinn.split_columns import split_col
 from quinn.transformations import (

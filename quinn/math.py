@@ -47,6 +47,29 @@ def rand_laplace(
     )
 
 
+def rand_range(
+    minimum: Union[int, Column],
+    maximum: Union[int, Column],
+    seed: Optional[int] = None,
+) -> Column:
+    """Generate random numbers uniformly distributed in [`minimum`, `maximum`).
+
+    :param minimum: minimum value of the random numbers
+    :param maximum: maximum value of the random numbers
+    :param seed: random seed value (optional, default None)
+    :returns: column with random numbers
+    """
+    if not isinstance(minimum, Column):
+        minimum = F.lit(minimum)
+
+    if not isinstance(maximum, Column):
+        maximum = F.lit(maximum)
+
+    u = F.rand(seed)
+
+    return minimum + (maximum - minimum) * u
+
+
 def div_or_else(
     cola: Column,
     colb: Column,
