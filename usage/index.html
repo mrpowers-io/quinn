@@ -1,0 +1,1126 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mrpowers.github.io/quinn/usage/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../reference/SUMMARY/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.7">
+    
+    
+      
+        <title>Usage - Quinn</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quinn-helper-functions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Quinn" class="md-header__button md-logo" aria-label="Quinn" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Quinn
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MrPowers/quinn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MrPowers/quinn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Usage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../reference/SUMMARY/" class="md-tabs__link">
+        
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../examples/" class="md-tabs__link">
+        
+  
+    
+  
+  Examples
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../learn_more/" class="md-tabs__link">
+        
+  
+    
+  
+  Learn more
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Quinn" class="md-nav__button md-logo" aria-label="Quinn" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Quinn
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MrPowers/quinn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MrPowers/quinn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quinn-helper-functions" class="md-nav__link">
+    Quinn Helper Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Quinn Helper Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataframe-validations" class="md-nav__link">
+    DataFrame Validations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformations" class="md-nav__link">
+    Transformations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataframe-helpers" class="md-nav__link">
+    DataFrame Helpers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-helpers" class="md-nav__link">
+    Schema Helpers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/SUMMARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../examples/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            </a>
+            
+              <label class="md-nav__link " for="__nav_4">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notebooks/schema_as_code/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Print SCHEMA as code
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../learn_more/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Learn more
+  </span>
+  
+
+            </a>
+            
+              <label class="md-nav__link " for="__nav_5">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Learn more
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learn_more/column_to_list/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Column to list performance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quinn-helper-functions" class="md-nav__link">
+    Quinn Helper Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Quinn Helper Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataframe-validations" class="md-nav__link">
+    DataFrame Validations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformations" class="md-nav__link">
+    Transformations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataframe-helpers" class="md-nav__link">
+    DataFrame Helpers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-helpers" class="md-nav__link">
+    Schema Helpers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Usage</h1>
+
+<h2 id="quinn-helper-functions">Quinn Helper Functions</h2>
+<pre><code class="language-python">import quinn
+</code></pre>
+<h3 id="dataframe-validations">DataFrame Validations</h3>
+<p><strong>validate_presence_of_columns()</strong></p>
+<pre><code class="language-python">quinn.validate_presence_of_columns(source_df, [&quot;name&quot;, &quot;age&quot;, &quot;fun&quot;])
+</code></pre>
+<p>Raises an exception unless <code>source_df</code> contains the <code>name</code>, <code>age</code>, and <code>fun</code> column.</p>
+<p><strong>validate_schema()</strong></p>
+<pre><code class="language-python">quinn.validate_schema(source_df, required_schema)
+</code></pre>
+<p>Raises an exception unless <code>source_df</code> contains all the <code>StructFields</code> defined in the <code>required_schema</code>.</p>
+<p><strong>validate_absence_of_columns()</strong></p>
+<pre><code class="language-python">quinn.validate_absence_of_columns(source_df, [&quot;age&quot;, &quot;cool&quot;])
+</code></pre>
+<p>Raises an exception if <code>source_df</code> contains <code>age</code> or <code>cool</code> columns.</p>
+<h3 id="functions">Functions</h3>
+<p><strong>single_space()</strong></p>
+<pre><code class="language-python">actual_df = source_df.withColumn(
+    &quot;words_single_spaced&quot;,
+    quinn.single_space(col(&quot;words&quot;))
+)
+</code></pre>
+<p>Replaces all multispaces with single spaces (e.g. changes <code>"this has   some"</code> to <code>"this has some"</code>.</p>
+<p><strong>remove_all_whitespace()</strong></p>
+<pre><code class="language-python">actual_df = source_df.withColumn(
+    &quot;words_without_whitespace&quot;,
+    quinn.remove_all_whitespace(col(&quot;words&quot;))
+)
+</code></pre>
+<p>Removes all whitespace in a string (e.g. changes <code>"this has some"</code> to <code>"thishassome"</code>.</p>
+<p><strong>anti_trim()</strong></p>
+<pre><code class="language-python">actual_df = source_df.withColumn(
+    &quot;words_anti_trimmed&quot;,
+    quinn.anti_trim(col(&quot;words&quot;))
+)
+</code></pre>
+<p>Removes all inner whitespace, but doesn't delete leading or trailing whitespace (e.g. changes <code>" this has some "</code> to <code>" thishassome "</code>.</p>
+<p><strong>remove_non_word_characters()</strong></p>
+<pre><code class="language-python">actual_df = source_df.withColumn(
+    &quot;words_without_nonword_chars&quot;,
+    quinn.remove_non_word_characters(col(&quot;words&quot;))
+)
+</code></pre>
+<p>Removes all non-word characters from a string (e.g. changes <code>"si%$#@!#$!@#mpsons"</code> to <code>"simpsons"</code>.</p>
+<p><strong>multi_equals()</strong></p>
+<pre><code class="language-python">source_df.withColumn(
+    &quot;are_s1_and_s2_cat&quot;,
+    quinn.multi_equals(&quot;cat&quot;)(col(&quot;s1&quot;), col(&quot;s2&quot;))
+)
+</code></pre>
+<p><code>multi_equals</code> returns true if <code>s1</code> and <code>s2</code> are both equal to <code>"cat"</code>.</p>
+<p><strong>approx_equal()</strong></p>
+<p>This function takes 3 arguments which are 2 Pyspark DataFrames and one integer values as threshold, and returns the Boolean column which tells if the columns are equal in the threshold.</p>
+<pre><code>let the columns be
+col1 = [1.2, 2.5, 3.1, 4.0, 5.5]
+col2 = [1.3, 2.3, 3.0, 3.9, 5.6]
+threshold = 0.2
+
+result = approx_equal(col(&quot;col1&quot;), col(&quot;col2&quot;), threshold)
+result.show()
+
++-----+
+|value|
++-----+
+| true|
+|false|
+| true|
+| true|
+| true|
++-----+
+</code></pre>
+<p><strong>array_choice()</strong></p>
+<p>This function takes a Column as a parameter and returns a PySpark column that contains a random value from the input column parameter</p>
+<pre><code>df = spark.createDataFrame([(1,), (2,), (3,), (4,), (5,)], [&quot;values&quot;])
+result = df.select(array_choice(col(&quot;values&quot;)))
+
+The output is :=
++--------------+
+|array_choice()|
++--------------+
+|             2|
++--------------+
+
+</code></pre>
+<p><strong>regexp_extract_all()</strong></p>
+<p>The regexp_extract_all takes 2 parameters String <code>s</code> and <code>regexp</code> which is a regular expression. This function finds all the matches for the string which satisfies the regular expression.</p>
+<pre><code>print(regexp_extract_all(&quot;this is a example text message for testing application&quot;,r&quot;\b\w*a\w*\b&quot;))
+
+The output is :=
+['a', 'example', 'message', 'application']
+
+</code></pre>
+<p>Where <code>r"\b\w*a\w*\b"</code> pattern checks for words containing letter <code>a</code></p>
+<p><strong>week_start_date()</strong></p>
+<p>It takes 2 parameters, column and week_start_day. It returns a Spark Dataframe column which contains the start date of the week. By default the week_start_day is set to "Sun".</p>
+<p>For input <code>["2023-03-05", "2023-03-06", "2023-03-07", "2023-03-08"]</code> the Output is</p>
+<pre><code>result = df.select(&quot;date&quot;, week_start_date(col(&quot;date&quot;), &quot;Sun&quot;))
+result.show()
++----------+----------------+
+|      date|week_start_date |
++----------+----------------+
+|2023-03-05|      2023-03-05|
+|2023-03-07|      2023-03-05|
+|2023-03-08|      2023-03-05|
++----------+----------------+
+</code></pre>
+<p><strong>week_end_date()</strong></p>
+<p>It also takes 2 Paramters as Column and week_end_day, and returns the dateframe column which contains the end date of the week. By default the week_end_day is set to "sat"</p>
+<pre><code>+---------+-------------+
+      date|week_end_date|
++---------+-------------+
+2023-03-05|   2023-03-05|
+2023-03-07|   2023-03-12|
+2023-03-08|   2023-03-12|
++---------+-------------+
+
+</code></pre>
+<p><strong>uuid5()</strong></p>
+<p>This function generates UUIDv5 in string form from the passed column and optionally namespace and optional extra salt.
+By default namespace is NAMESPACE_DNS UUID and no extra string used to reduce hash collisions.</p>
+<pre><code>
+df = spark.createDataFrame([(&quot;lorem&quot;,), (&quot;ipsum&quot;,)], [&quot;values&quot;])
+result = df.select(quinn.uuid5(F.col(&quot;values&quot;)).alias(&quot;uuid5&quot;))
+result.show(truncate=False)
+
+The output is :=
++------------------------------------+
+|uuid5                               |
++------------------------------------+
+|35482fda-c10a-5076-8da2-dc7bf22d6be4|
+|51b79c1d-d06c-5b30-a5c6-1fadcd3b2103|
++------------------------------------+
+
+</code></pre>
+<h3 id="transformations">Transformations</h3>
+<p><strong>snake_case_col_names()</strong></p>
+<pre><code class="language-python">quinn.snake_case_col_names(source_df)
+</code></pre>
+<p>Converts all the column names in a DataFrame to snake_case. It's annoying to write SQL queries when columns aren't snake cased.</p>
+<p><strong>sort_columns()</strong></p>
+<pre><code class="language-python">quinn.sort_columns(df=source_df, sort_order=&quot;asc&quot;, sort_nested=True)
+</code></pre>
+<p>Sorts the DataFrame columns in alphabetical order, including nested columns if sort_nested is set to True. Wide DataFrames are easier to navigate when they're sorted alphabetically.</p>
+<h3 id="dataframe-helpers">DataFrame Helpers</h3>
+<p><strong>column_to_list()</strong></p>
+<pre><code class="language-python">quinn.column_to_list(source_df, &quot;name&quot;)
+</code></pre>
+<p>Converts a column in a DataFrame to a list of values.</p>
+<p><strong>two_columns_to_dictionary()</strong></p>
+<pre><code class="language-python">quinn.two_columns_to_dictionary(source_df, &quot;name&quot;, &quot;age&quot;)
+</code></pre>
+<p>Converts two columns of a DataFrame into a dictionary. In this example, <code>name</code> is the key and <code>age</code> is the value.</p>
+<p><strong>to_list_of_dictionaries()</strong></p>
+<pre><code class="language-python">quinn.to_list_of_dictionaries(source_df)
+</code></pre>
+<p>Converts an entire DataFrame into a list of dictionaries.</p>
+<p><strong>show_output_to_df()</strong></p>
+<pre><code class="language-python">quinn.show_output_to_df(output_str, spark)
+</code></pre>
+<p>Parses a spark DataFrame output string into a spark DataFrame. Useful for quickly pulling data from a log into a DataFrame. In this example, output_str is a string of the form:</p>
+<pre><code>+----+---+-----------+------+
+|name|age|     stuff1|stuff2|
++----+---+-----------+------+
+|jose|  1|nice person|  yoyo|
+|  li|  2|nice person|  yoyo|
+| liz|  3|nice person|  yoyo|
++----+---+-----------+------+
+</code></pre>
+<h3 id="schema-helpers">Schema Helpers</h3>
+<p><strong>schema_from_csv()</strong></p>
+<pre><code class="language-python">quinn.schema_from_csv(&quot;schema.csv&quot;)
+</code></pre>
+<p>Converts a CSV file into a PySpark schema (aka <code>StructType</code>). The CSV must contain the column name and type.  The nullable and metadata columns are optional.</p>
+<p>Here's an example CSV file:</p>
+<pre><code>name,type
+person,string
+address,string
+phoneNumber,string
+age,int
+</code></pre>
+<p>Here's how to convert that CSV file to a PySpark schema:</p>
+<pre><code class="language-python">schema = schema_from_csv(spark, &quot;some_file.csv&quot;)
+
+StructType([
+    StructField(&quot;person&quot;, StringType(), True),
+    StructField(&quot;address&quot;, StringType(), True),
+    StructField(&quot;phoneNumber&quot;, StringType(), True),
+    StructField(&quot;age&quot;, IntegerType(), True),
+])
+</code></pre>
+<p>Here's a more complex CSV file:</p>
+<pre><code>name,type,nullable,metadata
+person,string,false,{&quot;description&quot;:&quot;The person's name&quot;}
+address,string
+phoneNumber,string,TRUE,{&quot;description&quot;:&quot;The person's phone number&quot;}
+age,int,False
+</code></pre>
+<p>Here's how to read this CSV file into a PySpark schema:</p>
+<pre><code class="language-python">another_schema = schema_from_csv(spark, &quot;some_file.csv&quot;)
+
+StructType([
+    StructField(&quot;person&quot;, StringType(), False, {&quot;description&quot;: &quot;The person's name&quot;}),
+    StructField(&quot;address&quot;, StringType(), True),
+    StructField(&quot;phoneNumber&quot;, StringType(), True, {&quot;description&quot;: &quot;The person's phone number&quot;}),
+    StructField(&quot;age&quot;, IntegerType(), False),
+])
+</code></pre>
+<p><strong>print_schema_as_code()</strong></p>
+<pre><code class="language-python">fields = [
+    StructField(&quot;simple_int&quot;, IntegerType()),
+    StructField(&quot;decimal_with_nums&quot;, DecimalType(19, 8)),
+    StructField(&quot;array&quot;, ArrayType(FloatType()))
+]
+schema = StructType(fields)
+printable_schema: str = quinn.print_schema_as_code(schema)
+</code></pre>
+<p>Converts a Spark <code>DataType</code> to a string of Python code that can be evaluated as code using eval(). If the <code>DataType</code> is a <code>StructType</code>, this can be used to print an existing schema in a format that can be copy-pasted into a Python script, log to a file, etc. </p>
+<p>For example:</p>
+<pre><code class="language-python">print(printable_schema)
+</code></pre>
+<pre><code>StructType(
+    fields=[
+        StructField(&quot;simple_int&quot;, IntegerType(), True),
+        StructField(&quot;decimal_with_nums&quot;, DecimalType(19, 8), True),
+        StructField(
+            &quot;array&quot;,
+            ArrayType(FloatType()),
+            True,
+        ),
+    ]
+)
+</code></pre>
+<p>Once evaluated, the printable schema is a valid schema that can be used in dataframe creation, validation, etc.</p>
+<pre><code class="language-python">from chispa.schema_comparer import assert_basic_schema_equality
+
+parsed_schema = eval(printable_schema)
+assert_basic_schema_equality(parsed_schema, schema) # passes
+</code></pre>
+<p><code>print_schema_as_code()</code> can also be used to print other <code>DataType</code> objects.</p>
+<p><code>ArrayType</code></p>
+<pre><code class="language-python">array_type = ArrayType(FloatType())
+printable_type: str = quinn.print_schema_as_code(array_type)
+print(printable_type)
+ ```
+
+ ```
+ArrayType(FloatType())
+ ```
+
+`MapType`
+```python
+map_type = MapType(StringType(), FloatType())
+printable_type: str = quinn.print_schema_as_code(map_type)
+print(printable_type)
+ ```
+
+ ```
+MapType(
+        StringType(),
+        FloatType(),
+        True,
+)
+ ```
+
+`IntegerType`, `StringType` etc.
+```python
+integer_type = IntegerType()
+printable_type: str = quinn.print_schema_as_code(integer_type)
+print(printable_type)
+ ```
+
+ ```
+IntegerType()
+ ```
+
+## Pyspark Core Class Extensions
+
+</code></pre>
+<p>import pyspark.sql.functions as F
+import quinn</p>
+<pre><code>
+### Column Extensions
+
+**isFalsy()**
+
+```python
+source_df.withColumn(&quot;is_stuff_falsy&quot;, quinn.is_falsy(F.col(&quot;has_stuff&quot;)))
+</code></pre>
+<p>Returns <code>True</code> if <code>has_stuff</code> is <code>None</code> or <code>False</code>.</p>
+<p><strong>isTruthy()</strong></p>
+<pre><code class="language-python">source_df.withColumn(&quot;is_stuff_truthy&quot;, quinn.is_truthy(F.col(&quot;has_stuff&quot;)))
+</code></pre>
+<p>Returns <code>True</code> unless <code>has_stuff</code> is <code>None</code> or <code>False</code>.</p>
+<p><strong>isNullOrBlank()</strong></p>
+<pre><code class="language-python">source_df.withColumn(&quot;is_blah_null_or_blank&quot;, quinn.is_null_or_blank(F.col(&quot;blah&quot;)))
+</code></pre>
+<p>Returns <code>True</code> if <code>blah</code> is <code>null</code> or blank (the empty string or a string that only contains whitespace).</p>
+<p><strong>isNotIn()</strong></p>
+<pre><code class="language-python">source_df.withColumn(&quot;is_not_bobs_hobby&quot;, quinn.is_not_in(F.col(&quot;fun_thing&quot;)))
+</code></pre>
+<p>Returns <code>True</code> if <code>fun_thing</code> is not included in the <code>bobs_hobbies</code> list.</p>
+<p><strong>nullBetween()</strong></p>
+<pre><code class="language-python">source_df.withColumn(&quot;is_between&quot;, quinn.null_between(F.col(&quot;age&quot;), F.col(&quot;lower_age&quot;), F.col(&quot;upper_age&quot;)))
+</code></pre>
+<p>Returns <code>True</code> if <code>age</code> is between <code>lower_age</code> and <code>upper_age</code>. If <code>lower_age</code> is populated and <code>upper_age</code> is <code>null</code>, it will return <code>True</code> if <code>age</code> is greater than or equal to <code>lower_age</code>. If <code>lower_age</code> is <code>null</code> and <code>upper_age</code> is populate, it will return <code>True</code> if <code>age</code> is lower than or equal to <code>upper_age</code>.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../reference/SUMMARY/" class="md-footer__link md-footer__link--next" aria-label="Next: API Reference" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                API Reference
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.footer", "navigation.indexes", "navigation.expand", "content.tabs.link", "content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      
+    
+  </body>
+</html>
