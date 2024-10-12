@@ -38,12 +38,9 @@ def rand_laplace(
     if not isinstance(beta, Column):
         beta = F.lit(beta)
 
-    u = F.rand(seed)
-
-    return (
-        F.when(u < F.lit(0.5), mu + beta * F.log(2 * u))
-        .otherwise(mu - beta * F.log(2 * (1 - u)))
-        .alias("laplace_random")
+    u = F.rand(seed) - F.lit(0.5)
+    return (mu - beta * F.signum(u) * F.log(F.lit(1) - (F.lit(2) * F.abs(u)))).alias(
+        "laplace_random"
     )
 
 
