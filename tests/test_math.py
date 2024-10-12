@@ -1,14 +1,23 @@
 import pyspark.sql.functions as F
 
+import pytest
 import quinn
 import math
 from .spark import spark
 
 
-def test_rand_laplace():
+@pytest.mark.parametrize(
+    "mean, scale",
+    [
+        (1.0, 2.0),
+        (2.0, 3.0),
+        (3.0, 4.0),
+    ],
+)
+def test_rand_laplace(mean: float, scale: float):
     stats = (
         spark.range(100000)
-        .select(quinn.rand_laplace(0.0, 1.0, 42))
+        .select(quinn.rand_laplace(mean, scale, 42))
         .agg(
             F.mean("laplace_random").alias("mean"),
             F.stddev("laplace_random").alias("std_dev"),
@@ -20,8 +29,8 @@ def test_rand_laplace():
     laplace_stddev = stats["std_dev"]
 
     # Laplace distribution with mean=0.0 and scale=1.0 has mean=0.0 and stddev=sqrt(2.0)
-    assert abs(laplace_mean) <= 0.1
-    assert abs(laplace_stddev - math.sqrt(2.0)) < 0.5
+    assert abs(laplace_mean - mean) <= 0.1
+    assert abs(laplace_stddev - scale * math.sqrt(2.0)) <= 0.1
 
 
 def test_rand_range():
