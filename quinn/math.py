@@ -89,7 +89,7 @@ def randn(
     if not isinstance(variance, Column):
         variance = F.lit(variance)
 
-    return F.rand(seed) * F.sqrt(variance) + mean
+    return F.randn(seed) * F.sqrt(variance) + mean
 
 
 def div_or_else(
