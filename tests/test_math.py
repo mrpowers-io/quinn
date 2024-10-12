@@ -47,3 +47,23 @@ def test_rand_range():
     uniform_max = stats["max"]
 
     assert lower_bound <= uniform_min <= uniform_max <= upper_bound
+
+
+def test_randn():
+    mean = 1.0
+    variance = 2.0
+    stats = (
+        spark.range(1000)
+        .select(quinn.randn(mean, variance).alias("rand_normal"))
+        .agg(
+            F.mean("rand_normal").alias("agg_mean"),
+            F.variance("rand_normal").alias("agg_variance"),
+        )
+        .first()
+    )
+
+    agg_mean = stats["agg_mean"]
+    agg_variance = stats["agg_variance"]
+
+    assert agg_mean - mean <= 0.1
+    assert agg_variance - variance <= 0.1

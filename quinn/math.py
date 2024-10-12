@@ -67,6 +67,28 @@ def rand_range(
     return minimum + (maximum - minimum) * u
 
 
+def randn(
+    mean: Union[float, Column],
+    variance: Union[float, Column],
+    seed: Optional[int] = None,
+) -> Column:
+    """Generate a column with independent and identically distributed (i.i.d.) samples from
+    the standard normal distribution with given `mean` and `variance`..
+
+    :param mean: Mean of the normal distribution of the random numbers
+    :param variance: variance of the normal distribution of the random numbers
+    :param seed: random seed value (optional, default None)
+    :returns: column with random numbers
+    """
+    if not isinstance(mean, Column):
+        mean = F.lit(mean)
+
+    if not isinstance(variance, Column):
+        variance = F.lit(variance)
+
+    return F.randn(seed) * F.sqrt(variance) + mean
+
+
 def div_or_else(
     cola: Column,
     colb: Column,
