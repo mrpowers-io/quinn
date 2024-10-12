@@ -40,7 +40,7 @@ def rand_laplace(
 
     u = F.rand(seed) - F.lit(0.5)
     return (mu - beta * F.signum(u) * F.log(F.lit(1) - (F.lit(2) * F.abs(u)))).alias(
-        "laplace_random"
+        "laplace_random",
     )
 
 
