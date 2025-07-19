@@ -87,6 +87,15 @@ def validate_schema(
                     x.nullable = None
 
             missing_struct_fields = [x for x in _required_schema if x not in _all_struct_fields]
+
+            # for field_name in _required_schema.fieldNames():
+            #     if field_name not in ...
+            #     else:
+            #         if ignore_nullable:
+            #             %% compare name, dataType %%
+            #         else:
+            #             %% compare name, dataType, nullabe %%
+
             error_message = (
                 f"The {missing_struct_fields} StructFields are not included in the DataFrame with the following StructFields {_all_struct_fields}"
             )
